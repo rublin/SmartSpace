@@ -1,11 +1,14 @@
 package repository.mock;
 
 import model.DigitTrigger;
+import org.slf4j.Logger;
 import repository.StateRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Sheremet on 15.06.2016.
