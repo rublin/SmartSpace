@@ -1,6 +1,8 @@
 package service;
 
 import model.DigitTrigger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import repository.TriggerRepository;
 import util.exceptions.NotFoundException;
 
@@ -9,7 +11,9 @@ import java.util.Collection;
 /**
  * Created by Sheremet on 15.06.2016.
  */
+@Service
 public class TriggerServiceImpl implements TriggerService {
+    @Autowired
     private TriggerRepository repository;
     @Override
     public DigitTrigger save(DigitTrigger trigger) {

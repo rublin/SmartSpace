@@ -2,6 +2,7 @@ package repository.mock;
 
 import model.DigitTrigger;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Repository;
 import repository.StateRepository;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by Sheremet on 15.06.2016.
  */
+@Repository
 public class InMemoryStateRepository implements StateRepository {
     private Map<DigitTrigger, Map<LocalDateTime, String>> repository = new ConcurrentHashMap<>();
 

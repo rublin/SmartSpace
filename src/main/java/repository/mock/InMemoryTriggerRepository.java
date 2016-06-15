@@ -2,6 +2,7 @@ package repository.mock;
 
 import model.AbstractTrigger;
 import model.DigitTrigger;
+import org.springframework.stereotype.Repository;
 import repository.TriggerRepository;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Sheremet on 15.06.2016.
  */
+@Repository
 public class InMemoryTriggerRepository implements TriggerRepository {
     Map<Integer, DigitTrigger> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);

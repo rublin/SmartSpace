@@ -1,3 +1,5 @@
+package main;
+
 import model.DigitTrigger;
 import repository.mock.InMemoryStateRepository;
 import repository.mock.InMemoryTriggerRepository;
