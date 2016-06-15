@@ -5,15 +5,16 @@ package model;
  */
 public abstract class AbstractTrigger {
     protected Integer id;
+    protected String name;
 
-    public AbstractTrigger() {
+    protected AbstractTrigger() {
     }
-
-    public AbstractTrigger(String name) {
+    protected AbstractTrigger (Integer id) {
+        this.id = id;
+    }
+    protected AbstractTrigger(String name) {
         this.name = name;
     }
-
-    protected String name;
 
     public String getName() {
         return name;
@@ -21,10 +22,6 @@ public abstract class AbstractTrigger {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    protected AbstractTrigger (Integer id) {
-        this.id = id;
     }
 
     public void setId(Integer id) {
