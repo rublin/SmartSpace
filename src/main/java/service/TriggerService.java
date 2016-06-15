@@ -1,7 +1,7 @@
 package service;
 
 import model.DigitTrigger;
-import util.exceptions.NotFoundException;
+import util.exception.NotFoundException;
 
 import java.util.Collection;
 

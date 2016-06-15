@@ -4,6 +4,7 @@ import model.AbstractTrigger;
 import model.DigitTrigger;
 import org.springframework.stereotype.Repository;
 import repository.TriggerRepository;
+import util.TriggerInit;
 
 import java.util.Collection;
 import java.util.Map;
@@ -17,6 +18,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InMemoryTriggerRepository implements TriggerRepository {
     Map<Integer, DigitTrigger> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
+    {
+        TriggerInit.TRIGGER_LIST.forEach(this::save);
+    }
     @Override
     public DigitTrigger save(DigitTrigger trigger) {
         if (trigger.isNew())

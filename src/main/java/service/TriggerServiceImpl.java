@@ -4,7 +4,7 @@ import model.DigitTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.TriggerRepository;
-import util.exceptions.NotFoundException;
+import util.exception.NotFoundException;
 
 import java.util.Collection;
 

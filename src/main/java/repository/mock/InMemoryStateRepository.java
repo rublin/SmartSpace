@@ -17,7 +17,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Repository
 public class InMemoryStateRepository implements StateRepository {
     private Map<DigitTrigger, Map<LocalDateTime, String>> repository = new ConcurrentHashMap<>();
+    {
 
+    }
     @Override
     public void save(DigitTrigger trigger, boolean state) {
         if (trigger.isState()!=state){

@@ -1,4 +1,4 @@
-package util.exceptions;
+package util.exception;
 
 /**
  * Created by Sheremet on 15.06.2016.

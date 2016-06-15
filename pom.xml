@@ -6,6 +6,7 @@
 
     <groupId>org.rublin</groupId>
     <artifactId>SmartSpace</artifactId>
+    <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>Smart Space</name>
     <url>http://rublin.org</url>
