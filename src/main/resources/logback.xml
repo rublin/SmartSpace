@@ -24,7 +24,7 @@
         </encoder>
     </appender>
 
-    <logger name="ru.javawebinar.topjava" level="debug"/>
+    <logger name="sspace" level="debug"/>
 
     <root level="info">
         <appender-ref ref="file"/>
