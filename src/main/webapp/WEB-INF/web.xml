@@ -1,0 +1,28 @@
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+
+    <display-name>SmartSpace</display-name>
+
+    <servlet>
+        <servlet-name>triggerServlet</servlet-name>
+        <servlet-class>web.TriggerServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>triggerServlet</servlet-name>
+        <url-pattern>/triggers</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>stateServlet</servlet-name>
+        <servlet-class>web.StateServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>stateServlet</servlet-name>
+        <url-pattern>/states</url-pattern>
+    </servlet-mapping>
+
+</web-app>

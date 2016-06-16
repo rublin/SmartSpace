@@ -38,4 +38,10 @@ public class TriggerServlet extends HttpServlet {
         }
         req.getRequestDispatcher("/trigger.jsp").forward(req, resp);
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        context.close();
+    }
 }
