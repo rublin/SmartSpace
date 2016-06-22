@@ -23,4 +23,10 @@ public class DigitEvent implements Event<Boolean>{
     public Boolean getState() {
         return state;
     }
+    @Override
+    public String toString() {
+        return "DigitalEvent {" +
+                "state: " + getState() + "" +
+                ", time: " + getTime();
+    }
 }

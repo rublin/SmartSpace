@@ -11,14 +11,18 @@ import repository.mock.InMemoryTriggerRepository;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         InMemoryTriggerRepository triggerRepository = new InMemoryTriggerRepository();
+        InMemoryStateRepository stateRepository = new InMemoryStateRepository();
+        //stateRepository.getAll(triggerRepository.get(1)).forEach(System.out::println);
+        stateRepository.save(triggerRepository.get(1), new DigitEvent(false));
+        stateRepository.getAll(triggerRepository.get(1)).forEach(System.out::println);
         triggerRepository.save(new DigitTrigger("main Move 1 floor"));
         triggerRepository.save(new DigitTrigger("main Door 1 floor"));
         triggerRepository.getAll().forEach(System.out::println);
-        InMemoryStateRepository stateRepository = new InMemoryStateRepository();
+
         stateRepository.save(triggerRepository.get(1), new DigitEvent(true));
         //hread.sleep(1000);
-        /*stateRepository.save(triggerRepository.get(2), new DigitEvent(false));
-        Thread.sleep(1000);*/
+        stateRepository.save(triggerRepository.get(2), new DigitEvent(false));
+        Thread.sleep(1000);
         stateRepository.save(triggerRepository.get(2), new DigitEvent(true));
         //Thread.sleep(5000);
         stateRepository.save(triggerRepository.get(1), new DigitEvent(false));

@@ -16,4 +16,5 @@ public class DigitTrigger extends AbstractTrigger{
     public void setEvent(DigitEvent event) {
         super.event = event;
     }
+
 }
