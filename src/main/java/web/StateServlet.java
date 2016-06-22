@@ -30,9 +30,9 @@ public class StateServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         AbstractTrigger trigger = triggerController.get(1);
-        req.setAttribute("stateMap", stateController.getAll(trigger));
+        req.setAttribute("eventList", stateController.getAll(trigger));
         req.setAttribute("trigger", trigger);
-        LOG.info("get state {} trigger", trigger.getName());
+        LOG.info("get event {} trigger", trigger.getName());
         req.getRequestDispatcher("/triggerStates.jsp").forward(req, resp);
     }
 

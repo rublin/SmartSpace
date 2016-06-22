@@ -1,9 +1,10 @@
 package util;
 
+import model.AbstractTrigger;
+import model.DigitEvent;
 import model.DigitTrigger;
+import model.Event;
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,11 +17,8 @@ public class TriggerInit {
             new DigitTrigger("Move 2 floor"),
             new DigitTrigger("Door 1 floor")
     );
-    public static final Map<LocalDateTime, Boolean> STAGE_LIST;
-    static
-    {
-        STAGE_LIST = new ConcurrentHashMap<LocalDateTime, Boolean>();
-        STAGE_LIST.put(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), Boolean.TRUE);
-        STAGE_LIST.put(LocalDateTime.of(2016, Month.NOVEMBER, 01, 10, 0), Boolean.FALSE);
-    }
+    public static final List<Event> EVENT_LIST = Arrays.asList(
+            new DigitEvent(Boolean.TRUE),
+            new DigitEvent(Boolean.FALSE)
+    );
 }

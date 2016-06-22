@@ -26,7 +26,7 @@
         <tr>
             <td>${trigger.id}</td>
             <td>${trigger.name}</td>
-            <td>${trigger.state}</td>
+            <td>${trigger.event.toString()}</td>
         </tr>
     </c:forEach>
 </table>

@@ -21,11 +21,11 @@
         <th>state</th>
     </tr>
     </thead>
-    <c:forEach items="${stateMap}" var="state">
+    <c:forEach items="${eventList}" var="event">
         <%--<jsp:useBean id="state" scope="page" type="repository.StateRepository"/>--%>
         <tr>
-            <td>${state.key}</td>
-            <td>${state.value}</td>
+            <td>${event.time}</td>
+            <td>${event.state}</td>
         </tr>
     </c:forEach>
 </table>

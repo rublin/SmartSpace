@@ -7,6 +7,7 @@ import model.Event;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import repository.StateRepository;
+import util.TriggerInit;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -22,13 +23,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class InMemoryStateRepository implements StateRepository {
     private static final Logger LOG = getLogger(InMemoryStateRepository.class);
     private Map<Integer, List<Event>> repository = new ConcurrentHashMap<>();
-    /*{
-        repository.put(1, Arrays.asList(
-                new DigitEvent(true),
-                new DigitEvent(false),
-                new DigitEvent(true)
-        ));
-    }*/
+    {
+        repository.put(1, new CopyOnWriteArrayList<>());
+        TriggerInit.EVENT_LIST.forEach(event -> repository.get(1).add(event));
+    }
 
     @Override
     public void save(AbstractTrigger trigger, Event event) {

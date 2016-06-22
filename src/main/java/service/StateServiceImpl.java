@@ -7,6 +7,7 @@ import model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.StateRepository;
+import repository.mock.InMemoryStateRepository;
 
 import java.util.List;
 

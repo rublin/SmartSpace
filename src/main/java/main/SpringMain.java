@@ -1,10 +1,14 @@
 package main;
 
+import model.DigitEvent;
 import model.DigitTrigger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import service.StateService;
+import service.StateServiceImpl;
 import service.TriggerService;
 import service.TriggerServiceImpl;
+import web.rest.StateRestController;
 
 import java.util.Arrays;
 
@@ -19,6 +23,12 @@ public class SpringMain {
             triggerService.save(new DigitTrigger("Move 1 floor"));
             triggerService.save(new DigitTrigger("Door 1 floor"));
             triggerService.getAll().forEach(System.out::println);
+            StateService stateService = (StateServiceImpl) springContext.getBean(StateService.class);
+            stateService.save(triggerService.get(1), new DigitEvent(true));
+            stateService.save(triggerService.get(1), new DigitEvent(false));
+            stateService.getAll(triggerService.get(1)).forEach(System.out::println);
+            StateRestController stateController = (StateRestController)springContext.getBean(StateRestController.class);
+            stateController.getAll(triggerService.get(1)).forEach(System.out::println);
         }
     }
 }
