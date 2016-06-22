@@ -23,7 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class TriggerServlet extends HttpServlet {
     private static final Logger LOG = getLogger(TriggerServlet.class);
-    private TriggerRestController controller;
+    protected static TriggerRestController controller;
     private ConfigurableApplicationContext context;
 
     @Override

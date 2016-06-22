@@ -1,7 +1,6 @@
 package web;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
+import model.*;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,10 +27,41 @@ public class StateServlet extends HttpServlet {
     private TriggerRestController triggerController;
 
     @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        stateController = context.getBean(StateRestController.class);
+        triggerController = context.getBean(TriggerRestController.class);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        AbstractTrigger trigger = triggerController.get(1);
+        String action = req.getParameter("action");
+        String triggerId = req.getParameter("triggerId");
+        if (action!=null) {
+            if (action.equals("addEvent")) {
+                String state = req.getParameter("state");
+                AbstractTrigger trigger = triggerController.get(Integer.parseInt(triggerId));
+                Event event;
+                if (trigger instanceof DigitTrigger) {
+                    LOG.info("new digital event {} from trigger {}", state, trigger.getName());
+                    event = new DigitEvent(Boolean.parseBoolean(state));
+                } else {
+                    LOG.info("new analog event {} from trigger {}", state, trigger.getName());
+                    event = new AnalogEvent(Double.parseDouble(state));
+                }
+                stateController.save(trigger, event);
+                trigger.setEvent(event);
+            }
+        }
+
+        LOG.info("trigger id is {}", triggerId);
+        if (triggerId.isEmpty())
+            triggerId="1";
+        AbstractTrigger trigger = triggerController.get(Integer.parseInt(triggerId));
         req.setAttribute("eventList", stateController.getAll(trigger));
         req.setAttribute("trigger", trigger);
+        req.setAttribute("triggerList", triggerController.getAll());
         LOG.info("get event {} trigger", trigger.getName());
         req.getRequestDispatcher("/triggerStates.jsp").forward(req, resp);
     }
@@ -45,13 +75,5 @@ public class StateServlet extends HttpServlet {
     public void destroy() {
         super.destroy();
         context.close();
-    }
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
-        stateController = context.getBean(StateRestController.class);
-        triggerController = context.getBean(TriggerRestController.class);
     }
 }

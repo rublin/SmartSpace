@@ -21,12 +21,12 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Repository
 public class InMemoryStateRepository implements StateRepository {
-    private static final Logger LOG = getLogger(InMemoryStateRepository.class);
+    //private static final Logger LOG = getLogger(InMemoryStateRepository.class);
     private Map<Integer, List<Event>> repository = new ConcurrentHashMap<>();
-    {
+    /*{
         repository.put(1, new CopyOnWriteArrayList<>());
         TriggerInit.EVENT_LIST.forEach(event -> repository.get(1).add(event));
-    }
+    }*/
 
     @Override
     public void save(AbstractTrigger trigger, Event event) {
@@ -40,8 +40,12 @@ public class InMemoryStateRepository implements StateRepository {
 
     @Override
     public List<Event> get(AbstractTrigger trigger) {
-        LOG.debug("get", trigger.getId());
-        return repository.get(trigger.getId());
+        //LOG.debug("get", trigger.getId());
+        if (repository.containsKey(trigger.getId()))
+            return repository.get(trigger.getId());
+        else
+            return new ArrayList<>();
+        //return repository.containsKey(trigger.getId()) ? repository.get(trigger.getId()) : new ArrayList<Event>();
     }
 
     @Override

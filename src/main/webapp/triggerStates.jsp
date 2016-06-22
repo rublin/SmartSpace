@@ -12,7 +12,16 @@
     <title>States of triggers | Smart Space</title>
 </head>
 <body>
+<h2><a href="index.html">Home</a></h2>
 <h1>Triggers states history</h1>
+<form method="get" action="states?action=show">
+<select name="triggerId">
+    <c:forEach var="trigger" items="${triggerList}">
+        <option>${trigger.id}</option>
+    </c:forEach>
+</select>
+    <input type="submit" value="Select">
+</form>
 <h3>Trigger is: ${trigger.name}</h3>
 <table border="1" cellpadding="8" cellspacing="0" >
     <thead>

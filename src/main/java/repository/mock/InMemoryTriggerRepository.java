@@ -18,9 +18,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InMemoryTriggerRepository implements TriggerRepository {
     private Map<Integer, AbstractTrigger> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
-    {
+    /*{
         TriggerInit.TRIGGER_LIST.forEach(this::save);
-    }
+    }*/
     @Override
     public AbstractTrigger save(AbstractTrigger trigger) {
         if (trigger.isNew())
