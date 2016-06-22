@@ -22,7 +22,6 @@
     </tr>
     </thead>
     <c:forEach items="${eventList}" var="event">
-        <%--<jsp:useBean id="state" scope="page" type="repository.StateRepository"/>--%>
         <tr>
             <td>${event.time}</td>
             <td>${event.state}</td>

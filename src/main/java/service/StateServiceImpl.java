@@ -1,13 +1,10 @@
 package service;
 
 import model.AbstractTrigger;
-import model.DigitTrigger;
-import model.DigitEvent;
 import model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.StateRepository;
-import repository.mock.InMemoryStateRepository;
 
 import java.util.List;
 
@@ -25,6 +22,6 @@ public class StateServiceImpl implements StateService {
 
     @Override
     public List<Event> getAll(AbstractTrigger trigger) {
-        return repository.getAll(trigger);
+        return repository.get(trigger);
     }
 }

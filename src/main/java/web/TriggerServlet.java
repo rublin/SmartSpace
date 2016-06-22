@@ -1,6 +1,10 @@
 package web;
 
+import model.AbstractTrigger;
+import model.AnalogTrigger;
+import model.DigitTrigger;
 import org.slf4j.Logger;
+import org.springframework.asm.Type;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import web.rest.TriggerRestController;
@@ -30,11 +34,35 @@ public class TriggerServlet extends HttpServlet {
     }
 
     @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        LOG.info("post", req);
+        String id = req.getParameter("id");
+        String type = req.getParameter("type");
+        String name = req.getParameter("name");
+        if (id.isEmpty()) {
+            if (type.equals("digital")) {
+                LOG.info("Create digital trigger {}", name);
+                controller.create(new DigitTrigger(name));
+            } else if (type.equals("analog")){
+                LOG.info("Create analog trigger {}", name);
+                controller.create(new AnalogTrigger(name));
+            }
+        } else {
+            AbstractTrigger trigger = controller.get(Integer.parseInt(id));
+            LOG.info("Update trigger {}. New name is {}", trigger, name);
+            trigger.setName(name);
+            controller.update(trigger);
+        }
+        resp.sendRedirect("triggers");
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
         if (action==null){
             req.setAttribute("triggerList", controller.getAll());
-            LOG.info("getAll");
+            LOG.info("get");
         }
         req.getRequestDispatcher("/trigger.jsp").forward(req, resp);
     }

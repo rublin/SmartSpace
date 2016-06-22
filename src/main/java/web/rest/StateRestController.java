@@ -23,5 +23,4 @@ public class StateRestController {
     public List<Event> getAll (AbstractTrigger trigger) {
         return service.getAll(trigger);
     }
-
 }

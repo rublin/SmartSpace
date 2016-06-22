@@ -39,8 +39,13 @@ public class InMemoryStateRepository implements StateRepository {
     }
 
     @Override
-    public List<Event> getAll(AbstractTrigger trigger) {
-        LOG.debug("getAll", trigger.getId());
+    public List<Event> get(AbstractTrigger trigger) {
+        LOG.debug("get", trigger.getId());
         return repository.get(trigger.getId());
+    }
+
+    @Override
+    public Map<Integer, List<Event>> getAll() {
+        return repository;
     }
 }
