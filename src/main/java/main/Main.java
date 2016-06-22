@@ -1,6 +1,7 @@
 package main;
 
 import model.DigitTrigger;
+import model.DigitEvent;
 import repository.mock.InMemoryStateRepository;
 import repository.mock.InMemoryTriggerRepository;
 
@@ -9,18 +10,18 @@ import repository.mock.InMemoryTriggerRepository;
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        InMemoryTriggerRepository repository = new InMemoryTriggerRepository();
-        repository.save(new DigitTrigger("Move 1 floor"));
-        repository.save(new DigitTrigger("Door 1 floor"));
-        repository.getAll().forEach(System.out::println);
+        InMemoryTriggerRepository triggerRepository = new InMemoryTriggerRepository();
+        triggerRepository.save(new DigitTrigger("main Move 1 floor"));
+        triggerRepository.save(new DigitTrigger("main Door 1 floor"));
+        triggerRepository.getAll().forEach(System.out::println);
         InMemoryStateRepository stateRepository = new InMemoryStateRepository();
-        stateRepository.save(repository.get(1), true);
-        Thread.sleep(1000);
-        stateRepository.save(repository.get(2), true);
-        Thread.sleep(1000);
-        stateRepository.save(repository.get(2), false);
-        Thread.sleep(5000);
-        stateRepository.save(repository.get(1), false);
-        stateRepository.getAll(repository.get(1)).forEach((k, v) -> System.out.println(k+" "+v));
+        stateRepository.save(triggerRepository.get(1), new DigitEvent(true));
+        //hread.sleep(1000);
+        /*stateRepository.save(triggerRepository.get(2), new DigitEvent(false));
+        Thread.sleep(1000);*/
+        stateRepository.save(triggerRepository.get(2), new DigitEvent(true));
+        //Thread.sleep(5000);
+        stateRepository.save(triggerRepository.get(1), new DigitEvent(false));
+        stateRepository.getAll(triggerRepository.get(1)).forEach(System.out::println);
     }
 }

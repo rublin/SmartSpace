@@ -1,5 +1,6 @@
 package web.rest;
 
+import model.AbstractTrigger;
 import model.DigitTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,13 +19,13 @@ public class TriggerRestController {
     public void delete (int id){
         service.delete(id);
     }
-    public DigitTrigger save (DigitTrigger trigger) {
+    public AbstractTrigger save (AbstractTrigger trigger) {
         return service.save(trigger);
     }
-    public DigitTrigger get (int id) {
+    public AbstractTrigger get (int id) {
         return service.get(id);
     }
-    public List<DigitTrigger> getAll () {
+    public List<AbstractTrigger> getAll () {
         return new ArrayList<>(service.getAll());
     }
 }

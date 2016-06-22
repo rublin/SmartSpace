@@ -1,12 +1,14 @@
 package web.rest;
 
+import model.AbstractTrigger;
 import model.DigitTrigger;
+import model.DigitEvent;
+import model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import service.StateService;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Sheremet on 16.06.2016.
@@ -15,10 +17,10 @@ import java.util.Map;
 public class StateRestController {
     @Autowired
     private StateService service;
-    public void save (DigitTrigger trigger, boolean state) {
-        service.save(trigger, state);
+    public void save (AbstractTrigger trigger, Event event) {
+        service.save(trigger, event);
     }
-    public Map<LocalDateTime, Boolean> getAll (DigitTrigger trigger) {
+    public List<Event> getAll (AbstractTrigger trigger) {
         return service.getAll(trigger);
     }
 

@@ -1,5 +1,6 @@
 package service;
 
+import model.AbstractTrigger;
 import model.DigitTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,22 +17,22 @@ public class TriggerServiceImpl implements TriggerService {
     @Autowired
     private TriggerRepository repository;
     @Override
-    public DigitTrigger save(DigitTrigger trigger) {
+    public AbstractTrigger save(AbstractTrigger trigger) {
         return repository.save(trigger);
     }
 
     @Override
-    public DigitTrigger delete(int id) throws NotFoundException {
+    public AbstractTrigger delete(int id) throws NotFoundException {
         return repository.delete(id);
     }
 
     @Override
-    public DigitTrigger get(int id) throws NotFoundException {
+    public AbstractTrigger get(int id) throws NotFoundException {
         return repository.get(id);
     }
 
     @Override
-    public Collection<DigitTrigger> getAll() {
+    public Collection<AbstractTrigger> getAll() {
         return repository.getAll();
     }
 }

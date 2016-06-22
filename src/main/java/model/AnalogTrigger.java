@@ -5,23 +5,15 @@ package model;
  */
 public class AnalogTrigger extends AbstractTrigger{
 
-    private double state;
     public AnalogTrigger (String name) {
         super(name);
+        super.event = new AnalogEvent(0.0);
     }
-    public double getState() {
-        return state;
+    public AnalogEvent getState() {
+        return (AnalogEvent) super.event;
     }
 
-    public void setState(double state) {
-        this.state = state;
-    }
-    @Override
-    public String toString() {
-        return "AnalogTrigger{" +
-                "id=" + super.getId() +
-                ", name=" + super.getName() +
-                ", state=" + state +
-                '}';
+    public void setState(AnalogEvent event) {
+        super.event = event;
     }
 }

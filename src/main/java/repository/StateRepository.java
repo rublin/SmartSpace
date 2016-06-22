@@ -1,15 +1,16 @@
 package repository;
 
+import model.AbstractTrigger;
 import model.DigitTrigger;
+import model.DigitEvent;
+import model.Event;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Sheremet on 15.06.2016.
  */
 public interface StateRepository {
-    void save (DigitTrigger trigger, boolean state);
-    Map<LocalDateTime, Boolean> getAll (DigitTrigger trigger);
+    void save (AbstractTrigger trigger, Event event);
+    List<Event> getAll (AbstractTrigger trigger);
 }

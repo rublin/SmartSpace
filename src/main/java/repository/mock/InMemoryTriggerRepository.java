@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Repository
 public class InMemoryTriggerRepository implements TriggerRepository {
-    Map<Integer, DigitTrigger> repository = new ConcurrentHashMap<>();
+    Map<Integer, AbstractTrigger> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
     {
         TriggerInit.TRIGGER_LIST.forEach(this::save);
     }
     @Override
-    public DigitTrigger save(DigitTrigger trigger) {
+    public AbstractTrigger save(AbstractTrigger trigger) {
         if (trigger.isNew())
             trigger.setId(counter.incrementAndGet());
         repository.put(trigger.getId(), trigger);
@@ -30,17 +30,17 @@ public class InMemoryTriggerRepository implements TriggerRepository {
     }
 
     @Override
-    public DigitTrigger delete(int id) {
+    public AbstractTrigger delete(int id) {
         return repository.remove(id);
     }
 
     @Override
-    public DigitTrigger get(int id) {
+    public AbstractTrigger get(int id) {
         return repository.get(id);
     }
 
     @Override
-    public Collection<DigitTrigger> getAll() {
+    public Collection<AbstractTrigger> getAll() {
         return repository.values();
     }
 }

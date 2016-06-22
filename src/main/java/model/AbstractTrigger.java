@@ -6,6 +6,15 @@ package model;
 public abstract class AbstractTrigger {
     protected Integer id;
     protected String name;
+    protected Event event;
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 
     protected AbstractTrigger() {
     }
@@ -39,8 +48,9 @@ public abstract class AbstractTrigger {
     @Override
     public String toString() {
         return "Trigger{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "id=" + getId() +
+                ", name=" + getName() +
+                ", state=" + event.getState() + " at " + event.getTime() +
                 '}';
     }
 }

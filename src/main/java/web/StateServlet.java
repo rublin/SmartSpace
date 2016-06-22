@@ -1,5 +1,6 @@
 package web;
 
+import model.AbstractTrigger;
 import model.DigitTrigger;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -28,7 +29,7 @@ public class StateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        DigitTrigger trigger = triggerController.get(1);
+        AbstractTrigger trigger = triggerController.get(1);
         req.setAttribute("stateMap", stateController.getAll(trigger));
         req.setAttribute("trigger", trigger);
         LOG.info("get state {} trigger", trigger.getName());

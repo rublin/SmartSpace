@@ -2,14 +2,12 @@ package repository.mock;
 
 import model.AbstractTrigger;
 import model.DigitTrigger;
-import org.slf4j.Logger;
+import model.DigitEvent;
+import model.Event;
 import org.springframework.stereotype.Repository;
 import repository.StateRepository;
-import util.TriggerInit;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -19,25 +17,29 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Repository
 public class InMemoryStateRepository implements StateRepository {
-    private Map<Integer, Map<LocalDateTime, Boolean>> repository = new ConcurrentHashMap<>();
+    private Map<Integer, List<Event>> repository = new ConcurrentHashMap<>();
     {
-        repository.put(1, new ConcurrentHashMap<LocalDateTime, Boolean>());
-        repository.get(1).put(LocalDateTime.now(), Boolean.TRUE);
-        repository.get(1).put(LocalDateTime.now(), Boolean.FALSE);
-        repository.get(1).put(LocalDateTime.now(), Boolean.TRUE);
+        repository.put(1, Arrays.asList(
+                new DigitEvent(true),
+                new DigitEvent(false),
+                new DigitEvent(true)
+        ));
     }
+
     @Override
-    public void save(DigitTrigger trigger, boolean state) {
-        if (trigger.isState()!=state){
+    public void save(AbstractTrigger trigger, Event event) {
+        if (trigger.getEvent().getState()!= event.getState()){
             if (!repository.containsKey(trigger))
-                repository.put(trigger.getId(), new ConcurrentHashMap<>());
-            repository.get(trigger).put(LocalDateTime.now(), trigger.isState());
-            trigger.setState(state);
+                repository.put(trigger.getId(), new ArrayList<>());
+            repository.get(trigger).add(event);
+            trigger.setEvent(event);
         }
     }
 
     @Override
-    public Map<LocalDateTime, Boolean> getAll(DigitTrigger trigger) {
+    public List<Event> getAll(AbstractTrigger trigger) {
         return repository.get(trigger.getId());
     }
+
+
 }
