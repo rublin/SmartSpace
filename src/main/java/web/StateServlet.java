@@ -56,7 +56,7 @@ public class StateServlet extends HttpServlet {
         }
 
         LOG.info("trigger id is {}", triggerId);
-        if (triggerId.isEmpty())
+        if (triggerId==null)
             triggerId="1";
         AbstractTrigger trigger = triggerController.get(Integer.parseInt(triggerId));
         req.setAttribute("eventList", stateController.getAll(trigger));
@@ -68,7 +68,26 @@ public class StateServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        req.setCharacterEncoding("UTF-8");
+        LOG.info("post", req);
+        String id = req.getParameter("id");
+        String type = req.getParameter("type");
+        String name = req.getParameter("name");
+        if (id==null) {
+            if (type.equals("digital")) {
+                LOG.info("Create digital trigger {}", name);
+                triggerController.create(new DigitTrigger(name));
+            } else if (type.equals("analog")){
+                LOG.info("Create analog trigger {}", name);
+                triggerController.create(new AnalogTrigger(name));
+            }
+        } else {
+            AbstractTrigger trigger = triggerController.get(Integer.parseInt(id));
+            LOG.info("Update trigger {}. New name is {}", trigger, name);
+            trigger.setName(name);
+            triggerController.update(trigger);
+        }
+        resp.sendRedirect("states");
     }
 
     @Override

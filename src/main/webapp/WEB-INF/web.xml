@@ -5,15 +5,15 @@
 
     <display-name>SmartSpace</display-name>
 
-    <servlet>
-        <servlet-name>triggerServlet</servlet-name>
-        <servlet-class>web.TriggerServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>triggerServlet</servlet-name>
-        <url-pattern>/triggers</url-pattern>
-    </servlet-mapping>
+    <!--<servlet>-->
+        <!--<servlet-name>triggerServlet</servlet-name>-->
+        <!--<servlet-class>web.TriggerServlet</servlet-class>-->
+        <!--<load-on-startup>0</load-on-startup>-->
+    <!--</servlet>-->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>triggerServlet</servlet-name>-->
+        <!--<url-pattern>/triggers</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <servlet>
         <servlet-name>stateServlet</servlet-name>

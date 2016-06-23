@@ -23,10 +23,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class InMemoryStateRepository implements StateRepository {
     //private static final Logger LOG = getLogger(InMemoryStateRepository.class);
     private Map<Integer, List<Event>> repository = new ConcurrentHashMap<>();
-    /*{
+    {
         repository.put(1, new CopyOnWriteArrayList<>());
         TriggerInit.EVENT_LIST.forEach(event -> repository.get(1).add(event));
-    }*/
+    }
 
     @Override
     public void save(AbstractTrigger trigger, Event event) {
