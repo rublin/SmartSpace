@@ -1,7 +1,5 @@
 package service;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
 import model.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

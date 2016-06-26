@@ -1,7 +1,5 @@
 package repository;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
 import model.Trigger;
 
 import java.util.Collection;

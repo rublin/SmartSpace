@@ -14,7 +14,7 @@
 <body>
 <h2><a href="index.html">Home</a></h2>
 <h1>Add trigger</h1>
-<%--<jsp:useBean id="trigger" type="model.AbstractTrigger" scope="request"/>--%>
+<%--<jsp:useBean id="trigger" type="model.Trigger"request"/>--%>
 <form method="post" action="triggers?action=add">
     <input type="hidden" name="id" value="${trigger.id}">
     Name:<input type="text" name="name" value="${trigger.name}">

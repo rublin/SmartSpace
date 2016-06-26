@@ -1,11 +1,8 @@
 package web;
 
-import model.AbstractTrigger;
-import model.AnalogTrigger;
-import model.DigitTrigger;
 import model.Trigger;
+import model.Type;
 import org.slf4j.Logger;
-import org.springframework.asm.Type;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import web.rest.TriggerRestController;
@@ -44,10 +41,10 @@ public class TriggerServlet extends HttpServlet {
         if (id.isEmpty()) {
             if (type.equals("digital")) {
                 LOG.info("Create digital trigger {}", name);
-                controller.create(new DigitTrigger(name));
+                controller.create(new Trigger(name));
             } else if (type.equals("analog")){
                 LOG.info("Create analog trigger {}", name);
-                controller.create(new AnalogTrigger(name));
+                controller.create(new Trigger(name, Type.DIGITAL));
             }
         } else {
             Trigger trigger = controller.get(Integer.parseInt(id));

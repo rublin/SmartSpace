@@ -1,7 +1,5 @@
 package repository.mock;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
 import model.Trigger;
 import org.springframework.stereotype.Repository;
 import repository.TriggerRepository;

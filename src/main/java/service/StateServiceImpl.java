@@ -1,7 +1,7 @@
 package service;
 
-import model.event.Event;
 import model.Trigger;
+import model.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.StateRepository;

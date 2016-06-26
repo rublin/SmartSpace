@@ -1,7 +1,7 @@
 package main;
 
+import model.Trigger;
 import model.event.DigitEvent;
-import model.DigitTrigger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import service.StateService;
@@ -20,8 +20,8 @@ public class SpringMain {
         try (ConfigurableApplicationContext springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml")){
             System.out.println(Arrays.toString(springContext.getBeanDefinitionNames()));
             TriggerService triggerService = (TriggerServiceImpl)springContext.getBean(TriggerService.class);
-            triggerService.save(new DigitTrigger("Move 1 floor"));
-            triggerService.save(new DigitTrigger("Door 1 floor"));
+            triggerService.save(new Trigger("Move 1 floor"));
+            triggerService.save(new Trigger("Door 1 floor"));
             triggerService.getAll().forEach(System.out::println);
             StateService stateService = (StateServiceImpl) springContext.getBean(StateService.class);
             stateService.save(triggerService.get(1), new DigitEvent(triggerService.get(1), true));

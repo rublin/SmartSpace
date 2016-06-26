@@ -1,7 +1,5 @@
 package web.rest;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
 import model.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

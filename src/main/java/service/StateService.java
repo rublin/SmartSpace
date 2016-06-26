@@ -1,7 +1,7 @@
 package service;
 
-import model.event.Event;
 import model.Trigger;
+import model.event.Event;
 
 import java.util.List;
 

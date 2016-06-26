@@ -16,8 +16,8 @@ public class Main {
         //stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);
         stateRepository.save(triggerRepository.get(1), new DigitEvent(triggerRepository.get(1),false));
         stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);
-        triggerRepository.save(new DigitTrigger("main Move 1 floor"));
-        triggerRepository.save(new DigitTrigger("main Door 1 floor"));
+        triggerRepository.save(new Trigger("main Move 1 floor"));
+        triggerRepository.save(new Trigger("main Door 1 floor"));
         triggerRepository.getAll().forEach(System.out::println);
 
         stateRepository.save(triggerRepository.get(1), new DigitEvent(triggerRepository.get(1),true));
@@ -29,7 +29,7 @@ public class Main {
         stateRepository.save(triggerRepository.get(1), new DigitEvent(triggerRepository.get(1),false));
         stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);
 
-        Trigger analog = triggerRepository.save(new AnalogTrigger("FAT"));
+        Trigger analog = triggerRepository.save(new Trigger("FAT"));
         stateRepository.save(triggerRepository.get(analog.getId()), new AnalogEvent(analog, 12.0));
         stateRepository.get(triggerRepository.get(analog.getId())).forEach(System.out::println);
     }

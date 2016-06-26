@@ -46,7 +46,7 @@ public class StateServlet extends HttpServlet {
                 String state = req.getParameter("state");
                 Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
                 Event event;
-                if (trigger instanceof DigitTrigger) {
+                if (trigger.getType() == Type.DIGITAL) {
                     LOG.info("new digital event {} from trigger {}", state, trigger.getName());
                     event = new DigitEvent(trigger, Boolean.parseBoolean(state));
                 } else {
@@ -79,10 +79,10 @@ public class StateServlet extends HttpServlet {
         if (id==null) {
             if (type.equals("digital")) {
                 LOG.info("Create digital trigger {}", name);
-                triggerController.create(new DigitTrigger(name));
+                triggerController.create(new Trigger(name));
             } else if (type.equals("analog")){
                 LOG.info("Create analog trigger {}", name);
-                triggerController.create(new AnalogTrigger(name));
+                triggerController.create(new Trigger(name));
             }
         } else {
             Trigger trigger = triggerController.get(Integer.parseInt(id));
