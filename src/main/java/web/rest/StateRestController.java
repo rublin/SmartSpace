@@ -1,6 +1,7 @@
 package web.rest;
 
 import model.*;
+import model.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import service.StateService;

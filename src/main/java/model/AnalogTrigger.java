@@ -1,5 +1,7 @@
 package model;
 
+import model.event.AnalogEvent;
+
 /**
  * Created by Sheremet on 15.06.2016.
  */

@@ -1,6 +1,7 @@
 package repository;
 
 import model.*;
+import model.event.Event;
 
 import java.util.List;
 import java.util.Map;

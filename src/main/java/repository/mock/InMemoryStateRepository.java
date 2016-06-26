@@ -1,12 +1,11 @@
 package repository.mock;
 
 import model.*;
-import org.slf4j.Logger;
+import model.event.Event;
 import org.springframework.stereotype.Repository;
 import repository.StateRepository;
 import util.TriggerInit;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;

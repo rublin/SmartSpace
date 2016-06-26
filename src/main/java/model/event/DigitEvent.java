@@ -1,4 +1,6 @@
-package model;
+package model.event;
+
+import model.Trigger;
 
 /**
  * Created by Sheremet on 21.06.2016.

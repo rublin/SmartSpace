@@ -1,5 +1,7 @@
 package model;
 
+import model.event.DigitEvent;
+
 /**
  * Created by Sheremet on 15.06.2016.
  */

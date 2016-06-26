@@ -1,6 +1,6 @@
 package main;
 
-import model.DigitEvent;
+import model.event.DigitEvent;
 import model.DigitTrigger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

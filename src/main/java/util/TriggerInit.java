@@ -1,12 +1,10 @@
 package util;
 
-import model.AbstractTrigger;
-import model.DigitEvent;
+import model.event.DigitEvent;
 import model.DigitTrigger;
-import model.Event;
+import model.event.Event;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Sheremet on 15.06.2016.

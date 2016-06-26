@@ -1,6 +1,8 @@
 package main;
 
 import model.*;
+import model.event.AnalogEvent;
+import model.event.DigitEvent;
 import repository.mock.InMemoryStateRepository;
 import repository.mock.InMemoryTriggerRepository;
 

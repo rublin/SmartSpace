@@ -1,6 +1,9 @@
 package web;
 
 import model.*;
+import model.event.AnalogEvent;
+import model.event.DigitEvent;
+import model.event.Event;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

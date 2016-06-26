@@ -33,6 +33,9 @@
         <th>id</th>
         <th>name</th>
         <th>type</th>
+        <th>current state</th>
+        <th></th>
+        <th></th>
     </tr>
     </thead>
     <c:forEach items="${triggerList}" var="trigger">
