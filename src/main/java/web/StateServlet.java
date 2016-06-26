@@ -45,10 +45,10 @@ public class StateServlet extends HttpServlet {
                 Event event;
                 if (trigger instanceof DigitTrigger) {
                     LOG.info("new digital event {} from trigger {}", state, trigger.getName());
-                    event = new DigitEvent(Boolean.parseBoolean(state));
+                    event = new DigitEvent(trigger, Boolean.parseBoolean(state));
                 } else {
                     LOG.info("new analog event {} from trigger {}", state, trigger.getName());
-                    event = new AnalogEvent(Double.parseDouble(state));
+                    event = new AnalogEvent(trigger, Double.parseDouble(state));
                 }
                 stateController.save(trigger, event);
                 trigger.setEvent(event);

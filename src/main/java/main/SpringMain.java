@@ -24,8 +24,8 @@ public class SpringMain {
             triggerService.save(new DigitTrigger("Door 1 floor"));
             triggerService.getAll().forEach(System.out::println);
             StateService stateService = (StateServiceImpl) springContext.getBean(StateService.class);
-            stateService.save(triggerService.get(1), new DigitEvent(true));
-            stateService.save(triggerService.get(1), new DigitEvent(false));
+            stateService.save(triggerService.get(1), new DigitEvent(triggerService.get(1), true));
+            stateService.save(triggerService.get(1), new DigitEvent(triggerService.get(1), false));
             stateService.getAll(triggerService.get(1)).forEach(System.out::println);
             StateRestController stateController = (StateRestController)springContext.getBean(StateRestController.class);
             stateController.getAll(triggerService.get(1)).forEach(System.out::println);

@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
 public class DigitEvent implements Event<Boolean>{
     private final LocalDateTime time;
     private final boolean state;
-
-    public DigitEvent(boolean state) {
+    private AbstractTrigger trigger;
+    public DigitEvent(AbstractTrigger trigger, boolean state) {
         time = LocalDateTime.now();
         this.state = state;
+        this.trigger = trigger;
     }
 
     @Override
@@ -23,10 +24,17 @@ public class DigitEvent implements Event<Boolean>{
     public Boolean getState() {
         return state;
     }
+
+    @Override
+    public AbstractTrigger getTrigger() {
+        return trigger;
+    }
+
     @Override
     public String toString() {
         return "DigitalEvent {" +
-                "state: " + getState() + "" +
-                ", time: " + getTime();
+                "trigger: " + getTrigger().getName() +
+                ", state: " + getState() +
+                ", time: " + getTime() + "}";
     }
 }

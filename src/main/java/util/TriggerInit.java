@@ -18,7 +18,7 @@ public class TriggerInit {
             new DigitTrigger("Door 1 floor")
     );
     public static final List<Event> EVENT_LIST = Arrays.asList(
-            new DigitEvent(Boolean.TRUE),
-            new DigitEvent(Boolean.FALSE)
+            new DigitEvent(TRIGGER_LIST.get(1), Boolean.TRUE),
+            new DigitEvent(TRIGGER_LIST.get(1), Boolean.FALSE)
     );
 }

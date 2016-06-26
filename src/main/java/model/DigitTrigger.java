@@ -6,7 +6,7 @@ package model;
 public class DigitTrigger extends AbstractTrigger{
     public DigitTrigger(String name) {
         super(name);
-        super.event = new DigitEvent(true);
+        super.event = new DigitEvent(this, true);
     }
 
     public DigitEvent getEvent() {

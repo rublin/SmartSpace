@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 public class AnalogEvent implements Event<Double> {
     private final LocalDateTime time;
     private final Double state;
+    private AbstractTrigger trigger;
 
-    public AnalogEvent(Double state) {
+    public AnalogEvent(AbstractTrigger trigger, Double state) {
         this.time = LocalDateTime.now();
         this.state = state;
+        this.trigger = trigger;
     }
 
     @Override
@@ -22,5 +24,18 @@ public class AnalogEvent implements Event<Double> {
     @Override
     public Double getState() {
         return state;
+    }
+
+    @Override
+    public AbstractTrigger getTrigger() {
+        return trigger;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{" +
+                "trigger: " + getTrigger().getName() +
+                ", state: " + getState() +
+                ", time: " + getTime() + "}";
     }
 }
