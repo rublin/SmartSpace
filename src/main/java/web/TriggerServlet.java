@@ -3,6 +3,7 @@ package web;
 import model.AbstractTrigger;
 import model.AnalogTrigger;
 import model.DigitTrigger;
+import model.Trigger;
 import org.slf4j.Logger;
 import org.springframework.asm.Type;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -49,7 +50,7 @@ public class TriggerServlet extends HttpServlet {
                 controller.create(new AnalogTrigger(name));
             }
         } else {
-            AbstractTrigger trigger = controller.get(Integer.parseInt(id));
+            Trigger trigger = controller.get(Integer.parseInt(id));
             LOG.info("Update trigger {}. New name is {}", trigger, name);
             trigger.setName(name);
             controller.update(trigger);

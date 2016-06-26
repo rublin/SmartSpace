@@ -41,7 +41,7 @@ public class StateServlet extends HttpServlet {
         if (action!=null) {
             if (action.equals("addEvent")) {
                 String state = req.getParameter("state");
-                AbstractTrigger trigger = triggerController.get(Integer.parseInt(triggerId));
+                Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
                 Event event;
                 if (trigger instanceof DigitTrigger) {
                     LOG.info("new digital event {} from trigger {}", state, trigger.getName());
@@ -58,7 +58,7 @@ public class StateServlet extends HttpServlet {
         LOG.info("trigger id is {}", triggerId);
         if (triggerId==null)
             triggerId="1";
-        AbstractTrigger trigger = triggerController.get(Integer.parseInt(triggerId));
+        Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
         req.setAttribute("eventList", stateController.getAll(trigger));
         req.setAttribute("trigger", trigger);
         req.setAttribute("triggerList", triggerController.getAll());
@@ -82,7 +82,7 @@ public class StateServlet extends HttpServlet {
                 triggerController.create(new AnalogTrigger(name));
             }
         } else {
-            AbstractTrigger trigger = triggerController.get(Integer.parseInt(id));
+            Trigger trigger = triggerController.get(Integer.parseInt(id));
             LOG.info("Update trigger {}. New name is {}", trigger, name);
             trigger.setName(name);
             triggerController.update(trigger);

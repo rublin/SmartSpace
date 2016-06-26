@@ -2,6 +2,7 @@ package web.rest;
 
 import model.AbstractTrigger;
 import model.DigitTrigger;
+import model.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +24,19 @@ public class TriggerRestController {
         LOG.info("delete trigger id: {}", id);
         service.delete(id);
     }
-    public AbstractTrigger create (AbstractTrigger trigger) {
+    public Trigger create (Trigger trigger) {
         LOG.info("create trigger {}",trigger);
         return service.save(trigger);
     }
-    public AbstractTrigger update(AbstractTrigger trigger) {
+    public Trigger update(Trigger trigger) {
         LOG.info("update trigger {}", trigger);
         return service.save(trigger);
     }
-    public AbstractTrigger get (int id) {
+    public Trigger get (int id) {
         LOG.info("get trigger id: {}",id);
         return service.get(id);
     }
-    public List<AbstractTrigger> getAll () {
+    public List<Trigger> getAll () {
         LOG.info("get all triggers");
         return new ArrayList<>(service.getAll());
     }

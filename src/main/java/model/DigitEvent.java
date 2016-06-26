@@ -7,7 +7,7 @@ public class DigitEvent extends AbstractEvent<Boolean> {
 
     private final boolean state;
 
-    public DigitEvent(AbstractTrigger trigger, boolean state) {
+    public DigitEvent(Trigger trigger, boolean state) {
         super(trigger);
         this.state = state;
     }

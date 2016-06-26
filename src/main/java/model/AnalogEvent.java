@@ -7,7 +7,7 @@ public class AnalogEvent extends AbstractEvent<Double> {
 
     private final Double state;
 
-    public AnalogEvent(AbstractTrigger trigger, Double state) {
+    public AnalogEvent(Trigger trigger, Double state) {
         super(trigger);
         this.state = state;
     }

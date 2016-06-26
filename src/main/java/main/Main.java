@@ -27,7 +27,7 @@ public class Main {
         stateRepository.save(triggerRepository.get(1), new DigitEvent(triggerRepository.get(1),false));
         stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);
 
-        AbstractTrigger analog = triggerRepository.save(new AnalogTrigger("FAT"));
+        Trigger analog = triggerRepository.save(new AnalogTrigger("FAT"));
         stateRepository.save(triggerRepository.get(analog.getId()), new AnalogEvent(analog, 12.0));
         stateRepository.get(triggerRepository.get(analog.getId())).forEach(System.out::println);
     }

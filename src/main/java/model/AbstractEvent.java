@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
  */
 public abstract class AbstractEvent<T> implements Event<T>{
     protected LocalDateTime time;
-    protected AbstractTrigger trigger;
+    protected Trigger trigger;
 
-    public AbstractEvent(AbstractTrigger trigger) {
+    public AbstractEvent(Trigger trigger) {
         time = LocalDateTime.now();
         this.trigger = trigger;
     }
@@ -19,7 +19,7 @@ public abstract class AbstractEvent<T> implements Event<T>{
     }
 
     @Override
-    public AbstractTrigger getTrigger() {
+    public Trigger getTrigger() {
         return trigger;
     }
 }

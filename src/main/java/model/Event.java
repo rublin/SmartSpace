@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 public interface Event<T>{
     LocalDateTime getTime();
     T getState();
-    AbstractTrigger getTrigger();
+    Trigger getTrigger();
 }

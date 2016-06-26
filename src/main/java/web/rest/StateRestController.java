@@ -1,9 +1,6 @@
 package web.rest;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
-import model.DigitEvent;
-import model.Event;
+import model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import service.StateService;
@@ -17,10 +14,10 @@ import java.util.List;
 public class StateRestController {
     @Autowired
     private StateService service;
-    public void save (AbstractTrigger trigger, Event event) {
+    public void save (Trigger trigger, Event event) {
         service.save(trigger, event);
     }
-    public List<Event> getAll (AbstractTrigger trigger) {
+    public List<Event> getAll (Trigger trigger) {
         return service.getAll(trigger);
     }
 }

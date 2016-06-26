@@ -3,7 +3,7 @@ package model;
 /**
  * Created by Sheremet on 15.06.2016.
  */
-public abstract class AbstractTrigger {
+public abstract class AbstractTrigger implements Trigger {
     protected Integer id;
     protected String name;
     protected Event event;

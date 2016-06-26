@@ -1,9 +1,6 @@
 package repository.mock;
 
-import model.AbstractTrigger;
-import model.DigitTrigger;
-import model.DigitEvent;
-import model.Event;
+import model.*;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import repository.StateRepository;
@@ -29,7 +26,7 @@ public class InMemoryStateRepository implements StateRepository {
     }
 
     @Override
-    public void save(AbstractTrigger trigger, Event event) {
+    public void save(Trigger trigger, Event event) {
         if (trigger.getEvent().getState()!= event.getState()){
             if (!repository.containsKey(trigger.getId()))
                 repository.put(trigger.getId(), new CopyOnWriteArrayList<>());
@@ -39,7 +36,7 @@ public class InMemoryStateRepository implements StateRepository {
     }
 
     @Override
-    public List<Event> get(AbstractTrigger trigger) {
+    public List<Event> get(Trigger trigger) {
         //LOG.debug("get", trigger.getId());
         if (repository.containsKey(trigger.getId()))
             return repository.get(trigger.getId());
