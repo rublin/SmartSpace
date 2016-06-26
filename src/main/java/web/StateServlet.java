@@ -79,10 +79,10 @@ public class StateServlet extends HttpServlet {
         if (id==null) {
             if (type.equals("digital")) {
                 LOG.info("Create digital trigger {}", name);
-                triggerController.create(new Trigger(name));
+                triggerController.create(new Trigger(name, Type.DIGITAL));
             } else if (type.equals("analog")){
                 LOG.info("Create analog trigger {}", name);
-                triggerController.create(new Trigger(name));
+                triggerController.create(new Trigger(name, Type.ANALOG));
             }
         } else {
             Trigger trigger = triggerController.get(Integer.parseInt(id));

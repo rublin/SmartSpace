@@ -34,7 +34,7 @@
         <th>name</th>
         <th>type</th>
         <th>current state</th>
-        <th></th>
+        <th>update state</th>
         <th></th>
     </tr>
     </thead>
@@ -43,7 +43,10 @@
         <tr>
             <td>${trigger.id}</td>
             <td>${trigger.name}</td>
-            <td>${trigger.event.toString()}</td>
+            <td>${trigger.type}</td>
+            <td>${trigger.event.getState()}</td>
+            <td><a href="states?action=addEvent&triggerId=${trigger.id}&state=${trigger.event.getState()}">state</a></td>
+            <td></td>
         </tr>
     </c:forEach>
 </table>
