@@ -1,33 +1,20 @@
 package model;
 
-import java.time.LocalDateTime;
-
 /**
  * Created by Sheremet on 21.06.2016.
  */
-public class DigitEvent implements Event<Boolean>{
-    private final LocalDateTime time;
-    private final boolean state;
-    private AbstractTrigger trigger;
-    public DigitEvent(AbstractTrigger trigger, boolean state) {
-        time = LocalDateTime.now();
-        this.state = state;
-        this.trigger = trigger;
-    }
+public class DigitEvent extends AbstractEvent<Boolean> {
 
-    @Override
-    public LocalDateTime getTime() {
-        return time;
+    private final boolean state;
+
+    public DigitEvent(AbstractTrigger trigger, boolean state) {
+        super(trigger);
+        this.state = state;
     }
 
     @Override
     public Boolean getState() {
         return state;
-    }
-
-    @Override
-    public AbstractTrigger getTrigger() {
-        return trigger;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package model;
 
-import java.time.LocalDateTime;
-
 /**
  * Created by Sheremet on 22.06.2016.
  */
