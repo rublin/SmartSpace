@@ -5,20 +5,13 @@ import java.time.LocalDateTime;
 /**
  * Created by Sheremet on 22.06.2016.
  */
-public class AnalogEvent implements Event<Double> {
-    private final LocalDateTime time;
+public class AnalogEvent extends AbstractEvent<Double> {
+
     private final Double state;
-    private AbstractTrigger trigger;
 
     public AnalogEvent(AbstractTrigger trigger, Double state) {
-        this.time = LocalDateTime.now();
+        super(trigger);
         this.state = state;
-        this.trigger = trigger;
-    }
-
-    @Override
-    public LocalDateTime getTime() {
-        return time;
     }
 
     @Override
@@ -26,10 +19,6 @@ public class AnalogEvent implements Event<Double> {
         return state;
     }
 
-    @Override
-    public AbstractTrigger getTrigger() {
-        return trigger;
-    }
 
     @Override
     public String toString() {
