@@ -11,4 +11,7 @@ public interface Event<T>{
     LocalDateTime getTime();
     T getState();
     Trigger getTrigger();
+    int getId();
+    void setId(int id);
+    boolean isNew();
 }

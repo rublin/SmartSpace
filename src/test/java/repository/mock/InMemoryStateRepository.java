@@ -45,7 +45,7 @@ public class InMemoryStateRepository implements StateRepository {
     }
 
     @Override
-    public Map<Integer, List<Event>> getAll() {
-        return repository;
+    public List<Event> getAll() {
+        return null;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 public interface TriggerRepository {
     Trigger save (Trigger trigger);
-    Trigger delete (int id);
+    boolean delete (int id);
     Trigger get (int id);
     Collection<Trigger> getAll ();
 }

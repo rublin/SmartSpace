@@ -29,8 +29,8 @@ public class InMemoryTriggerRepository implements TriggerRepository {
     }
 
     @Override
-    public Trigger delete(int id) {
-        return repository.remove(id);
+    public boolean delete(int id) {
+        return repository.remove(id) != null;
     }
 
     @Override

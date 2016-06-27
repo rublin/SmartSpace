@@ -8,14 +8,14 @@ import model.event.Event;
  * Created by Sheremet on 15.06.2016.
  */
 public class Trigger {
-    protected Integer id;
-    protected String name;
-    protected Event event;
+    private Integer id;
+    private String name;
+    private Event event;
     private Type type;
 
-    protected Trigger() {
+    public Trigger() {
     }
-    protected Trigger(Integer id) {
+    public Trigger(Integer id) {
         this.id = id;
     }
     public Trigger(String name) {
@@ -67,6 +67,7 @@ public class Trigger {
     public void setType(Type type) {
         this.type = type;
     }
+
 
     @Override
     public String toString() {

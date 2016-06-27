@@ -12,5 +12,5 @@ import java.util.Map;
 public interface StateRepository {
     void save (Trigger trigger, Event event);
     List<Event> get(Trigger trigger);
-    Map<Integer, List<Event>> getAll();
+    List<Event> getAll();
 }
