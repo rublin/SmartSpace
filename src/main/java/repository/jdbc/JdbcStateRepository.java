@@ -1,6 +1,7 @@
 package repository.jdbc;
 
 import model.Trigger;
+import model.event.AnalogEvent;
 import model.event.DigitEvent;
 import model.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import repository.StateRepository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +25,8 @@ import java.util.List;
 @Repository
 public class JdbcStateRepository implements StateRepository {
     private static final BeanPropertyRowMapper<Event> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Event.class);
+    public static final BeanPropertyRowMapper<DigitEvent> DIGIT_ROW_MAPPER = BeanPropertyRowMapper.newInstance(DigitEvent.class);
+    public static final BeanPropertyRowMapper<AnalogEvent> ANALOG_ROW_MAPPER = BeanPropertyRowMapper.newInstance(AnalogEvent.class);
 
     @Autowired
     private JdbcTemplate jdbc;
@@ -61,8 +65,16 @@ public class JdbcStateRepository implements StateRepository {
 
     @Override
     public List<Event> get(Trigger trigger) {
-        List<Event> events = jdbc.query("SELECT * FROM events WHERE trigger_id=? ORDER BY date_time DESC", ROW_MAPPER, trigger.getId());
-        return events;
+        List<Event> result;
+        if (trigger.getEvent() instanceof DigitEvent) {
+            List<DigitEvent> digitEvents = jdbc.query("SELECT * FROM events WHERE trigger_id=? ORDER BY date_time DESC", DIGIT_ROW_MAPPER, trigger.getId());
+            result = new ArrayList<>(digitEvents);
+        } else {
+            List<AnalogEvent> analogEvents = jdbc.query("SELECT * FROM events WHERE trigger_id=? ORDER BY date_time DESC", ANALOG_ROW_MAPPER, trigger.getId());
+            result = new ArrayList<>(analogEvents);
+        }
+
+        return result;
     }
 
     @Override

@@ -31,7 +31,7 @@ public abstract class AbstractEvent<T> implements Event<T>{
         return trigger;
     }
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
     @Override
