@@ -22,7 +22,8 @@ public class DigitEvent extends AbstractEvent<Boolean> {
     @Override
     public String toString() {
         return "DigitalEvent {" +
-                "trigger: " + getTrigger().getName() +
+                "id: " + (super.id == null ? "null" : getId()) +
+                ", trigger: " + getTrigger().getName() +
                 ", state: " + getState() +
                 ", time: " + getTime() + "}";
     }

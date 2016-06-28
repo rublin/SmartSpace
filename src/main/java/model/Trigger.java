@@ -32,6 +32,12 @@ public class Trigger {
         setEvent(event);
     }
 
+    public Trigger(int id, String name, Type type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+
     public Event getEvent() {
         return event;
     }
@@ -74,7 +80,7 @@ public class Trigger {
         return "Trigger{" +
                 "id= " + getId() +
                 ", name= " + getName() +
-                ", type= " + getType() +
+                //", type= " + getType() +
                 //", state= " + event == null ? "null" : event.getState() + " at " +
                 '}';
     }
