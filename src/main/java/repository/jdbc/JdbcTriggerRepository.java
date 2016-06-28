@@ -20,13 +20,17 @@ import java.util.List;
  */
 @Repository
 public class JdbcTriggerRepository implements TriggerRepository {
+
     private static final BeanPropertyRowMapper<Trigger> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Trigger.class);
 
     @Autowired
-    private JdbcTemplate jdbc;
+    private JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private NamedParameterJdbcTemplate namedJdbc;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private SimpleJdbcInsert insertTrigger;
+
     @Autowired
     public JdbcTriggerRepository (DataSource dataSource) {
         this.insertTrigger = new SimpleJdbcInsert(dataSource)
@@ -42,7 +46,7 @@ public class JdbcTriggerRepository implements TriggerRepository {
             Number key = insertTrigger.executeAndReturnKey(map);
             trigger.setId(key.intValue());
         } else {
-            namedJdbc.update(
+            namedParameterJdbcTemplate.update(
                     "UPDATE triggers SET name=:name WHERE id=:id", map);
         }
         return trigger;
@@ -50,17 +54,17 @@ public class JdbcTriggerRepository implements TriggerRepository {
 
     @Override
     public boolean delete(int id) {
-        return jdbc.update("DELETE FROM triggers WHERE id=?", id) !=0;
+        return jdbcTemplate.update("DELETE FROM triggers WHERE id=?", id) !=0;
     }
 
     @Override
     public Trigger get(int id) {
-        List<Trigger> triggers = jdbc.query("SELECT * FROM triggers WHERE id=?", ROW_MAPPER, id);
+        List<Trigger> triggers = jdbcTemplate.query("SELECT * FROM triggers WHERE id=?", ROW_MAPPER, id);
         return DataAccessUtils.singleResult(triggers);
     }
 
     @Override
     public Collection<Trigger> getAll() {
-        return jdbc.query("SELECT * FROM triggers ORDER BY name", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM triggers ORDER BY name", ROW_MAPPER);
     }
 }

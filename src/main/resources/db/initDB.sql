@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS trigger_type;
-DROP TABLE IF EXISTS triggers;
+DROP TABLE IF EXISTS trigger_type CASCADE ;
+DROP TABLE IF EXISTS triggers CASCADE ;
 DROP TABLE IF EXISTS events;
 DROP SEQUENCE IF EXISTS global_seq;
 
@@ -8,8 +8,7 @@ CREATE SEQUENCE global_seq START 1000;
 CREATE TABLE triggers
 (
   id         INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
-  name       VARCHAR NOT NULL,
-  registered TIMESTAMP DEFAULT now()
+  name       VARCHAR NOT NULL
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx ON triggers (name);
 

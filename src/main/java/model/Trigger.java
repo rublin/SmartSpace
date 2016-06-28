@@ -75,7 +75,7 @@ public class Trigger {
                 "id= " + getId() +
                 ", name= " + getName() +
                 ", type= " + getType() +
-                ", state= " + event.getState() + " at " + event.getTime() +
+                //", state= " + event == null ? "null" : event.getState() + " at " +
                 '}';
     }
 }

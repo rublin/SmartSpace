@@ -1,6 +1,7 @@
 package main;
 
 import model.Trigger;
+import model.Type;
 import model.event.DigitEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -17,18 +18,19 @@ import java.util.Arrays;
  */
 public class SpringMain {
     public static void main(String[] args) {
-        try (ConfigurableApplicationContext springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml")){
+        try (ConfigurableApplicationContext springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml")){
             System.out.println(Arrays.toString(springContext.getBeanDefinitionNames()));
             TriggerService triggerService = (TriggerServiceImpl)springContext.getBean(TriggerService.class);
-            triggerService.save(new Trigger("Move 1 floor"));
-            triggerService.save(new Trigger("Door 1 floor"));
+            triggerService.save(new Trigger("Move 2 floor", Type.DIGITAL));
+            triggerService.save(new Trigger("Door 2 floor", Type.DIGITAL));
             triggerService.getAll().forEach(System.out::println);
             StateService stateService = (StateServiceImpl) springContext.getBean(StateService.class);
-            stateService.save(triggerService.get(1), new DigitEvent(triggerService.get(1), true));
-            stateService.save(triggerService.get(1), new DigitEvent(triggerService.get(1), false));
-            stateService.getAll(triggerService.get(1)).forEach(System.out::println);
+            Trigger trigger1000 = triggerService.get(1002);
+            stateService.save(trigger1000, new DigitEvent(trigger1000, true));
+            stateService.save(triggerService.get(1002), new DigitEvent(triggerService.get(1002), false));
+            stateService.getAll(triggerService.get(1002)).forEach(System.out::println);
             StateRestController stateController = (StateRestController)springContext.getBean(StateRestController.class);
-            stateController.getAll(triggerService.get(1)).forEach(System.out::println);
+            stateController.getAll(triggerService.get(1002)).forEach(System.out::println);
         }
     }
 }
