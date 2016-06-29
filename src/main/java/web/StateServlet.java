@@ -54,7 +54,7 @@ public class StateServlet extends HttpServlet {
                     event = new AnalogEvent(trigger, Double.parseDouble(state));
                 }
                 stateController.save(trigger, event);
-                trigger.setEvent(event);
+                //trigger.setEvent(event);
             }
         }
 

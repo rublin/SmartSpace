@@ -26,12 +26,9 @@ public class InMemoryStateRepository implements StateRepository {
 
     @Override
     public void save(Trigger trigger, Event event) {
-        if (trigger.getEvent().getState()!= event.getState()){
-            if (!repository.containsKey(trigger.getId()))
-                repository.put(trigger.getId(), new CopyOnWriteArrayList<>());
-            repository.get(trigger.getId()).add(event);
-            trigger.setEvent(event);
-        }
+        if (!repository.containsKey(trigger.getId()))
+            repository.put(trigger.getId(), new CopyOnWriteArrayList<>());
+        repository.get(trigger.getId()).add(event);
     }
 
     @Override

@@ -32,16 +32,6 @@ public class TriggerServiceImplTest {
     @Autowired
     protected TriggerService service;
 
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
     @Test
     public void testSave() throws Exception {
         Trigger trigger = new Trigger("new");

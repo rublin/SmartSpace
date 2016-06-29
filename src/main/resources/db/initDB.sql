@@ -5,24 +5,20 @@ DROP SEQUENCE IF EXISTS global_seq;
 
 CREATE SEQUENCE global_seq START 1000;
 
+
 CREATE TABLE triggers
 (
-  id         INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
-  name       VARCHAR NOT NULL
+  id        INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
+  name      VARCHAR NOT NULL,
+  type      VARCHAR NOT NULL
+
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx ON triggers (name);
-
-CREATE TABLE trigger_type
-(
-  trigger_id  INTEGER NOT NULL,
-  type        VARCHAR,
-  CONSTRAINT trigger_type_idx UNIQUE (trigger_id, type),
-  FOREIGN KEY (trigger_id) REFERENCES triggers (id) ON DELETE CASCADE
-);
 
 CREATE TABLE events (
   id            INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
   trigger_id    INTEGER NOT NULL,
+  type          TEXT NOT NULL,
   date_time     TIMESTAMP NOT NULL,
   analog_state  REAL,
   digital_state BOOLEAN,

@@ -1,6 +1,7 @@
 package repository.jdbc;
 
 import model.Trigger;
+import model.Type;
 import model.event.AnalogEvent;
 import model.event.DigitEvent;
 import model.event.Event;
@@ -66,7 +67,7 @@ public class JdbcStateRepository implements StateRepository {
     @Override
     public List<Event> get(Trigger trigger) {
         List<Event> result;
-        if (trigger.getEvent() instanceof DigitEvent) {
+        if (trigger.getType().equals(Type.DIGITAL)) {
             List<DigitEvent> digitEvents = jdbc.query("SELECT * FROM events WHERE trigger_id=? ORDER BY date_time DESC", DIGIT_ROW_MAPPER, trigger.getId());
             result = new ArrayList<>(digitEvents);
         } else {

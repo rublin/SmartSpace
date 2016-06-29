@@ -1,6 +1,7 @@
 package model.event;
 
 import model.Trigger;
+import model.Type;
 
 import java.time.LocalDateTime;
 
@@ -14,4 +15,8 @@ public interface Event<T>{
     Integer getId();
     void setId(int id);
     boolean isNew();
+    void setTime(LocalDateTime time);
+    void setTrigger(Trigger trigger);
+    Type getType();
+    void setType(Type type);
 }
