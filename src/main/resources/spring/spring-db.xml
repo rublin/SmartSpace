@@ -11,11 +11,11 @@
 
     <context:property-placeholder location="classpath:db/postgresql.properties" system-properties-mode="OVERRIDE"/>
     <!--
-    <bean class="util.DbPopulator">
+    <bean class="org.rublin.util.DbPopulator">
         <constructor-arg name="scriptLocation" value="classpath:db/populateDB.sql"/>
     </bean>
 -->
-    <context:component-scan base-package="repository.jpa"/>
+    <context:component-scan base-package="org.rublin.repository.jpa"/>
 
     <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
         <jdbc:script location="classpath:db/${jdbc.initLocation}"/>
@@ -33,7 +33,7 @@
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           p:dataSource-ref="dataSource"
-          p:packagesToScan="**.model">
+          p:packagesToScan="**.org.rublin.model">
         <property name="jpaPropertyMap">
             <map>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="${hibernate.format_sql}"/>

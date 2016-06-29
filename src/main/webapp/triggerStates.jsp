@@ -14,7 +14,7 @@
 <body>
 <h2><a href="index.html">Home</a></h2>
 <h1>Add trigger</h1>
-<%--<jsp:useBean id="trigger" type="model.Trigger"request"/>--%>
+<%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
 <form method="post" action="states?action=addTrigger">
     <%--<input type="hidden" name="id" value="${trigger.id}">--%>
     Name:<input type="text" name="name" >
@@ -39,7 +39,7 @@
     </tr>
     </thead>
     <c:forEach items="${triggerList}" var="trigger">
-        <%--<jsp:useBean id="trigger" scope="page" type="model.DigitTrigger"/>--%>
+        <%--<jsp:useBean id="trigger" scope="page" type="org.rublin.model.DigitTrigger"/>--%>
         <tr>
             <td>${trigger.id}</td>
             <td>${trigger.name}</td>
