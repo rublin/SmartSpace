@@ -13,10 +13,12 @@ public interface Event<T>{
     T getState();
     Trigger getTrigger();
     Integer getId();
-    void setId(int id);
+    void setId(Integer id);
     boolean isNew();
     void setTime(LocalDateTime time);
     void setTrigger(Trigger trigger);
     Type getType();
     void setType(Type type);
+
+    String toString();
 }

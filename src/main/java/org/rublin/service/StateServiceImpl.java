@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.rublin.repository.StateRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,5 +24,10 @@ public class StateServiceImpl implements StateService {
     @Override
     public List<Event> getAll(Trigger trigger) {
         return repository.get(trigger);
+    }
+
+    @Override
+    public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
+        return null;
     }
 }

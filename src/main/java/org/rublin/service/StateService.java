@@ -3,6 +3,7 @@ package org.rublin.service;
 import org.rublin.model.Trigger;
 import org.rublin.model.event.Event;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -11,4 +12,5 @@ import java.util.List;
 public interface StateService {
     void save (Trigger trigger, Event event);
     List<Event> getAll(Trigger trigger);
+    List<Event> getBetween(LocalDateTime from, LocalDateTime to);
 }

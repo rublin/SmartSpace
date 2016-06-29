@@ -49,10 +49,6 @@ public abstract class AbstractEvent<T> implements Event<T>{
         return id;
     }
     @Override
-    public void setId(int id) {
-        this.id = id;
-    }
-    @Override
     public boolean isNew() {
         return this.id == null;
     }
@@ -61,6 +57,7 @@ public abstract class AbstractEvent<T> implements Event<T>{
         this.trigger = trigger;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }
@@ -78,4 +75,13 @@ public abstract class AbstractEvent<T> implements Event<T>{
     public void setType(Type type) {
         this.type = type;
     }
+
+    /*@Override
+    public String toString() {
+        return "DigitalEvent {" +
+                "id: " + (id == null ? "null" : getId()) +
+                //", trigger: " + getTrigger().getName() +
+                ", state: " + getState() +
+                ", time: " + getTime() + "}";
+    }*/
 }
