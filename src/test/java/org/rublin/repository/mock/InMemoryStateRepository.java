@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.rublin.repository.StateRepository;
 import org.rublin.util.TriggerInit;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,6 +44,11 @@ public class InMemoryStateRepository implements StateRepository {
 
     @Override
     public List<Event> getAll() {
+        return null;
+    }
+
+    @Override
+    public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
         return null;
     }
 }

@@ -31,9 +31,9 @@ public class SpringMain {
             System.out.println(event);
             stateService.save(trigger1000, event);
             stateService.save(triggerService.get(1000), new DigitEvent(triggerService.get(1000), false));
-            stateService.getAll(triggerService.get(1000)).forEach(System.out::println);
+            stateService.get(triggerService.get(1000)).forEach(System.out::println);
             StateRestController stateController = (StateRestController)springContext.getBean(StateRestController.class);
-            stateController.getAll(triggerService.get(1000)).forEach(System.out::println);
+            stateController.get(triggerService.get(1000)).forEach(System.out::println);
         }
     }
 }

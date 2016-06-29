@@ -62,7 +62,7 @@ public class StateServlet extends HttpServlet {
         if (triggerId==null)
             triggerId="1";
         Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
-        req.setAttribute("eventList", stateController.getAll(trigger));
+        req.setAttribute("eventList", stateController.get(trigger));
         req.setAttribute("trigger", trigger);
         req.setAttribute("triggerList", triggerController.getAll());
         LOG.info("get event {} trigger", trigger.getName());

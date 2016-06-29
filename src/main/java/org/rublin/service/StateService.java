@@ -11,6 +11,7 @@ import java.util.List;
  */
 public interface StateService {
     void save (Trigger trigger, Event event);
-    List<Event> getAll(Trigger trigger);
+    List<Event> get(Trigger trigger);
+    List<Event> getAll();
     List<Event> getBetween(LocalDateTime from, LocalDateTime to);
 }

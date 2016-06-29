@@ -22,12 +22,17 @@ public class StateServiceImpl implements StateService {
     }
 
     @Override
-    public List<Event> getAll(Trigger trigger) {
+    public List<Event> get(Trigger trigger) {
         return repository.get(trigger);
     }
 
     @Override
+    public List<Event> getAll() {
+        return repository.getAll();
+    }
+
+    @Override
     public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
-        return null;
+        return repository.getBetween(from, to);
     }
 }

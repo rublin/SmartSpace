@@ -37,14 +37,14 @@ public class StateServiceImplTest {
     public void testDigitalSave() throws Exception {
         Event event = new DigitEvent(DIGITAL_TRIGGER, true);
         service.save(DIGITAL_TRIGGER, event);
-        MATCHER.assertCollectionEquals(Arrays.asList(event, DIGIT_EVENT1, DIGIT_EVENT6, DIGIT_EVENT5, DIGIT_EVENT4, DIGIT_EVENT3, DIGIT_EVENT2), service.getAll(DIGITAL_TRIGGER));
+        MATCHER.assertCollectionEquals(Arrays.asList(event, DIGIT_EVENT1, DIGIT_EVENT6, DIGIT_EVENT5, DIGIT_EVENT4, DIGIT_EVENT3, DIGIT_EVENT2), service.get(DIGITAL_TRIGGER));
 
     }
     @Test
     public void testAnalogSave() throws Exception {
         Event event = new AnalogEvent(ANALOG_TRIGGER, 29.0);
         service.save(ANALOG_TRIGGER, event);
-        MATCHER.assertCollectionEquals(Arrays.asList(event, ANALOG_EVENT2, ANALOG_EVENT1), service.getAll(ANALOG_TRIGGER));
+        MATCHER.assertCollectionEquals(Arrays.asList(event, ANALOG_EVENT2, ANALOG_EVENT1), service.get(ANALOG_TRIGGER));
     }
 
     @Test(expected = DataAccessException.class)
@@ -59,6 +59,12 @@ public class StateServiceImplTest {
 
     @Test
     public void testGetAll() throws Exception {
+        MATCHER.assertCollectionEquals(sortedEvents(), service.getAll());
+    }
 
+    @Test
+    public void testGetBetween() throws Exception {
+        MATCHER.assertCollectionEquals(Arrays.asList(DIGIT_EVENT1, ANALOG_EVENT2, ANALOG_EVENT1),
+                service.getBetween(LocalDateTime.of(2016, Month.JUNE, 01, 00,00,00), LocalDateTime.now()));
     }
 }

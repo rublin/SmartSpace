@@ -18,7 +18,10 @@ public class StateRestController {
     public void save (Trigger trigger, Event event) {
         service.save(trigger, event);
     }
-    public List<Event> getAll (Trigger trigger) {
-        return service.getAll(trigger);
+    public List<Event> get (Trigger trigger) {
+        return service.get(trigger);
+    }
+    public List<Event> getAll() {
+        return service.getAll();
     }
 }

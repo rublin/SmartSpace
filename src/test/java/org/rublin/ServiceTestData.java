@@ -47,10 +47,10 @@ public class ServiceTestData {
         events.add(ANALOG_EVENT2);
         return events;
     }
-    public static List<Event> sortedEvents(Event newEvent) {
-        List<Event> events = events();
-        events.add(newEvent);
-        return events.stream()
+    public static List<Event> sortedEvents() {
+        //List<Event> events = events();
+        //events.add(newEvent);
+        return events().stream()
                 .sorted((Event e1, Event e2) -> e2.getTime().compareTo(e1.getTime()))
                 .collect(Collectors.toList());
     }

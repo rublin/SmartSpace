@@ -3,6 +3,7 @@ package org.rublin.repository;
 import org.rublin.model.*;
 import org.rublin.model.event.Event;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -12,4 +13,5 @@ public interface StateRepository {
     void save (Trigger trigger, Event event);
     List<Event> get(Trigger trigger);
     List<Event> getAll();
+    List<Event> getBetween(LocalDateTime from, LocalDateTime to);
 }

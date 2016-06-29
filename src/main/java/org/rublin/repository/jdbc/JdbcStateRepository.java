@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.rublin.repository.StateRepository;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,5 +80,10 @@ public class JdbcStateRepository implements StateRepository {
     @Override
     public List<Event> getAll() {
         return jdbc.query("SELECT * FROM events", ROW_MAPPER);
+    }
+
+    @Override
+    public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
+        return null;
     }
 }
