@@ -4,6 +4,7 @@ import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 
 /**
@@ -12,7 +13,7 @@ import javax.persistence.*;
 
 @NamedQueries({
         @NamedQuery(name = AnalogEvent.GET, query = "SELECT e FROM AnalogEvent e WHERE e.id=:id"),
-        @NamedQuery(name = AnalogEvent.GET_ALL_SORTED, query = "SELECT e FROM AnalogEvent e WHERE e.trigger.id=:trigger_id")
+        @NamedQuery(name = AnalogEvent.GET_ALL_SORTED, query = "SELECT e FROM AnalogEvent e WHERE e.trigger.id=:trigger_id ORDER BY e.time DESC")
 })
 @Entity
 @Table(name = "events", uniqueConstraints = {@UniqueConstraint(columnNames = {"trigger_id", "date_time"}, name = "events_unique_trigger_datetime_idx")})
@@ -31,7 +32,22 @@ public class AnalogEvent extends AbstractEvent<Double> {
     public AnalogEvent(Trigger trigger, Double state) {
         super(trigger);
         this.state = state;
-        super.setType(Type.DIGITAL);
+        super.setType(Type.ANALOG);
+    }
+
+    public AnalogEvent(Trigger trigger, Double state, LocalDateTime time) {
+        super(trigger);
+        this.state = state;
+        super.setType(Type.ANALOG);
+        super.setTime(time);
+    }
+
+    public AnalogEvent(int id, Trigger trigger, Double state, LocalDateTime time) {
+        super(trigger);
+        this.state = state;
+        super.setType(Type.ANALOG);
+        super.setTime(time);
+        super.setId(id);
     }
 
     @Override
@@ -42,9 +58,6 @@ public class AnalogEvent extends AbstractEvent<Double> {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "{" +
-                "trigger: " + getTrigger().getName() +
-                ", state: " + getState() +
-                ", time: " + getTime() + "}";
+        return String.format("%s {id: %s, state: %.2f, time: %s}", this.getClass().getSimpleName(), (super.id == null ? "null" : getId().toString()), getState(), getTime().toString());
     }
 }
