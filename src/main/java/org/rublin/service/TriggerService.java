@@ -10,7 +10,7 @@ import java.util.Collection;
  */
 public interface TriggerService {
     Trigger save (Trigger trigger);
-    boolean delete (int id) throws NotFoundException;
+    void delete (int id) throws NotFoundException;
     Trigger get (int id) throws NotFoundException;
     Collection<Trigger> getAll ();
 }

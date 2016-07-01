@@ -22,8 +22,8 @@ public class TriggerServiceImpl implements TriggerService {
     }
 
     @Override
-    public boolean delete(int id) throws NotFoundException {
-        return repository.delete(id);
+    public void delete(int id) throws NotFoundException {
+        ExceptionUtil.checkNotFoundWithId(repository.delete(id), id);
     }
 
     @Override

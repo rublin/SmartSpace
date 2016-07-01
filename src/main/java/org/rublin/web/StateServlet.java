@@ -41,6 +41,7 @@ public class StateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
         String triggerId = req.getParameter("triggerId");
+        LOG.info("trigger id is {}", triggerId);
         if (action!=null) {
             if (action.equals("addEvent")) {
                 String state = req.getParameter("state");
@@ -55,20 +56,31 @@ public class StateServlet extends HttpServlet {
                 }
                 stateController.save(trigger, event);
                 //trigger.setEvent(event);
+            } else if (action.equals("edit")) {
+                Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
+                LOG.info("edit trigger {}  by {} id (get in form)", trigger.getName(), trigger.getId());
+                req.setAttribute("eventList", stateController.get(trigger));
+                req.setAttribute("trigger", trigger);
+                req.setAttribute("triggerList", triggerController.getAll());
+            } else if (action.equals("delete")) {
+                Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
+                LOG.info("trigger {} was delete by {} id", trigger.getName(), trigger.getId());
+                triggerController.delete(trigger.getId());
+                req.setAttribute("triggerList", triggerController.getAll());
+                req.setAttribute("eventList", stateController.getAll());
             }
-        }
-
-        LOG.info("trigger id is {}", triggerId);
-        if (triggerId==null) {
-            req.setAttribute("eventList", stateController.getAll());
-            req.setAttribute("triggerList", triggerController.getAll());
-            LOG.info("get all events from all triggers");
         } else {
-            Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
-            req.setAttribute("eventList", stateController.get(trigger));
-            req.setAttribute("trigger", trigger);
-            req.setAttribute("triggerList", triggerController.getAll());
-            LOG.info("get event {} trigger", trigger.getName());
+            if (triggerId==null) {
+                req.setAttribute("eventList", stateController.getAll());
+                req.setAttribute("triggerList", triggerController.getAll());
+                LOG.info("get all events from all triggers");
+            } else {
+                Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
+                req.setAttribute("eventList", stateController.get(trigger));
+                req.setAttribute("trigger", trigger);
+                req.setAttribute("triggerList", triggerController.getAll());
+                LOG.info("get event {} trigger", trigger.getName());
+            }
         }
         req.getRequestDispatcher("/triggerStates.jsp").forward(req, resp);
     }
@@ -80,7 +92,8 @@ public class StateServlet extends HttpServlet {
         String id = req.getParameter("id");
         String type = req.getParameter("type");
         String name = req.getParameter("name");
-        if (id==null) {
+        LOG.info("post trigger (edit or create) with id: ", id);
+        if (id==null || id.isEmpty()) {
             if (type.equals("digital")) {
                 LOG.info("Create digital trigger {}", name);
                 triggerController.create(new Trigger(name, Type.DIGITAL));

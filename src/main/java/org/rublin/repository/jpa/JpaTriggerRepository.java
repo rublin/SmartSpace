@@ -31,8 +31,9 @@ public class JpaTriggerRepository implements TriggerRepository {
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
-        return false;
+        return em.createNamedQuery(Trigger.DELETE).setParameter("id", id).executeUpdate() != 0;
     }
 
     @Override

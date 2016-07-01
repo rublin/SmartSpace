@@ -16,12 +16,28 @@
 <h1>Add trigger</h1>
 <%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
 <form method="post" action="states?action=addTrigger">
-    <%--<input type="hidden" name="id" value="${trigger.id}">--%>
-    Name:<input type="text" name="name" >
+    <input type="hidden" name="id" value="${trigger.id}">
+    Name:<input type="text" name="name" value="${trigger.name}">
+    <c:choose>
+        <c:when test="${not empty trigger.id}">
+            <c:choose>
+                <c:when test="${trigger.type=='DIGITAL'}">
+                    Digital<input type="radio" name="type" value="digital" CHECKED disabled>
+                    Analog<input type="radio" name="type" value="analog" disabled>
+                </c:when>
+                <c:when test="${trigger.type=='ANALOG'}">
+                    Digital<input type="radio" name="type" value="digital" disabled>
+                    Analog<input type="radio" name="type" value="analog" CHECKED disabled>
+                </c:when>
+            </c:choose>
+        </c:when>
+        <c:when test="${empty trigger.id}">
+            Digital<input type="radio" name="type" value="digital" CHECKED >
+            Analog<input type="radio" name="type" value="analog" >
+        </c:when>
+    </c:choose>
 
-    Digital<input type="radio" name="type" value="digital" CHECKED>
 
-    Analog<input type="radio" name="type" value="analog">
     <input type="submit" value="Submit">
 </form>
 <h1>Triggers in system</h1>
@@ -54,9 +70,12 @@
                         <a href="states?action=addEvent&triggerId=${trigger.id}&state=20.0">state</a>
                     </c:when>
                 </c:choose>
-
             </td>
-            <td></td>
+            <td>
+                <a href="states?action=edit&triggerId=${trigger.id}">edit</a>
+                <br>
+                <a href="states?action=delete&triggerId=${trigger.id}">delete</a>
+            </td>
         </tr>
     </c:forEach>
 </table>
