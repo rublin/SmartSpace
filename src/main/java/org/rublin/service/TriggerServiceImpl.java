@@ -1,6 +1,7 @@
 package org.rublin.service;
 
 import org.rublin.model.Trigger;
+import org.rublin.util.exception.ExceptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.rublin.repository.TriggerRepository;
@@ -27,7 +28,7 @@ public class TriggerServiceImpl implements TriggerService {
 
     @Override
     public Trigger get(int id) throws NotFoundException {
-        return repository.get(id);
+        return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
     }
 
     @Override

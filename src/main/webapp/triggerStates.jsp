@@ -45,7 +45,17 @@
             <td>${trigger.name}</td>
             <td>${trigger.type}</td>
             <%--<td>${trigger.event.getState()}</td>--%>
-            <td><a href="states?action=addEvent&triggerId=${trigger.id}&state=true">state</a></td>
+            <td>
+                <c:choose>
+                    <c:when test="${trigger.type=='DIGITAL'}">
+                        <a href="states?action=addEvent&triggerId=${trigger.id}&state=true">state</a>
+                    </c:when>
+                    <c:when test="${trigger.type=='ANALOG'}">
+                        <a href="states?action=addEvent&triggerId=${trigger.id}&state=20.0">state</a>
+                    </c:when>
+                </c:choose>
+
+            </td>
             <td></td>
         </tr>
     </c:forEach>
@@ -59,7 +69,15 @@
 </select>
     <input type="submit" value="Select">
 </form>
-<h3>Trigger is: ${trigger.name}</h3>
+<c:choose>
+    <c:when test="${not empty trigger}">
+        <h3>Trigger is: ${trigger.name}</h3>
+    </c:when>
+    <c:when test="${empty trigger}">
+        <h3>All events</h3>
+    </c:when>
+</c:choose>
+
 <table border="1" cellpadding="8" cellspacing="0" >
     <thead>
     <tr>

@@ -60,13 +60,16 @@ public class StateServlet extends HttpServlet {
 
         LOG.info("trigger id is {}", triggerId);
         if (triggerId==null) {
-
+            req.setAttribute("eventList", stateController.getAll());
+            req.setAttribute("triggerList", triggerController.getAll());
+            LOG.info("get all events from all triggers");
+        } else {
+            Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
+            req.setAttribute("eventList", stateController.get(trigger));
+            req.setAttribute("trigger", trigger);
+            req.setAttribute("triggerList", triggerController.getAll());
+            LOG.info("get event {} trigger", trigger.getName());
         }
-        Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
-        req.setAttribute("eventList", stateController.get(trigger));
-        req.setAttribute("trigger", trigger);
-        req.setAttribute("triggerList", triggerController.getAll());
-        LOG.info("get event {} trigger", trigger.getName());
         req.getRequestDispatcher("/triggerStates.jsp").forward(req, resp);
     }
 
