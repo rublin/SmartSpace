@@ -18,9 +18,9 @@
 <form method="post" action="states?action=addTrigger">
     <%--<input type="hidden" name="id" value="${trigger.id}">--%>
     Name:<input type="text" name="name" >
-    <br>
+
     Digital<input type="radio" name="type" value="digital" CHECKED>
-    <br>
+
     Analog<input type="radio" name="type" value="analog">
     <input type="submit" value="Submit">
 </form>
@@ -33,7 +33,7 @@
         <th>id</th>
         <th>name</th>
         <th>type</th>
-        <th>current state</th>
+        <%--<th>current state</th>--%>
         <th>update state</th>
         <th></th>
     </tr>
@@ -44,8 +44,8 @@
             <td>${trigger.id}</td>
             <td>${trigger.name}</td>
             <td>${trigger.type}</td>
-            <td>${trigger.event.getState()}</td>
-            <td><a href="states?action=addEvent&triggerId=${trigger.id}&state=${trigger.event.getState()}">state</a></td>
+            <%--<td>${trigger.event.getState()}</td>--%>
+            <td><a href="states?action=addEvent&triggerId=${trigger.id}&state=true">state</a></td>
             <td></td>
         </tr>
     </c:forEach>
@@ -63,12 +63,14 @@
 <table border="1" cellpadding="8" cellspacing="0" >
     <thead>
     <tr>
+        <th>trigger</th>
         <th>time</th>
         <th>state</th>
     </tr>
     </thead>
     <c:forEach items="${eventList}" var="event">
         <tr>
+            <td>${event.trigger.name}</td>
             <td>${event.time}</td>
             <td>${event.state}</td>
         </tr>

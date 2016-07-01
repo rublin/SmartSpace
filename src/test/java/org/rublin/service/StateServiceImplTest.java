@@ -67,4 +67,9 @@ public class StateServiceImplTest {
         MATCHER.assertCollectionEquals(Arrays.asList(DIGIT_EVENT1, ANALOG_EVENT2, ANALOG_EVENT1),
                 service.getBetween(LocalDateTime.of(2016, Month.JUNE, 01, 00,00,00), LocalDateTime.now()));
     }
+
+    @Test
+    public void testGet() throws Exception {
+        MATCHER.assertCollectionEquals(Arrays.asList(DIGIT_EVENT1, DIGIT_EVENT6, DIGIT_EVENT5, DIGIT_EVENT4, DIGIT_EVENT3, DIGIT_EVENT2), service.get(DIGITAL_TRIGGER));
+    }
 }

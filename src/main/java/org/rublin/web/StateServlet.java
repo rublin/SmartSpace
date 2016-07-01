@@ -32,7 +32,7 @@ public class StateServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        context = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
         stateController = context.getBean(StateRestController.class);
         triggerController = context.getBean(TriggerRestController.class);
     }
@@ -59,8 +59,9 @@ public class StateServlet extends HttpServlet {
         }
 
         LOG.info("trigger id is {}", triggerId);
-        if (triggerId==null)
-            triggerId="1";
+        if (triggerId==null) {
+
+        }
         Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
         req.setAttribute("eventList", stateController.get(trigger));
         req.setAttribute("trigger", trigger);

@@ -21,7 +21,7 @@ public abstract class AbstractEvent<T> implements Event<T>{
     @Column(name = "date_time", nullable = false, unique = true)
     protected LocalDateTime time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne//(fetch = FetchType.LAZY)
     @JoinColumn(name = "trigger_id", nullable = false)
     protected Trigger trigger;
 
