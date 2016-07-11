@@ -83,7 +83,8 @@
 <form method="get" action="states?action=show">
 <select name="triggerId">
     <c:forEach var="trigger" items="${triggerList}">
-        <option>${trigger.id}</option>
+        <%--<option>${trigger.id}</option>--%>
+        <option value="${trigger.id}">${trigger.name}</option>
     </c:forEach>
 </select>
     <input type="submit" value="Select">
