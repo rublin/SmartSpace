@@ -1,26 +1,26 @@
 package org.rublin.service;
 
 import org.rublin.model.ControlledObject;
-import org.rublin.model.Trigger;
+import org.rublin.repository.ControlledObjectRepository;
 import org.rublin.util.exception.ExceptionUtil;
+import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.rublin.repository.TriggerRepository;
-import org.rublin.util.exception.NotFoundException;
 
 import java.util.Collection;
 
 /**
- * Created by Sheremet on 15.06.2016.
+ * Created by Sheremet on 11.07.2016.
  */
 @Service
-public class TriggerServiceImpl implements TriggerService {
+public class ControlledObjectServiceImpl implements ControlledObjectService {
+
     @Autowired
-    private TriggerRepository repository;
+    private ControlledObjectRepository repository;
 
     @Override
-    public Trigger save(Trigger trigger, ControlledObject obj) {
-        return repository.save(trigger, obj);
+    public ControlledObject save(ControlledObject object) {
+        return repository.save(object);
     }
 
     @Override
@@ -29,12 +29,12 @@ public class TriggerServiceImpl implements TriggerService {
     }
 
     @Override
-    public Trigger get(int id) throws NotFoundException {
+    public ControlledObject get(int id) throws NotFoundException {
         return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
     }
 
     @Override
-    public Collection<Trigger> getAll() {
+    public Collection<ControlledObject> getAll() {
         return repository.getAll();
     }
 }

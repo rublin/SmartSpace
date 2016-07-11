@@ -1,5 +1,6 @@
 package org.rublin.repository.mock;
 
+import org.rublin.model.ControlledObject;
 import org.rublin.model.Trigger;
 import org.springframework.stereotype.Repository;
 import org.rublin.repository.TriggerRepository;
@@ -18,10 +19,11 @@ public class InMemoryTriggerRepository implements TriggerRepository {
     private Map<Integer, Trigger> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
     {
-        TriggerInit.TRIGGER_LIST.forEach(this::save);
+        ControlledObject obj = new ControlledObject(10, "Home");
+        TriggerInit.TRIGGER_LIST.forEach(trigger -> save(trigger, obj));
     }
     @Override
-    public Trigger save(Trigger trigger) {
+    public Trigger save(Trigger trigger, ControlledObject obj) {
         if (trigger.isNew())
             trigger.setId(counter.incrementAndGet());
         repository.put(trigger.getId(), trigger);

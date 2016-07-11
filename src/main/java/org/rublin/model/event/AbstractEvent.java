@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 public abstract class AbstractEvent<T> implements Event<T>{
 
     @Id
-    @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @SequenceGenerator(name = "event_seq", sequenceName = "event_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_seq")
     protected Integer id;
 
     @Column(name = "date_time", nullable = false, unique = true)

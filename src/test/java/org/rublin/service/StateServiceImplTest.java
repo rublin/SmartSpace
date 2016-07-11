@@ -2,7 +2,6 @@ package org.rublin.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.rublin.ServiceTestData;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 
-import static org.rublin.ServiceTestData.*;
+import static org.rublin.EventTestData.*;
 
 /**
  * Created by Sheremet on 29.06.2016.

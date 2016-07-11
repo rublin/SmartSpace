@@ -1,5 +1,6 @@
 package org.rublin.repository.jdbc;
 
+import org.rublin.model.ControlledObject;
 import org.rublin.model.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
@@ -38,7 +39,7 @@ public class JdbcTriggerRepository implements TriggerRepository {
                 .usingGeneratedKeyColumns("id");
     }
     @Override
-    public Trigger save(Trigger trigger) {
+    public Trigger save(Trigger trigger, ControlledObject obj) {
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", trigger.getId())
                 .addValue("name", trigger.getName());

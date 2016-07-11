@@ -4,6 +4,7 @@ import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
+import org.rublin.service.ControlledObjectService;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,6 +29,7 @@ public class StateServlet extends HttpServlet {
     private ConfigurableApplicationContext context;
     private StateRestController stateController;
     private TriggerRestController triggerController;
+    private ControlledObjectService objectService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -35,6 +37,7 @@ public class StateServlet extends HttpServlet {
         context = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
         stateController = context.getBean(StateRestController.class);
         triggerController = context.getBean(TriggerRestController.class);
+        objectService = context.getBean(ControlledObjectService.class);
     }
 
     @Override
@@ -87,6 +90,7 @@ public class StateServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ControlledObject obj = objectService.get(CurrentObject.getId());
         req.setCharacterEncoding("UTF-8");
         LOG.info("post", req);
         String id = req.getParameter("id");
@@ -96,16 +100,16 @@ public class StateServlet extends HttpServlet {
         if (id==null || id.isEmpty()) {
             if (type.equals("digital")) {
                 LOG.info("Create digital trigger {}", name);
-                triggerController.create(new Trigger(name, Type.DIGITAL));
+                triggerController.create(new Trigger(name, Type.DIGITAL), obj);
             } else if (type.equals("analog")){
                 LOG.info("Create analog trigger {}", name);
-                triggerController.create(new Trigger(name, Type.ANALOG));
+                triggerController.create(new Trigger(name, Type.ANALOG), obj);
             }
         } else {
             Trigger trigger = triggerController.get(Integer.parseInt(id));
             LOG.info("Update trigger {}. New name is {}", trigger, name);
             trigger.setName(name);
-            triggerController.update(trigger);
+            triggerController.update(trigger, obj);
         }
         resp.sendRedirect("states");
     }

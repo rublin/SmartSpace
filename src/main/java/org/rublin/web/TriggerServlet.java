@@ -30,6 +30,7 @@ public class TriggerServlet extends HttpServlet {
         context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         controller = context.getBean(TriggerRestController.class);
     }
+/*
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -64,6 +65,7 @@ public class TriggerServlet extends HttpServlet {
         }
         req.getRequestDispatcher("/trigger.jsp").forward(req, resp);
     }
+*/
 
     @Override
     public void destroy() {

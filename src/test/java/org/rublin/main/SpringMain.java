@@ -1,15 +1,14 @@
 package org.rublin.main;
 
+import org.rublin.model.ControlledObject;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
+import org.rublin.service.*;
+import org.rublin.web.CurrentObject;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.rublin.service.StateService;
-import org.rublin.service.StateServiceImpl;
-import org.rublin.service.TriggerService;
-import org.rublin.service.TriggerServiceImpl;
 import org.rublin.web.rest.StateRestController;
 
 import java.util.Arrays;
@@ -20,9 +19,11 @@ import java.util.Arrays;
 public class SpringMain {
     public static void main(String[] args) {
         try (ConfigurableApplicationContext springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml")){
+            ControlledObjectService objectService = (ControlledObjectServiceImpl) springContext.getBean(ControlledObjectService.class);
+            ControlledObject obj = objectService.get(CurrentObject.getId());
             System.out.println(Arrays.toString(springContext.getBeanDefinitionNames()));
             TriggerService triggerService = (TriggerServiceImpl)springContext.getBean(TriggerService.class);
-            triggerService.save(new Trigger("Move 2 floor", Type.DIGITAL));
+            triggerService.save(new Trigger("Move 2 floor", Type.DIGITAL), obj);
 //            triggerService.save(new Trigger("Door 2 floor", Type.DIGITAL));
             triggerService.getAll().forEach(System.out::println);
             StateService stateService = (StateServiceImpl) springContext.getBean(StateService.class);

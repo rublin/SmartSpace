@@ -1,5 +1,6 @@
 package org.rublin.repository.jpa;
 
+import org.rublin.model.ControlledObject;
 import org.rublin.model.Trigger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +22,9 @@ public class JpaTriggerRepository implements TriggerRepository {
 
     @Override
     @Transactional
-    public Trigger save(Trigger trigger) {
+    public Trigger save(Trigger trigger, ControlledObject obj) {
         if (trigger.isNew()){
+            trigger.setObject(obj);
             em.persist(trigger);
             return trigger;
         } else {

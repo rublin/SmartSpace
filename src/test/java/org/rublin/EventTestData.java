@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 /**
  * Created by Sheremet on 29.06.2016.
  */
-public class ServiceTestData {
-    public static final int DIGIT_EVENT1_ID = 1002;
-    public static final int ANALOG_EVENT1_ID = 1008;
+public class EventTestData {
+    public static final int DIGIT_EVENT1_ID = 1000;
+    public static final int ANALOG_EVENT1_ID = 1006;
     public static final Trigger DIGITAL_TRIGGER = TriggerTestData.DIGITAL_TRIGGER;
     public static final Trigger ANALOG_TRIGGER = TriggerTestData.ANALOG_TRIGGER;
 

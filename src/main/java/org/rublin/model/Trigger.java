@@ -23,9 +23,14 @@ public class Trigger {
     public static final String DELETE = "Trigger.delete";
 
     @Id
-    @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @SequenceGenerator(name = "trigger_seq", sequenceName = "trigger_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trigger_seq")
     private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "object_id", nullable = false)
+    private ControlledObject object;
+
     @Column(name = "name", nullable = false)
     private String name;
    /*
@@ -58,6 +63,13 @@ public class Trigger {
 
     public Trigger(int id, String name, Type type) {
         this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+
+    public Trigger(int id, ControlledObject object, String name, Type type) {
+        this.id = id;
+        this.object = object;
         this.name = name;
         this.type = type;
     }
@@ -100,6 +112,13 @@ public class Trigger {
         this.type = type;
     }
 
+    public ControlledObject getObject() {
+        return object;
+    }
+
+    public void setObject(ControlledObject object) {
+        this.object = object;
+    }
 
     @Override
     public String toString() {

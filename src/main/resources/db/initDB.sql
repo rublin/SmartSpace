@@ -1,22 +1,36 @@
+DROP TABLE IF EXISTS objects CASCADE ;
 DROP TABLE IF EXISTS trigger_type CASCADE ;
 DROP TABLE IF EXISTS triggers CASCADE ;
 DROP TABLE IF EXISTS events;
-DROP SEQUENCE IF EXISTS global_seq;
+DROP SEQUENCE IF EXISTS event_seq;
+DROP SEQUENCE IF EXISTS trigger_seq;
+DROP SEQUENCE IF EXISTS obj_seq;
 
-CREATE SEQUENCE global_seq START 1000;
+CREATE SEQUENCE obj_seq START 10;
+CREATE SEQUENCE event_seq START 1000;
+CREATE SEQUENCE trigger_seq START 100;
 
+
+CREATE TABLE objects
+(
+  id      INTEGER PRIMARY KEY DEFAULT nextval('obj_seq'),
+  name    VARCHAR NOT NULL ,
+  status  VARCHAR NOT NULL ,
+  secure  VARCHAR NOT NULL
+);
 
 CREATE TABLE triggers
 (
-  id        INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
+  id        INTEGER PRIMARY KEY DEFAULT nextval('trigger_seq'),
+  object_id INTEGER NOT NULL ,
   name      VARCHAR NOT NULL,
-  type      VARCHAR NOT NULL
-
+  type      VARCHAR NOT NULL,
+  FOREIGN KEY (object_id) REFERENCES objects (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx ON triggers (name);
 
 CREATE TABLE events (
-  id            INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
+  id            INTEGER PRIMARY KEY DEFAULT nextval('event_seq'),
   trigger_id    INTEGER NOT NULL,
   type          TEXT NOT NULL,
   date_time     TIMESTAMP NOT NULL,

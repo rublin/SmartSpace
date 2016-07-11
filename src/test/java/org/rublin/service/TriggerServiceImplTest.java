@@ -34,13 +34,13 @@ public class TriggerServiceImplTest {
     @Test
     public void testSave() throws Exception {
         Trigger trigger = new Trigger("new");
-        service.save(trigger);
+        service.save(trigger, OBJECT);
         MATCHER.assertCollectionEquals(Arrays.asList(DIGITAL_TRIGGER, trigger, ANALOG_TRIGGER), service.getAll());
     }
 
     @Test(expected = DataAccessException.class)
     public void testDuplicateNameSave() throws Exception {
-        service.save(new Trigger("Door 1 floor"));
+        service.save(new Trigger("Door 1 floor"), OBJECT);
     }
 
     @Test
