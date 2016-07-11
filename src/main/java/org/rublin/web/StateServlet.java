@@ -74,6 +74,7 @@ public class StateServlet extends HttpServlet {
             }
         } else {
             if (triggerId==null) {
+                req.setAttribute("objectList", objectService.getAll());
                 req.setAttribute("eventList", stateController.getAll());
                 req.setAttribute("triggerList", triggerController.getAll());
                 LOG.info("get all events from all triggers");
@@ -96,21 +97,28 @@ public class StateServlet extends HttpServlet {
         String id = req.getParameter("id");
         String type = req.getParameter("type");
         String name = req.getParameter("name");
-        LOG.info("post trigger (edit or create) with id: ", id);
-        if (id==null || id.isEmpty()) {
-            if (type.equals("digital")) {
-                LOG.info("Create digital trigger {}", name);
-                triggerController.create(new Trigger(name, Type.DIGITAL), obj);
-            } else if (type.equals("analog")){
-                LOG.info("Create analog trigger {}", name);
-                triggerController.create(new Trigger(name, Type.ANALOG), obj);
-            }
+        String secure = req.getParameter("secure");
+        if (secure != null) {
+            obj.setSecure(ObjectSecure.valueOf(secure));
+            LOG.info("change ControlledObject secure state to {}", obj.getSecure());
         } else {
-            Trigger trigger = triggerController.get(Integer.parseInt(id));
-            LOG.info("Update trigger {}. New name is {}", trigger, name);
-            trigger.setName(name);
-            triggerController.update(trigger, obj);
+            LOG.info("post trigger (edit or create) with id: ", id);
+            if (id==null || id.isEmpty()) {
+                if (type.equals("digital")) {
+                    LOG.info("Create digital trigger {}", name);
+                    triggerController.create(new Trigger(name, Type.DIGITAL), obj);
+                } else if (type.equals("analog")){
+                    LOG.info("Create analog trigger {}", name);
+                    triggerController.create(new Trigger(name, Type.ANALOG), obj);
+                }
+            } else {
+                Trigger trigger = triggerController.get(Integer.parseInt(id));
+                LOG.info("Update trigger {}. New name is {}", trigger, name);
+                trigger.setName(name);
+                triggerController.update(trigger, obj);
+            }
         }
+
         resp.sendRedirect("states");
     }
 

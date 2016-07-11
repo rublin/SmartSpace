@@ -12,8 +12,44 @@
     <title>States of triggers | Smart Space</title>
 </head>
 <body>
-<h2><a href="index.html">Home</a></h2>
-<h1>Add trigger</h1>
+<h3><a href="index.html">Home</a></h3>
+<h2>Object</h2>
+<table border="1" cellspacing="0" cellpadding="8">
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>status</th>
+        <th>secure</th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    <c:forEach items="${objectList}" var="obj">
+        <%--<jsp:useBean id="obj" scope="page" type="org.rublin.model.ControlledObject">--%>
+            <tr>
+                <td>${obj.id}</td>
+                <td>${obj.name}</td>
+                <td>${obj.status}</td>
+                <td>${obj.secure}</td>
+                <td></td>
+                <td>
+                    <form method="post" >
+                        <select name="secure">
+                            <option>NOT_PROTECTED</option>
+                            <option>PARTLY_PROTECTED</option>
+                            <option>FULLY_PROTECTED</option>
+                        </select>
+                        <input type="submit" value="Send">
+                    </form>
+                </td>
+            </tr>
+        <%--</jsp:useBean>--%>
+
+    </c:forEach>
+</table>
+
+<h2>Add trigger</h2>
 <%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
 <form method="post" action="states?action=addTrigger">
     <input type="hidden" name="id" value="${trigger.id}">
@@ -40,7 +76,7 @@
 
     <input type="submit" value="Submit">
 </form>
-<h1>Triggers in system</h1>
+<h2>Triggers in system</h2>
 
 
 <table border="1" cellpadding="8" cellspacing="0">
@@ -79,7 +115,7 @@
         </tr>
     </c:forEach>
 </table>
-<h1>Triggers states history</h1>
+<h2>Triggers states history</h2>
 <form method="get" action="states?action=show">
 <select name="triggerId">
     <c:forEach var="trigger" items="${triggerList}">
