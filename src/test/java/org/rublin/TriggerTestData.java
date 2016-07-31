@@ -1,7 +1,7 @@
 package org.rublin;
 
 import org.rublin.matcher.ModelMatcher;
-import org.rublin.model.ControlledObject;
+import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 
@@ -9,7 +9,7 @@ import org.rublin.model.Type;
  * Created by Sheremet on 28.06.2016.
  */
 public class TriggerTestData {
-    public static final ControlledObject OBJECT = ControlledObjectTestData.OBJECT;
+    public static final Zone OBJECT = ControlledObjectTestData.OBJECT;
     public static final int DIGITAL_TRIGGER_ID = 100;
     public static final int ANALOG_TRIGGER_ID = 101;
 

@@ -1,6 +1,6 @@
 package org.rublin.service;
 
-import org.rublin.model.ControlledObject;
+import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.rublin.util.exception.ExceptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class TriggerServiceImpl implements TriggerService {
     private TriggerRepository repository;
 
     @Override
-    public Trigger save(Trigger trigger, ControlledObject obj) {
+    public Trigger save(Trigger trigger, Zone obj) {
         return repository.save(trigger, obj);
     }
 

@@ -1,22 +1,22 @@
-DROP TABLE IF EXISTS objects CASCADE ;
+DROP TABLE IF EXISTS zones CASCADE ;
 DROP TABLE IF EXISTS trigger_type CASCADE ;
 DROP TABLE IF EXISTS triggers CASCADE ;
 DROP TABLE IF EXISTS events;
 DROP SEQUENCE IF EXISTS event_seq;
 DROP SEQUENCE IF EXISTS trigger_seq;
-DROP SEQUENCE IF EXISTS obj_seq;
+DROP SEQUENCE IF EXISTS zone_seq;
 
-CREATE SEQUENCE obj_seq START 10;
+CREATE SEQUENCE zone_seq START 10;
 CREATE SEQUENCE event_seq START 1000;
 CREATE SEQUENCE trigger_seq START 100;
 
 
-CREATE TABLE objects
+CREATE TABLE zones
 (
   id      INTEGER PRIMARY KEY DEFAULT nextval('obj_seq'),
   name    VARCHAR NOT NULL ,
   status  VARCHAR NOT NULL ,
-  secure  VARCHAR NOT NULL
+  secure  BOOLEAN NOT NULL
 );
 
 CREATE TABLE triggers
@@ -25,7 +25,7 @@ CREATE TABLE triggers
   object_id INTEGER NOT NULL ,
   name      VARCHAR NOT NULL,
   type      VARCHAR NOT NULL,
-  FOREIGN KEY (object_id) REFERENCES objects (id) ON DELETE CASCADE
+  FOREIGN KEY (object_id) REFERENCES zones (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx ON triggers (name);
 

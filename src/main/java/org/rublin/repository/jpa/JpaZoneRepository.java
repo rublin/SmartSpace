@@ -1,7 +1,7 @@
 package org.rublin.repository.jpa;
 
-import org.rublin.model.ControlledObject;
-import org.rublin.repository.ControlledObjectRepository;
+import org.rublin.model.Zone;
+import org.rublin.repository.ZoneRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,14 +14,14 @@ import java.util.Collection;
  */
 @Repository
 @Transactional(readOnly = true)
-public class JpaControlledObjectRepository implements ControlledObjectRepository {
+public class JpaZoneRepository implements ZoneRepository {
 
     @PersistenceContext
     private EntityManager em;
 
     @Override
     @Transactional
-    public ControlledObject save(ControlledObject object) {
+    public Zone save(Zone object) {
         if (object.isNew()) {
             em.persist(object);
             return object;
@@ -31,18 +31,18 @@ public class JpaControlledObjectRepository implements ControlledObjectRepository
     }
 
     @Override
-    public ControlledObject get(int id) {
-        return em.find(ControlledObject.class, id);
+    public Zone get(int id) {
+        return em.find(Zone.class, id);
     }
 
     @Override
-    public Collection<ControlledObject> getAll() {
-        return em.createNamedQuery(ControlledObject.GET_All_SORTED, ControlledObject.class).getResultList();
+    public Collection<Zone> getAll() {
+        return em.createNamedQuery(Zone.GET_All_SORTED, Zone.class).getResultList();
     }
 
     @Override
     @Transactional
     public boolean delete(int id) {
-        return em.createNamedQuery(ControlledObject.DELETE).setParameter("id", id).executeUpdate() != 0;
+        return em.createNamedQuery(Zone.DELETE).setParameter("id", id).executeUpdate() != 0;
     }
 }

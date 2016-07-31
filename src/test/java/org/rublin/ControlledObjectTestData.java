@@ -1,16 +1,15 @@
 package org.rublin;
 
 import org.rublin.matcher.ModelMatcher;
-import org.rublin.model.ControlledObject;
-import org.rublin.model.ObjectSecure;
-import org.rublin.model.ObjectStatus;
+import org.rublin.model.Zone;
+import org.rublin.model.ZoneStatus;
 
 /**
  * Created by Sheremet on 11.07.2016.
  */
 public class ControlledObjectTestData {
     public static final int OBJECT_ID = 10;
-    public static final ControlledObject OBJECT = new ControlledObject(OBJECT_ID, "Home", ObjectStatus.GREEN, ObjectSecure.NOT_PROTECTED);
+    public static final Zone OBJECT = new Zone(OBJECT_ID, "Home", ZoneStatus.GREEN, false);
 
-    public static final ModelMatcher<ControlledObject, String> MATCHER = new ModelMatcher<>(ControlledObject::toString);
+    public static final ModelMatcher<Zone, String> MATCHER = new ModelMatcher<>(Zone::toString);
 }

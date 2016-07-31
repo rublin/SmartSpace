@@ -29,7 +29,7 @@ public class Trigger {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "object_id", nullable = false)
-    private ControlledObject object;
+    private Zone object;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -67,7 +67,7 @@ public class Trigger {
         this.type = type;
     }
 
-    public Trigger(int id, ControlledObject object, String name, Type type) {
+    public Trigger(int id, Zone object, String name, Type type) {
         this.id = id;
         this.object = object;
         this.name = name;
@@ -112,11 +112,11 @@ public class Trigger {
         this.type = type;
     }
 
-    public ControlledObject getObject() {
+    public Zone getObject() {
         return object;
     }
 
-    public void setObject(ControlledObject object) {
+    public void setObject(Zone object) {
         this.object = object;
     }
 

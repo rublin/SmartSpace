@@ -6,7 +6,7 @@ import org.rublin.model.event.DigitEvent;
 import org.rublin.repository.mock.InMemoryObjectRepository;
 import org.rublin.repository.mock.InMemoryStateRepository;
 import org.rublin.repository.mock.InMemoryTriggerRepository;
-import org.rublin.web.CurrentObject;
+import org.rublin.web.CurrentZone;
 
 /**
  * Created by Sheremet on 15.06.2016.
@@ -16,7 +16,7 @@ public class Main {
         InMemoryObjectRepository objectRepository = new InMemoryObjectRepository();
         InMemoryTriggerRepository triggerRepository = new InMemoryTriggerRepository();
         InMemoryStateRepository stateRepository = new InMemoryStateRepository();
-        ControlledObject obj = objectRepository.get(CurrentObject.getId());
+        Zone obj = objectRepository.get(CurrentZone.getId());
         //stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);
         stateRepository.save(triggerRepository.get(1), new DigitEvent(triggerRepository.get(1),false));
         stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);

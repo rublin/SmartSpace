@@ -13,7 +13,7 @@
 </head>
 <body>
 <h3><a href="index.html">Home</a></h3>
-<h2>Object</h2>
+<h2>Zone</h2>
 <table border="1" cellspacing="0" cellpadding="8">
     <thead>
     <tr>
@@ -25,13 +25,28 @@
         <th></th>
     </tr>
     </thead>
-    <c:forEach items="${objectList}" var="obj">
-        <%--<jsp:useBean id="obj" scope="page" type="org.rublin.model.ControlledObject">--%>
-            <tr>
-                <td>${obj.id}</td>
-                <td>${obj.name}</td>
-                <td>${obj.status}</td>
-                <td>${obj.secure}</td>
+    <c:forEach items="${zoneList}" var="zone">
+        <td>${zone.id}</td>
+        <td>${zone.name}</td>
+        <td>${zone.status}</td>
+        <td>${zone.secure}</td>
+        <td></td>
+        <td>
+            <form method="post" >
+                <select name="secure">
+                    <option>true</option>
+                    <option>false</option>
+                </select>
+                <input type="submit" value="Send">
+            </form>
+        </td></tr>
+    </c:forEach>
+</table>
+        <%--<jsp:useBean id="obj" scope="page" type="org.rublin.model.Zone       <tr>
+                <td>${zone.id}</td>
+                <td>${zone.name}</td>
+                <td>${zone.status}</td>
+                <td>${zone.secure}</td>
                 <td></td>
                 <td>
                     <form method="post" >
@@ -44,10 +59,9 @@
                     </form>
                 </td>
             </tr>
-        <%--</jsp:useBean>--%>
+        &lt;%&ndash;</jsp:useBean>--%>
 
-    </c:forEach>
-</table>
+
 
 <h2>Add trigger</h2>
 <%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>

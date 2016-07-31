@@ -1,7 +1,7 @@
 package org.rublin.service;
 
-import org.rublin.model.ControlledObject;
-import org.rublin.repository.ControlledObjectRepository;
+import org.rublin.model.Zone;
+import org.rublin.repository.ZoneRepository;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +13,13 @@ import java.util.Collection;
  * Created by Sheremet on 11.07.2016.
  */
 @Service
-public class ControlledObjectServiceImpl implements ControlledObjectService {
+public class ZoneServiceImpl implements ZoneService {
 
     @Autowired
-    private ControlledObjectRepository repository;
+    private ZoneRepository repository;
 
     @Override
-    public ControlledObject save(ControlledObject object) {
+    public Zone save(Zone object) {
         return repository.save(object);
     }
 
@@ -29,12 +29,12 @@ public class ControlledObjectServiceImpl implements ControlledObjectService {
     }
 
     @Override
-    public ControlledObject get(int id) throws NotFoundException {
+    public Zone get(int id) throws NotFoundException {
         return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
     }
 
     @Override
-    public Collection<ControlledObject> getAll() {
+    public Collection<Zone> getAll() {
         return repository.getAll();
     }
 }

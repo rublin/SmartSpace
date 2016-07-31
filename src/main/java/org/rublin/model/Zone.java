@@ -1,22 +1,21 @@
 package org.rublin.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Sheremet on 11.07.2016.
  */
 @NamedQueries({
-        @NamedQuery(name = ControlledObject.GET, query = "SELECT o FROM ControlledObject o WHERE o.id=:id"),
-        @NamedQuery(name = ControlledObject.GET_All_SORTED, query = "SELECT o FROM ControlledObject o ORDER BY o.name"),
-        @NamedQuery(name = ControlledObject.DELETE, query = "DELETE FROM ControlledObject o WHERE o.id=:id")
+        @NamedQuery(name = Zone.GET, query = "SELECT o FROM Zone o WHERE o.id=:id"),
+        @NamedQuery(name = Zone.GET_All_SORTED, query = "SELECT o FROM Zone o ORDER BY o.name"),
+        @NamedQuery(name = Zone.DELETE, query = "DELETE FROM Zone o WHERE o.id=:id")
 })
 @Entity
-@Table(name = "objects")
-public class ControlledObject {
+@Table(name = "zones")
+public class Zone {
 
-    public static final String GET = "ControlledObject.get";
+    public static final String GET = "Zone.get";
     public static final String GET_All_SORTED = "ControllerObject.getAllSorted";
     public static final String DELETE = "ControllerObject.delete";
 
@@ -30,36 +29,36 @@ public class ControlledObject {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ObjectStatus status;
+    private ZoneStatus status;
 
-    @Enumerated(EnumType.STRING)
+    //@Enumerated(EnumType.STRING)
     @Column(name = "secure", nullable = false)
-    private ObjectSecure secure;
+    private boolean secure;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "object", cascade = CascadeType.REMOVE)
     private List<Trigger> triggers;
 
-    public ControlledObject() {
+    public Zone() {
     }
 
-    public ControlledObject(int id, String name) {
+    public Zone(int id, String name) {
         this.id = id;
         this.name = name;
-        status = ObjectStatus.GREEN;
-        secure = ObjectSecure.NOT_PROTECTED;
+        status = ZoneStatus.GREEN;
+        secure = false;
     }
 
-    public ControlledObject(int id, String name, ObjectStatus status, ObjectSecure secure) {
+    public Zone(int id, String name, ZoneStatus status, boolean secure) {
         this.id = id;
         this.name = name;
         this.status = status;
         this.secure = secure;
     }
 
-    public ControlledObject(String name) {
+    public Zone(String name) {
         this.name = name;
-        this.status = ObjectStatus.GREEN;
-        this.secure = ObjectSecure.NOT_PROTECTED;
+        this.status = ZoneStatus.GREEN;
+        this.secure = false;
     }
 
     public int getId() {
@@ -78,19 +77,19 @@ public class ControlledObject {
         this.name = name;
     }
 
-    public ObjectStatus getStatus() {
+    public ZoneStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ObjectStatus status) {
+    public void setStatus(ZoneStatus status) {
         this.status = status;
     }
 
-    public ObjectSecure getSecure() {
+    public boolean getSecure() {
         return secure;
     }
 
-    public void setSecure(ObjectSecure secure) {
+    public void setSecure(boolean secure) {
         this.secure = secure;
     }
     public List<Trigger> getTriggers() {
@@ -111,7 +110,7 @@ public class ControlledObject {
 
     @Override
     public String toString() {
-        return "ControlledObject{" +
+        return "Zone{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", status=" + status +

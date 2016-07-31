@@ -1,12 +1,12 @@
 package org.rublin.main;
 
-import org.rublin.model.ControlledObject;
+import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
 import org.rublin.service.*;
-import org.rublin.web.CurrentObject;
+import org.rublin.web.CurrentZone;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.rublin.web.rest.StateRestController;
@@ -19,8 +19,8 @@ import java.util.Arrays;
 public class SpringMain {
     public static void main(String[] args) {
         try (ConfigurableApplicationContext springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml")){
-            ControlledObjectService objectService = (ControlledObjectServiceImpl) springContext.getBean(ControlledObjectService.class);
-            ControlledObject obj = objectService.get(CurrentObject.getId());
+            ZoneService objectService = (ZoneServiceImpl) springContext.getBean(ZoneService.class);
+            Zone obj = objectService.get(CurrentZone.getId());
             System.out.println(Arrays.toString(springContext.getBeanDefinitionNames()));
             TriggerService triggerService = (TriggerServiceImpl)springContext.getBean(TriggerService.class);
             triggerService.save(new Trigger("Move 2 floor", Type.DIGITAL), obj);

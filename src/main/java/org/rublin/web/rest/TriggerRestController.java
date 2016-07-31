@@ -1,6 +1,6 @@
 package org.rublin.web.rest;
 
-import org.rublin.model.ControlledObject;
+import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +23,11 @@ public class TriggerRestController {
         LOG.info("delete trigger id: {}", id);
         service.delete(id);
     }
-    public Trigger create (Trigger trigger, ControlledObject obj) {
+    public Trigger create (Trigger trigger, Zone obj) {
         LOG.info("create trigger {}",trigger);
         return service.save(trigger, obj);
     }
-    public Trigger update(Trigger trigger, ControlledObject obj) {
+    public Trigger update(Trigger trigger, Zone obj) {
         LOG.info("update trigger {}", trigger);
         return service.save(trigger, obj);
     }

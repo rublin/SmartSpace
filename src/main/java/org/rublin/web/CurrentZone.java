@@ -3,7 +3,7 @@ package org.rublin.web;
 /**
  * Created by Sheremet on 11.07.2016.
  */
-public class CurrentObject {
+public class CurrentZone {
     public static int id = 10;
 
     public static int getId() {
@@ -11,6 +11,6 @@ public class CurrentObject {
     }
 
     public static void setId(int id) {
-        CurrentObject.id = id;
+        CurrentZone.id = id;
     }
 }

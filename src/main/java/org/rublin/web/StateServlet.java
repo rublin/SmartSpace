@@ -4,7 +4,7 @@ import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
-import org.rublin.service.ControlledObjectService;
+import org.rublin.service.ZoneService;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -29,7 +31,7 @@ public class StateServlet extends HttpServlet {
     private ConfigurableApplicationContext context;
     private StateRestController stateController;
     private TriggerRestController triggerController;
-    private ControlledObjectService objectService;
+    private ZoneService zoneService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -37,7 +39,7 @@ public class StateServlet extends HttpServlet {
         context = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
         stateController = context.getBean(StateRestController.class);
         triggerController = context.getBean(TriggerRestController.class);
-        objectService = context.getBean(ControlledObjectService.class);
+        zoneService = context.getBean(ZoneService.class);
     }
 
     @Override
@@ -74,7 +76,8 @@ public class StateServlet extends HttpServlet {
             }
         } else {
             if (triggerId==null) {
-                req.setAttribute("objectList", objectService.getAll());
+                Collection<Zone> zones = zoneService.getAll();
+                req.setAttribute("zoneList", zones);
                 req.setAttribute("eventList", stateController.getAll());
                 req.setAttribute("triggerList", triggerController.getAll());
                 LOG.info("get all events from all triggers");
@@ -91,7 +94,7 @@ public class StateServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ControlledObject obj = objectService.get(CurrentObject.getId());
+        Zone zone = zoneService.get(CurrentZone.getId());
         req.setCharacterEncoding("UTF-8");
         LOG.info("post", req);
         String id = req.getParameter("id");
@@ -99,24 +102,24 @@ public class StateServlet extends HttpServlet {
         String name = req.getParameter("name");
         String secure = req.getParameter("secure");
         if (secure != null) {
-            obj.setSecure(ObjectSecure.valueOf(secure));
-            objectService.save(obj);
-            LOG.info("change ControlledObject secure state to {}", obj.getSecure());
+            zone.setSecure(Boolean.valueOf(secure));
+            zoneService.save(zone);
+            LOG.info("change Zone secure state to {}", zone.getSecure());
         } else {
             LOG.info("post trigger (edit or create) with id: ", id);
             if (id==null || id.isEmpty()) {
                 if (type.equals("digital")) {
                     LOG.info("Create digital trigger {}", name);
-                    triggerController.create(new Trigger(name, Type.DIGITAL), obj);
+                    triggerController.create(new Trigger(name, Type.DIGITAL), zone);
                 } else if (type.equals("analog")){
                     LOG.info("Create analog trigger {}", name);
-                    triggerController.create(new Trigger(name, Type.ANALOG), obj);
+                    triggerController.create(new Trigger(name, Type.ANALOG), zone);
                 }
             } else {
                 Trigger trigger = triggerController.get(Integer.parseInt(id));
                 LOG.info("Update trigger {}. New name is {}", trigger, name);
                 trigger.setName(name);
-                triggerController.update(trigger, obj);
+                triggerController.update(trigger, zone);
             }
         }
 

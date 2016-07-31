@@ -1,6 +1,6 @@
 -- DELETE FROM trigger_type;
 
-DELETE FROM objects;
+DELETE FROM zones;
 DELETE FROM triggers;
 DELETE FROM events;
 
@@ -8,8 +8,8 @@ ALTER SEQUENCE obj_seq RESTART WITH 10;
 ALTER SEQUENCE trigger_seq RESTART WITH 100;
 ALTER SEQUENCE event_seq RESTART WITH 1000;
 
-INSERT INTO objects (name, status, secure) VALUES
-  ('Home', 'GREEN', 'NOT_PROTECTED');
+INSERT INTO zones (name, status, secure) VALUES
+  ('Home', 'GREEN', FALSE );
 
 INSERT INTO triggers (object_id, name, type) VALUES
   (10, 'Door 1 floor', 'DIGITAL'),
