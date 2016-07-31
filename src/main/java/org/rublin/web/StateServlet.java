@@ -100,6 +100,7 @@ public class StateServlet extends HttpServlet {
         String secure = req.getParameter("secure");
         if (secure != null) {
             obj.setSecure(ObjectSecure.valueOf(secure));
+            objectService.save(obj);
             LOG.info("change ControlledObject secure state to {}", obj.getSecure());
         } else {
             LOG.info("post trigger (edit or create) with id: ", id);
