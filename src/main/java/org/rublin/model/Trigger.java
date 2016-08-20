@@ -27,9 +27,9 @@ public class Trigger {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trigger_seq")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "object_id", nullable = false)
-    private Zone object;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "zone_id", nullable = false)
+    private Zone zone;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -67,9 +67,9 @@ public class Trigger {
         this.type = type;
     }
 
-    public Trigger(int id, Zone object, String name, Type type) {
+    public Trigger(int id, Zone zone, String name, Type type) {
         this.id = id;
-        this.object = object;
+        this.zone = zone;
         this.name = name;
         this.type = type;
     }
@@ -112,12 +112,12 @@ public class Trigger {
         this.type = type;
     }
 
-    public Zone getObject() {
-        return object;
+    public Zone getZone() {
+        return zone;
     }
 
-    public void setObject(Zone object) {
-        this.object = object;
+    public void setZone(Zone zone) {
+        this.zone = zone;
     }
 
     @Override

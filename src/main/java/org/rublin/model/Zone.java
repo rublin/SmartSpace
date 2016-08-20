@@ -35,7 +35,7 @@ public class Zone {
     @Column(name = "secure", nullable = false)
     private boolean secure;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "object", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
     private List<Trigger> triggers;
 
     public Zone() {

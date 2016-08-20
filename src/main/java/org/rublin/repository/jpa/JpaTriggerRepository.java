@@ -24,7 +24,7 @@ public class JpaTriggerRepository implements TriggerRepository {
     @Transactional
     public Trigger save(Trigger trigger, Zone obj) {
         if (trigger.isNew()){
-            trigger.setObject(obj);
+            trigger.setZone(obj);
             em.persist(trigger);
             return trigger;
         } else {

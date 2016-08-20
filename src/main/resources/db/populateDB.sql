@@ -11,7 +11,7 @@ ALTER SEQUENCE event_seq RESTART WITH 1000;
 INSERT INTO zones (name, status, secure) VALUES
   ('Home', 'GREEN', FALSE );
 
-INSERT INTO triggers (object_id, name, type) VALUES
+INSERT INTO triggers (zone_id, name, type) VALUES
   (10, 'Door 1 floor', 'DIGITAL'),
   (10, 'Temperature 2 floor', 'ANALOG');
 

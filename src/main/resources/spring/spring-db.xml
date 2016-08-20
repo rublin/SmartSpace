@@ -10,17 +10,15 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <context:property-placeholder location="classpath:db/postgresql.properties" system-properties-mode="OVERRIDE"/>
-    <!--
-    <bean class="org.rublin.util.DbPopulator">
-        <constructor-arg name="scriptLocation" value="classpath:db/populateDB.sql"/>
-    </bean>
--->
     <context:component-scan base-package="org.rublin.repository.jpa"/>
 
-    <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
-        <jdbc:script location="classpath:db/${jdbc.initLocation}"/>
-        <jdbc:script encoding="utf-8" location="classpath:db/populateDB.sql"/>
-    </jdbc:initialize-database>
+    <!--uncomment to populate db -->
+    <!---->
+    <!--<jdbc:initialize-database data-source="dataSource" enabled="${database.init}">-->
+        <!--<jdbc:script location="classpath:db/${jdbc.initLocation}"/>-->
+        <!--<jdbc:script encoding="utf-8" location="classpath:db/populateDB.sql"/>-->
+    <!--</jdbc:initialize-database>-->
+    <!---->
 
     <!--no pooling-->
     <bean id="dataSource"

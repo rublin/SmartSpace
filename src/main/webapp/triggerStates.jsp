@@ -62,9 +62,10 @@
         &lt;%&ndash;</jsp:useBean>--%>
 
 
-
-<h2>Add trigger</h2>
 <%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
+
+<h2>Triggers in system</h2>
+
 <form method="post" action="states?action=addTrigger">
     <input type="hidden" name="id" value="${trigger.id}">
     Name:<input type="text" name="name" value="${trigger.name}">
@@ -90,14 +91,13 @@
 
     <input type="submit" value="Submit">
 </form>
-<h2>Triggers in system</h2>
-
 
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
     <tr>
         <th>id</th>
         <th>name</th>
+        <th>zone</th>
         <th>type</th>
         <%--<th>current state</th>--%>
         <th>update state</th>
@@ -109,6 +109,7 @@
         <tr>
             <td>${trigger.id}</td>
             <td>${trigger.name}</td>
+            <td>${trigger.zone.name}</td>
             <td>${trigger.type}</td>
             <%--<td>${trigger.event.getState()}</td>--%>
             <td>

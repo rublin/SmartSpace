@@ -22,10 +22,10 @@ CREATE TABLE zones
 CREATE TABLE triggers
 (
   id        INTEGER PRIMARY KEY DEFAULT nextval('trigger_seq'),
-  object_id INTEGER NOT NULL ,
+  zone_id INTEGER NOT NULL ,
   name      VARCHAR NOT NULL,
   type      VARCHAR NOT NULL,
-  FOREIGN KEY (object_id) REFERENCES zones (id) ON DELETE CASCADE
+  FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx ON triggers (name);
 
