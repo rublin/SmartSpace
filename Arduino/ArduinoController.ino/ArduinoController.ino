@@ -4,8 +4,10 @@
 * IDE: Arduino 1.6.6
 * 
 * My triggers:
+* Digital 2 - move 1 floor 1 id=4280
+* Digital 3 - door 2 floor 1 id=2607
 * Digital 4 - 
-* Digital 5 - move 1 floor id=1000
+* Digital 5 - move 1 floor 2 id=1000
 * Digital 6 - 
 * Digital 7 - 
 * Digital 8 - 
@@ -32,12 +34,17 @@ EthernetClient rclient;
 const long MINUTE=60000;
 const long TWO_MINUTES=120000;
 
+const int D1_2ID=2607;
+const int M1ID=1000;
+const int M2ID=2564;
+
 // initial values
 float tempC;
-int old_door1_2=0;
+int oldDoor1_2=0;
 int oldMovement1=0;
 long oldMoveTime1=0;
-int old_movement_2=0;
+int oldMovement2=0;
+long oldMoveTime2=0;
 char buf[80];
 char ipbuff[16];
 String get="GET /smartSpace/states?action=addEvent&triggerId=%d&state=%s";
@@ -79,7 +86,7 @@ void setup()
  Ethernet.begin(mac, ip, dns_server, gateway, subnet); // Ethernet Shield
 
  pinMode(3, INPUT); // door1.2
- old_door1_2=digitalRead(3);
+ oldDoor1_2=digitalRead(3);
 
  pinMode(5, INPUT); // move1
  oldMovement1=digitalRead(5);
@@ -93,20 +100,46 @@ void loop()
 
   delay(1000); // 1 sec delay 
 
+  //DOOR 2 (floor 1)
+  int curDoor1_2=digitalRead(3);
+  
+  if (curDoor1_2!=oldDoor1_2) {
+    oldDoor1_2=curDoor1_2;
+    sprintf(buf, get.c_str(), D1_2ID, curDoor1_2==0 ? "false" : "true");
+    sendHTTPRequest();
+  }
+
   //MOVEMENT 1 SENSOR
-   //Serial.println("M2");
+   //Serial.println("M1");
    int curMovement1=digitalRead(5);
    long curMoveTime1=millis();
 
    if (curMovement1==0 && oldMovement1!=curMovement1) {
-    oldMovement1=curMovement1;
+    oldMovement1=0;
     oldMoveTime1=curMoveTime1;
-    sprintf(buf, get.c_str(), 1000, curMovement1==0 ? "false" : "true");
+    sprintf(buf, get.c_str(), M1ID, curMovement1==0 ? "false" : "true");
     sendHTTPRequest();
    } else if (curMovement1==1 && oldMovement1!=curMovement1 && curMoveTime1-oldMoveTime1>TWO_MINUTES) {
-    oldMovement1=curMovement1;
+    oldMovement1=1;
     oldMoveTime1=curMoveTime1;
-    sprintf(buf, get.c_str(), 1000, curMovement1==0 ? "false" : "true");
+    sprintf(buf, get.c_str(), M1ID, curMovement1==0 ? "false" : "true");
+    sendHTTPRequest();
+   }
+
+   //MOVEMENT 2 SENSOR
+   //Serial.println("M2");
+   int curMovement2=digitalRead(2);
+   long curMoveTime2=millis();
+
+   if (curMovement2==0 && oldMovement2!=curMovement2) {
+    oldMovement2=0;
+    oldMoveTime2=curMoveTime2;
+    sprintf(buf, get.c_str(), M2ID, curMovement2==0 ? "false" : "true");
+    sendHTTPRequest();
+   } else if (curMovement2==1 && oldMovement2!=curMovement2 && curMoveTime2-oldMoveTime2>TWO_MINUTES) {
+    oldMovement2=1;
+    oldMoveTime2=curMoveTime2;
+    sprintf(buf, get.c_str(), M2ID, curMovement2==0 ? "false" : "true");
     sendHTTPRequest();
    }
 }
