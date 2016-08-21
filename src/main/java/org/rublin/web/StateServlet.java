@@ -5,6 +5,7 @@ import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
 import org.rublin.service.ZoneService;
+import org.rublin.util.Notification;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -59,6 +60,13 @@ public class StateServlet extends HttpServlet {
                     LOG.info("new analog event {} from trigger {}", state, trigger.getName());
                     event = new AnalogEvent(trigger, Double.parseDouble(state));
                 }
+                Zone zone = trigger.getZone();
+                if (zone.getSecure()) {
+                    zone.setStatus(ZoneStatus.RED);
+                    zoneService.save(zone);
+                    Notification.sendMail(String.format("Zone %s: trigger %s status %s", zone.getName(), trigger.getName(), event.getState().toString()));
+                    LOG.error("Security issue in zone {} form trigger {}", zone.getName(), trigger.getName());
+                }
                 stateController.save(trigger, event);
                 //trigger.setEvent(event);
             } else if (action.equals("edit")) {
@@ -103,6 +111,7 @@ public class StateServlet extends HttpServlet {
         String secure = req.getParameter("secure");
         if (secure != null) {
             zone.setSecure(Boolean.valueOf(secure));
+            zone.setStatus(ZoneStatus.GREEN);
             zoneService.save(zone);
             LOG.info("change Zone secure state to {}", zone.getSecure());
         } else {

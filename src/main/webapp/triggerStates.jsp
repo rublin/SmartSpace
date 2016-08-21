@@ -14,6 +14,11 @@
 <body>
 <h3><a href="index.html">Home</a></h3>
 <h2>Zone</h2>
+<form method="post" action="states?action=addZone">
+    <input type="hidden" name="id" value="${zone.id}">
+    Name:<input type="text" name="name" value="${zone.name}">
+    <input type="submit" value="Submit">
+</form>
 <table border="1" cellspacing="0" cellpadding="8">
     <thead>
     <tr>
@@ -30,7 +35,11 @@
         <td>${zone.name}</td>
         <td>${zone.status}</td>
         <td>${zone.secure}</td>
-        <td></td>
+        <td>
+            <a href="states?action=edit&zoneId=${zone.id}">edit</a>
+            <br>
+            <a href="states?action=delete&zoneId=${zone.id}">delete</a>
+        </td>
         <td>
             <form method="post" >
                 <select name="secure">
@@ -87,8 +96,6 @@
             Analog<input type="radio" name="type" value="analog" >
         </c:when>
     </c:choose>
-
-
     <input type="submit" value="Submit">
 </form>
 
