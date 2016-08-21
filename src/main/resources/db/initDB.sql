@@ -13,7 +13,7 @@ CREATE SEQUENCE trigger_seq START 100;
 
 CREATE TABLE zones
 (
-  id      INTEGER PRIMARY KEY DEFAULT nextval('obj_seq'),
+  id      INTEGER PRIMARY KEY DEFAULT nextval('zone_seq'),
   name    VARCHAR NOT NULL ,
   status  VARCHAR NOT NULL ,
   secure  BOOLEAN NOT NULL
