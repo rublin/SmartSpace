@@ -64,8 +64,15 @@ public class StateServlet extends HttpServlet {
                 if (zone.getSecure()) {
                     zone.setStatus(ZoneStatus.RED);
                     zoneService.save(zone);
-                    Notification.sendMail(String.format("Zone %s: trigger %s status %s", zone.getName(), trigger.getName(), event.getState().toString()));
-                    LOG.error("Security issue in zone {} form trigger {}", zone.getName(), trigger.getName());
+                    Notification.sendMailWithAttach(String.format("Trigger %s activity", trigger.getName()),
+                            String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
+                                            "<h2>Trigger: <span style=\"color: blue;\">%s</span></h2>\n" +
+                                            "<h2>Status: <span style=\"color: %s;\">%s</span></h2>",
+                                    zone.getName(),
+                                    trigger.getName(),
+                                    Boolean.parseBoolean(event.getState().toString()) ? "green" : "red",
+                                    Boolean.parseBoolean(event.getState().toString()) ? "close | without move" : "open | with move"), "http://192.168.0.31/Streaming/channels/1/picture");
+                    LOG.info("Security issue in zone {} form trigger {}", zone.getName(), trigger.getName());
                 }
                 stateController.save(trigger, event);
                 //trigger.setEvent(event);
@@ -113,6 +120,15 @@ public class StateServlet extends HttpServlet {
             zone.setSecure(Boolean.valueOf(secure));
             zone.setStatus(ZoneStatus.GREEN);
             zoneService.save(zone);
+            Notification.sendMail(String.format("Zone %s ", zone.getName()),
+                    String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +
+                                    "<h2>Status: <span style=\"color: %s;\">%s</span></h2>\n" +
+                                    "<h2>Secure: <span style=\"color: %s;\">%s</span></h2>",
+                            zone.getName(),
+                            zone.getStatus(),
+                            zone.getStatus(),
+                            zone.getSecure() ? "GREEN" : "GREY",
+                            zone.getSecure()));
             LOG.info("change Zone secure state to {}", zone.getSecure());
         } else {
             LOG.info("post trigger (edit or create) with id: ", id);
