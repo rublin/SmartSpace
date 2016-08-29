@@ -48,6 +48,14 @@
         </plugins>
     </build>
 
+    <!--For Telegram dependencies-->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Logging with SLF4J & LogBack -->
         <dependency>
@@ -152,10 +160,17 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--Notifications and controls-->
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>${mail.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.rubenlagus</groupId>
+            <artifactId>TelegramBots</artifactId>
+            <version>v2.3.5</version>
         </dependency>
     </dependencies>
 

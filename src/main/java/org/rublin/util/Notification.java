@@ -124,7 +124,7 @@ public class Notification {
         }
     }
 
-    private static String  getImageFromCamera(String link) {
+    public static String  getImageFromCamera(String link) {
         Properties properties = readProperties();
         URL url = null;
         URLConnection connection = null;
@@ -151,7 +151,7 @@ public class Notification {
         }
         return filename;
     }
-    private static Properties readProperties() {
+    public static Properties readProperties() {
         Properties properties = new Properties();
         try (InputStream input = Notification.class.getClassLoader().getResourceAsStream(PROPERTIES)) {
             properties.load(input);
