@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import org.rublin.controller.Telegram;
 import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
@@ -11,6 +12,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.rublin.web.rest.StateRestController;
 import org.rublin.web.rest.TriggerRestController;
+import org.telegram.telegrambots.TelegramApiException;
+import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.updatesreceivers.BotSession;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -33,6 +36,8 @@ public class StateServlet extends HttpServlet {
     private StateRestController stateController;
     private TriggerRestController triggerController;
     private ZoneService zoneService;
+    private Telegram telegram;
+    private BotSession session;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -41,6 +46,15 @@ public class StateServlet extends HttpServlet {
         stateController = context.getBean(StateRestController.class);
         triggerController = context.getBean(TriggerRestController.class);
         zoneService = context.getBean(ZoneService.class);
+
+        //Telegram bot support
+        telegram = context.getBean(Telegram.class);
+        TelegramBotsApi api = new TelegramBotsApi();
+        try {
+            api.registerBot(telegram);
+        } catch (TelegramApiException e) {
+            LOG.error("Failed to register bot {} due to error {}: {}", telegram.getBotUsername(), e.getMessage(), e.getApiResponse());
+        }
     }
 
     @Override
@@ -153,6 +167,7 @@ public class StateServlet extends HttpServlet {
 
     @Override
     public void destroy() {
+        session.close();
         super.destroy();
         context.close();
     }
