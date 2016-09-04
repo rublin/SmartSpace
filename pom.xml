@@ -16,19 +16,21 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Spring -->
         <spring.version>4.2.6.RELEASE</spring.version>
+        <spring-security.version>4.1.1.RELEASE</spring-security.version>
 
         <!-- Logging -->
         <logback.version>1.1.7</logback.version>
         <slf4j.version>1.7.21</slf4j.version>
-        <!--DB-->
+        <!-- DB -->
         <postgresql.version>9.4.1208</postgresql.version>
         <!--    Tests  -->
         <junit.version>4.12</junit.version>
         <!-- Hibernate -->
         <hibernate.version>5.1.0.Final</hibernate.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <!--mail-->
+        <!-- mail -->
         <mail.version>1.4.7</mail.version>
     </properties>
 
@@ -108,6 +110,23 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <!--security-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <version>${spring-security.version}</version>
         </dependency>
 
         <!--DataBase-->

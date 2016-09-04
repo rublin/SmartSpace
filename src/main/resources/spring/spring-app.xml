@@ -10,5 +10,4 @@
     <context:component-scan base-package="org.rublin.service"/>
     <context:component-scan base-package="org.rublin.web"/>
     <context:component-scan base-package="org.rublin.controller"/>
-    <context:component-scan base-package="org.rublin.config"/>
 </beans>

@@ -20,8 +20,8 @@ public class Zone {
     public static final String DELETE = "ControllerObject.delete";
 
     @Id
-    @SequenceGenerator(name = "obj_seq", sequenceName = "obj_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "obj_seq")
+    @SequenceGenerator(name = "zone_seq", sequenceName = "zone_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "zone_seq")
     private Integer id;
 
     @Column(name = "name", nullable = false)
@@ -37,6 +37,9 @@ public class Zone {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
     private List<Trigger> triggers;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    private List<Camera> cameras;
 
     public Zone() {
     }

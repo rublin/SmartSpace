@@ -23,8 +23,8 @@ public class Trigger {
     public static final String DELETE = "Trigger.delete";
 
     @Id
-    @SequenceGenerator(name = "trigger_seq", sequenceName = "trigger_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trigger_seq")
+    @SequenceGenerator(name = "common_seq", sequenceName = "common_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "common_seq")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)

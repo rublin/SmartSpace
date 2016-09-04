@@ -1,6 +1,7 @@
 package org.rublin.controller;
 
 import org.rublin.model.Zone;
+import org.rublin.service.UserService;
 import org.rublin.service.ZoneService;
 import org.rublin.util.Notification;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class Telegram extends TelegramLongPollingCommandBot {
 
     private static final Logger LOG = getLogger(Notification.class);
 
-    public static Set<String> users = new HashSet<>();
+    public static Set<Integer> telegramIds = new HashSet<>();
 
     private static final String BOT_USERNAME = Notification.readProperties().getProperty("telegram.bot.username");
     private static final String BOT_TOKEN = Notification.readProperties().getProperty("telegram.bot.token");
@@ -35,9 +36,9 @@ public class Telegram extends TelegramLongPollingCommandBot {
     @Autowired
     private ZoneService zoneService;
 
-    {
-        users.addAll(Arrays.asList("Helenko", "rublinua"));
-    }
+    @Autowired
+    private UserService userService;
+
     private void sendTextMessage(String id, String html) {
         SendMessage sendMessageRequest = new SendMessage();
         sendMessageRequest.setChatId(id);
@@ -63,8 +64,33 @@ public class Telegram extends TelegramLongPollingCommandBot {
         }
     }
     private boolean isAuthorize(User user) {
-        LOG.info("Received message from user {} (id: {})", user.getUserName(), user.getId());
-        return users.contains(user.getUserName());
+        String telegramName = user.getUserName();
+        int telegramId = user.getId();
+        LOG.debug("Received message from user {} (id: {})", telegramName, telegramId);
+        if (telegramIds.contains(telegramId)) {
+            org.rublin.model.user.User foundUser = userService.getByTelegramId(telegramId);
+            LOG.info("Telegram User {} with id {} authorized as {}. Quick authorization", telegramName, telegramId, foundUser.getFirstName());
+            if (!foundUser.getTelegramName().equals(telegramName)) {
+                foundUser.setTelegramName(telegramName);
+                LOG.info("Telegram name {} updated", telegramName);
+            }
+            return true;
+        } else {
+            List<org.rublin.model.user.User> users = userService.getAll();
+            for (org.rublin.model.user.User u : users) {
+                String foundTelegramName = u.getTelegramName();
+//                LOG.debug("Compare name");
+                if (foundTelegramName != null && foundTelegramName.equals(telegramName)) {
+                    LOG.info("Telegram User {} with id {} authorized as {}. Long authorization", telegramName, telegramId, u.getFirstName());
+                    u.setTelegramId(telegramId);
+                    telegramIds.add(telegramId);
+                    userService.update(u);
+                    return true;
+                }
+            }
+        }
+        LOG.info("Telegram User {} with id {} not authorized.", telegramName, telegramId);
+        return false;
     }
     private String zoneInfo(Zone zone) {
         return String.format(

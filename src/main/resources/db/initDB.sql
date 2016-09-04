@@ -2,13 +2,17 @@ DROP TABLE IF EXISTS zones CASCADE ;
 DROP TABLE IF EXISTS trigger_type CASCADE ;
 DROP TABLE IF EXISTS triggers CASCADE ;
 DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS cameras;
+DROP TABLE IF EXISTS user_roles CASCADE ;
+DROP TABLE IF EXISTS users;
 DROP SEQUENCE IF EXISTS event_seq;
+DROP SEQUENCE IF EXISTS common_seq;
 DROP SEQUENCE IF EXISTS trigger_seq;
 DROP SEQUENCE IF EXISTS zone_seq;
 
 CREATE SEQUENCE zone_seq START 10;
+CREATE SEQUENCE common_seq START 100;
 CREATE SEQUENCE event_seq START 1000;
-CREATE SEQUENCE trigger_seq START 100;
 
 
 CREATE TABLE zones
@@ -19,9 +23,44 @@ CREATE TABLE zones
   secure  BOOLEAN NOT NULL
 );
 
+CREATE TABLE cameras
+(
+  id      INTEGER PRIMARY KEY DEFAULT nextval('common_seq'),
+  zone_id INTEGER NOT NULL ,
+  name    VARCHAR NOT NULL ,
+  ip      VARCHAR NOT NULL ,
+  url     VARCHAR NOT NULL ,
+  login   VARCHAR NOT NULL ,
+  password VARCHAR NOT NULL ,
+  FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE
+);
+
+CREATE TABLE users
+(
+  id              INTEGER PRIMARY KEY DEFAULT nextval('common_seq'),
+  fname           VARCHAR NOT NULL ,
+  lname           VARCHAR NOT NULL ,
+  email           VARCHAR NOT NULL ,
+  password        VARCHAR NOT NULL ,
+  telegram_id     INTEGER,
+  telegram_name   VARCHAR,
+  mobile          VARCHAR,
+  registered      TIMESTAMP DEFAULT now(),
+  enabled         BOOLEAN DEFAULT TRUE
+);
+CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
+
+CREATE TABLE user_roles
+(
+  user_id         INTEGER NOT NULL ,
+  role            VARCHAR,
+  CONSTRAINT user_roles_idx UNIQUE (user_id, role),
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 CREATE TABLE triggers
 (
-  id        INTEGER PRIMARY KEY DEFAULT nextval('trigger_seq'),
+  id        INTEGER PRIMARY KEY DEFAULT nextval('common_seq'),
   zone_id INTEGER NOT NULL ,
   name      VARCHAR NOT NULL,
   type      VARCHAR NOT NULL,
