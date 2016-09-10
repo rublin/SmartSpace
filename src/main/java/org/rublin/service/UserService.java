@@ -15,6 +15,7 @@ public interface UserService {
     User getByEmail(String email) throws NotFoundException;
     User getByTelegramId(int telegramId) throws NotFoundException;
     User getByTelegramName(String name) throws NotFoundException;
+    User getByMobile(String mobile) throws NotFoundException;
     List<User> getAll();
     void update(User user);
     void enable(int id, boolean enable);

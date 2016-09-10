@@ -20,6 +20,7 @@ import java.util.*;
         @NamedQuery(name = User.BY_EMAIL, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email=:email"),
         @NamedQuery(name = User.BY_TELEGRAMID, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.telegramId=:telegramId"),
         @NamedQuery(name = User.BY_TELEGRAMNAME, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.telegramName=:telegramName"),
+        @NamedQuery(name = User.BY_MOBILE, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.mobile=:mobile"),
         @NamedQuery(name = User.ALL_SORTED, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles ORDER BY u.email"),
 })
 @Entity
@@ -34,6 +35,7 @@ public class User {
     public static final String BY_EMAIL = "User.getByEmail";
     public static final String BY_TELEGRAMID = "User.getByTelegramId";
     public static final String BY_TELEGRAMNAME = "User.getByTelegramName";
+    public static final String BY_MOBILE = "User.getByMobile";
 
     @Id
     @SequenceGenerator(name = "common_seq", sequenceName = "common_seq", allocationSize = 1)

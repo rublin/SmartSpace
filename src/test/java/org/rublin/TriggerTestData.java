@@ -10,8 +10,8 @@ import org.rublin.model.Type;
  */
 public class TriggerTestData {
     public static final Zone OBJECT = ControlledObjectTestData.OBJECT;
-    public static final int DIGITAL_TRIGGER_ID = 100;
-    public static final int ANALOG_TRIGGER_ID = 101;
+    public static final int DIGITAL_TRIGGER_ID = 103;
+    public static final int ANALOG_TRIGGER_ID = 104;
 
     public static final Trigger DIGITAL_TRIGGER = new Trigger(DIGITAL_TRIGGER_ID, OBJECT, "Door 1 floor", Type.DIGITAL);
     public static final Trigger ANALOG_TRIGGER = new Trigger(ANALOG_TRIGGER_ID, OBJECT, "Temperature 2 floor", Type.ANALOG);

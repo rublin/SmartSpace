@@ -55,6 +55,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getByMobile(String mobile) throws NotFoundException {
+        Objects.requireNonNull(mobile, "Mobile number must not be empty");
+        return ExceptionUtil.checkNotFound(repository.getByMobile(mobile), "mobile=" + mobile);
+    }
+
+    @Override
     public List<User> getAll() {
         return repository.getAll();
     }

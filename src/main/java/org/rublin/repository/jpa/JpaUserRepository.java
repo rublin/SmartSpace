@@ -15,6 +15,7 @@ import java.util.List;
 @Repository
 @Transactional(readOnly = true)
 public class JpaUserRepository implements UserRepository {
+
     @PersistenceContext
     private EntityManager em;
 
@@ -53,6 +54,11 @@ public class JpaUserRepository implements UserRepository {
     @Override
     public User getByTelegramName(String name) {
         return em.createNamedQuery(User.BY_TELEGRAMNAME, User.class).setParameter("telegramName", name).getSingleResult();
+    }
+
+    @Override
+    public User getByMobile(String mobile) {
+        return em.createNamedQuery(User.BY_MOBILE, User.class).setParameter("mobile", mobile).getSingleResult();
     }
 
     @Override

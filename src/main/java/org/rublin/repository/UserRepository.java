@@ -14,5 +14,6 @@ public interface UserRepository {
     User getByEmail(String email);
     User getByTelegramId(int telegramId);
     User getByTelegramName(String name);
+    User getByMobile(String mobile);
     List<User> getAll();
 }
