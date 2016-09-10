@@ -32,12 +32,12 @@ INSERT INTO triggers (zone_id, name, type) VALUES
   (10, 'Door 1 floor', 'DIGITAL'),
   (10, 'Temperature 2 floor', 'ANALOG');
 
-INSERT INTO events (type, date_time, analog_state, digital_state, trigger_id) VALUES
-  ('DIGITAL', '2016-06-20 11:00:00', NULL , TRUE, 103),
-  ('DIGITAL', '2016-05-30 11:00:00', NULL, FALSE , 103),
-  ('DIGITAL', '2016-05-30 20:00:00', NULL, TRUE , 103),
-  ('DIGITAL', '2016-05-31 10:00:00', NULL, FALSE, 103),
-  ('DIGITAL', '2016-05-31 13:00:00', NULL, TRUE, 103),
-  ('DIGITAL', '2016-05-31 20:00:00', NULL, FALSE, 103),
-  ('ANALOG', '2016-06-01 14:00:00', 22.5, NULL, 104),
-  ('ANALOG', '2016-06-01 21:00:00', 19.8, NULL, 104);
+INSERT INTO events (type, date_time, analog_state, digital_state, trigger_id, alarm) VALUES
+  ('DIGITAL', '2016-06-20 11:00:00', NULL , TRUE, 103, TRUE ),
+  ('DIGITAL', '2016-05-30 11:00:00', NULL, FALSE , 103, TRUE ),
+  ('DIGITAL', '2016-05-30 20:00:00', NULL, TRUE , 103, FALSE ),
+  ('DIGITAL', '2016-05-31 10:00:00', NULL, FALSE, 103, FALSE ),
+  ('DIGITAL', '2016-05-31 13:00:00', NULL, TRUE, 103, FALSE ),
+  ('DIGITAL', '2016-05-31 20:00:00', NULL, FALSE, 103, FALSE ),
+  ('ANALOG', '2016-06-01 14:00:00', 22.5, NULL, 104, FALSE ),
+  ('ANALOG', '2016-06-01 21:00:00', 19.8, NULL, 104, FALSE );

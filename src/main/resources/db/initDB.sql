@@ -75,6 +75,7 @@ CREATE TABLE events (
   date_time     TIMESTAMP NOT NULL,
   analog_state  REAL,
   digital_state BOOLEAN,
+  alarm         BOOLEAN NOT NULL ,
   FOREIGN KEY (trigger_id) REFERENCES triggers (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX events_unique_trigger_datetime_idx ON events(trigger_id, date_time)

@@ -19,6 +19,9 @@ public interface Event<T>{
     void setTrigger(Trigger trigger);
     Type getType();
     void setType(Type type);
+    boolean isDigital();
+    void setAlarm(boolean alarm);
+    boolean isAlarm();
 
     String toString();
 }

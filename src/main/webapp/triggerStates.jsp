@@ -165,11 +165,23 @@
     </tr>
     </thead>
     <c:forEach items="${eventList}" var="event">
-        <tr>
-            <td>${event.trigger.name}</td>
-            <td>${event.time}</td>
-            <td>${event.state}</td>
-        </tr>
+        <c:choose>
+            <c:when test="${event.alarm}">
+                <tr style="color: red">
+                    <td>${event.trigger.name}</td>
+                    <td>${event.time}</td>
+                    <td>${event.state}</td>
+                </tr>
+            </c:when>
+            <c:otherwise>
+                <tr style="color: green">
+                    <td>${event.trigger.name}</td>
+                    <td>${event.time}</td>
+                    <td>${event.state}</td>
+                </tr>
+            </c:otherwise>
+        </c:choose>
+
     </c:forEach>
 </table>
 

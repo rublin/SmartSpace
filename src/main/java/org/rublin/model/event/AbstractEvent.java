@@ -29,6 +29,9 @@ public abstract class AbstractEvent<T> implements Event<T>{
     @Column(name = "type", nullable = false)
     protected Type type;
 
+    @Column(name = "alarm")
+    protected boolean alarm;
+
     public AbstractEvent() {}
 
     public AbstractEvent(Trigger trigger) {
@@ -76,12 +79,18 @@ public abstract class AbstractEvent<T> implements Event<T>{
         this.type = type;
     }
 
-    /*@Override
-    public String toString() {
-        return "DigitalEvent {" +
-                "id: " + (id == null ? "null" : getId()) +
-                //", trigger: " + getTrigger().getName() +
-                ", state: " + getState() +
-                ", time: " + getTime() + "}";
-    }*/
+    @Override
+    public boolean isDigital() {
+        return this.type.equals(Type.DIGITAL);
+    }
+
+    @Override
+    public void setAlarm(boolean alarm) {
+        this.alarm = alarm;
+    }
+
+    @Override
+    public boolean isAlarm() {
+        return alarm;
+    }
 }
