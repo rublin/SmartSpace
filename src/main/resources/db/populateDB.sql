@@ -28,9 +28,9 @@ INSERT INTO zones (name, status, secure) VALUES
   ('Home', 'GREEN', FALSE );
 INSERT INTO cameras (zone_id, name, ip, url, login, password) VALUES
   (10, 'Cam 1 floor 1', '192.168.0.31', 'http://192.168.0.31/Streaming/channels/1/picture', 'imagesaver', 'QAZxsw123');
-INSERT INTO triggers (zone_id, name, type) VALUES
-  (10, 'Door 1 floor', 'DIGITAL'),
-  (10, 'Temperature 2 floor', 'ANALOG');
+INSERT INTO triggers (zone_id, name, type, secure, state, min, max) VALUES
+  (10, 'Door 1 floor', 'DIGITAL', TRUE , TRUE ,NULL , NULL ),
+  (10, 'Temperature 2 floor', 'ANALOG', FALSE , TRUE , 15, 25);
 
 INSERT INTO events (type, date_time, analog_state, digital_state, trigger_id, alarm) VALUES
   ('DIGITAL', '2016-06-20 11:00:00', NULL , TRUE, 103, TRUE ),

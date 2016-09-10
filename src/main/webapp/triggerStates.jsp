@@ -77,7 +77,7 @@
 
 <form method="post" action="states?action=addTrigger">
     <input type="hidden" name="id" value="${trigger.id}">
-    Name:<input type="text" name="name" value="${trigger.name}">
+    Name:<input type="text" name="name" value="${trigger.name}"><br>
     <c:choose>
         <c:when test="${not empty trigger.id}">
             <c:choose>
@@ -87,15 +87,21 @@
                 </c:when>
                 <c:when test="${trigger.type=='ANALOG'}">
                     Digital<input type="radio" name="type" value="digital" disabled>
-                    Analog<input type="radio" name="type" value="analog" CHECKED disabled>
+                    Analog<input type="radio" name="type" value="analog" CHECKED disabled><br>
+                    min value:<input type="number" name="minThreshold" value="${trigger.minThreshold}">
+                    max value:<input type="number" name="maxThreshold" value="${trigger.maxThreshold}">
                 </c:when>
             </c:choose>
         </c:when>
         <c:when test="${empty trigger.id}">
             Digital<input type="radio" name="type" value="digital" CHECKED >
-            Analog<input type="radio" name="type" value="analog" >
+            Analog<input type="radio" name="type" value="analog" ><br>
+            Secure<input type="checkbox" name="secureTrigger"><br>
+            min value:<input type="number" name="minThreshold" value="${trigger.minThreshold}">
+            max value:<input type="number" name="maxThreshold" value="${trigger.maxThreshold}">
         </c:when>
     </c:choose>
+    <br>
     <input type="submit" value="Submit">
 </form>
 

@@ -5,6 +5,7 @@ import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by Sheremet on 15.06.2016.
@@ -12,7 +13,8 @@ import javax.persistence.*;
 @NamedQueries({
         @NamedQuery(name = Trigger.GET, query = "SELECT t FROM Trigger t WHERE t.id=:id"),
         @NamedQuery(name = Trigger.GET_ALL_SORTED, query = "SELECT t FROM Trigger t ORDER BY t.name"),
-        @NamedQuery(name = Trigger.DELETE, query = "DELETE FROM Trigger t WHERE t.id=:id")
+        @NamedQuery(name = Trigger.DELETE, query = "DELETE FROM Trigger t WHERE t.id=:id"),
+        @NamedQuery(name = Trigger.GET_BY_STATE, query = "SELECT t FROM Trigger t WHERE t.state=:state")
 })
 @Entity
 @Table(name = "triggers")
@@ -20,6 +22,7 @@ public class Trigger {
 
     public static final String GET = "Trigger.get";
     public static final String GET_ALL_SORTED = "Trigger.getAllSorted";
+    public static final String GET_BY_STATE = "Trigger.getByState";
     public static final String DELETE = "Trigger.delete";
 
     @Id
@@ -41,6 +44,18 @@ public class Trigger {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private Type type;
+
+    @Column(name = "secure", nullable = false)
+    private boolean secure;
+
+    @Column(name = "state", nullable = false)
+    private boolean state;
+
+    @Column(name = "min")
+    private Double minThreshold;
+
+    @Column(name = "max")
+    private Double maxThreshold;
 
     public Trigger() {
     }
@@ -73,16 +88,22 @@ public class Trigger {
         this.name = name;
         this.type = type;
     }
-/*
 
-    public Event getEvent() {
-        return event;
+    public Trigger(String name, Type type, boolean secure) {
+        this.name = name;
+        this.type = type;
+        this.secure = secure;
+        state = true;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public Trigger(String name, Type type, boolean secure, Double minThreshold, Double maxThreshold) {
+        this.name = name;
+        this.type = type;
+        this.secure = secure;
+        this.minThreshold = minThreshold;
+        this.maxThreshold = maxThreshold;
+        state = true;
     }
-*/
 
     public String getName() {
         return name;
@@ -118,6 +139,38 @@ public class Trigger {
 
     public void setZone(Zone zone) {
         this.zone = zone;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
+
+    public boolean isState() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    public double getMinThreshold() {
+        return minThreshold;
+    }
+
+    public void setMinThreshold(double minThreshold) {
+        this.minThreshold = minThreshold;
+    }
+
+    public double getMaxThreshold() {
+        return maxThreshold;
+    }
+
+    public void setMaxThreshold(double maxThreshold) {
+        this.maxThreshold = maxThreshold;
     }
 
     @Override

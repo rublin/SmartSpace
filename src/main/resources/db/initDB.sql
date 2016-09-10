@@ -64,6 +64,10 @@ CREATE TABLE triggers
   zone_id INTEGER NOT NULL ,
   name      VARCHAR NOT NULL,
   type      VARCHAR NOT NULL,
+  secure    BOOLEAN NOT NULL ,
+  state     BOOLEAN NOT NULL ,
+  min       REAL,
+  max       REAL,
   FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx ON triggers (name);

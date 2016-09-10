@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.rublin.controller.TelegramController;
 import org.rublin.controller.ZoneController;
 import org.rublin.model.*;
@@ -123,18 +124,26 @@ public class StateServlet extends HttpServlet {
         String id = req.getParameter("id");
         String type = req.getParameter("type");
         String name = req.getParameter("name");
+
         String secure = req.getParameter("secure");
         if (secure != null) {
             zoneController.setSecure(zone, Boolean.valueOf(secure));
         } else {
+            Boolean secureTrigger = Boolean.parseBoolean(req.getParameter("secureTrigger"));
+
+
             LOG.info("post trigger (edit or create) with id: ", id);
             if (id==null || id.isEmpty()) {
                 if (type.equals("digital")) {
                     LOG.info("Create digital trigger {}", name);
-                    triggerController.create(new Trigger(name, Type.DIGITAL), zone);
+                    triggerController.create(new Trigger(name, Type.DIGITAL, secureTrigger), zone);
                 } else if (type.equals("analog")){
                     LOG.info("Create analog trigger {}", name);
-                    triggerController.create(new Trigger(name, Type.ANALOG), zone);
+                    if (req.getParameter("minThreshold") != null) {
+                        Double minThreshold = Double.parseDouble(req.getParameter("minThreshold"));
+                        Double maxThreshold = Double.parseDouble(req.getParameter("maxThreshold"));
+                        triggerController.create(new Trigger(name, Type.ANALOG, secureTrigger, minThreshold, maxThreshold), zone);
+                    }
                 }
             } else {
                 Trigger trigger = triggerController.get(Integer.parseInt(id));
