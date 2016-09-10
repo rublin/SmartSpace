@@ -36,11 +36,7 @@ public class Trigger {
 
     @Column(name = "name", nullable = false)
     private String name;
-   /*
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
-    private Event event;
-    */
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private Type type;
@@ -66,6 +62,7 @@ public class Trigger {
         this.name = name;
         this.type = Type.DIGITAL;
         //setEvent(new DigitEvent(this, Boolean.FALSE));
+        state = true;
     }
     public Trigger(String name, Type type) {
         this.name = name;
@@ -74,12 +71,14 @@ public class Trigger {
                 new AnalogEvent(this, 0.0) :
                 new DigitEvent(this, Boolean.FALSE);
         //setEvent(event);
+        state = true;
     }
 
     public Trigger(int id, String name, Type type) {
         this.id = id;
         this.name = name;
         this.type = type;
+        state = true;
     }
 
     public Trigger(int id, Zone zone, String name, Type type) {
@@ -87,6 +86,7 @@ public class Trigger {
         this.zone = zone;
         this.name = name;
         this.type = type;
+        state = true;
     }
 
     public Trigger(String name, Type type, boolean secure) {

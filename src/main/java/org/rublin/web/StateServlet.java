@@ -129,10 +129,8 @@ public class StateServlet extends HttpServlet {
         if (secure != null) {
             zoneController.setSecure(zone, Boolean.valueOf(secure));
         } else {
-            Boolean secureTrigger = Boolean.parseBoolean(req.getParameter("secureTrigger"));
-
-
-            LOG.info("post trigger (edit or create) with id: ", id);
+            LOG.info("post trigger (edit or create) with id: {}, secureTrigger is: {}", id, req.getParameter("secureTrigger"));
+            boolean secureTrigger = req.getParameter("secureTrigger") == null ? Boolean.FALSE : Boolean.TRUE;
             if (id==null || id.isEmpty()) {
                 if (type.equals("digital")) {
                     LOG.info("Create digital trigger {}", name);
