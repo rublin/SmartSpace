@@ -1,12 +1,8 @@
 package org.rublin.model.user;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.rublin.View;
-import org.rublin.controller.Telegram;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;

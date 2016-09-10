@@ -24,7 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Sheremet on 28.08.2016.
  */
 @Controller
-public class Telegram extends TelegramLongPollingCommandBot {
+public class TelegramController extends TelegramLongPollingCommandBot {
 
     private static final Logger LOG = getLogger(Notification.class);
 
@@ -35,6 +35,9 @@ public class Telegram extends TelegramLongPollingCommandBot {
 
     @Autowired
     private ZoneService zoneService;
+
+    @Autowired
+    private ZoneController zoneController;
 
     @Autowired
     private UserService userService;
@@ -92,14 +95,7 @@ public class Telegram extends TelegramLongPollingCommandBot {
         LOG.info("Telegram User {} with id {} not authorized.", telegramName, telegramId);
         return false;
     }
-    private String zoneInfo(Zone zone) {
-        return String.format(
-                "id: <b>%d</b>, name: <b>%s</b>, status: <b>%s</b>, secure: <b>%s</b>",
-                zone.getId(),
-                zone.getName(),
-                zone.getStatus().toString(),
-                zone.getSecure() ? "YES" : "NO");
-    }
+
     @Override
     public void processNonCommandUpdate(Update update) {
         if(update.hasMessage()) {
@@ -110,29 +106,23 @@ public class Telegram extends TelegramLongPollingCommandBot {
                     case "/aa": {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
-                            zone.setSecure(true);
+                            zoneController.setSecure(zone, true);
                             sendTextMessage(message.getChatId().toString(), String.format(
                                     "Zone <b>%s</b> is <b>arming</b> now",
                                     zone.getName()));
-                            sendTextMessage(message.getChatId().toString(), zoneInfo(zone));
+                            sendTextMessage(message.getChatId().toString(), zoneController.getZoneInfo(zone));
                         }
-                        Notification.sendMail("Telegram security change", String.format("<h2>All zones are arming</h2>\n" +
-                                        "<h3>by user %s</h3>",
-                                message.getFrom().getFirstName()));
                         break;
                     }
                     case "/da" : {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
-                            zone.setSecure(false);
+                            zoneController.setSecure(zone, false);
                             sendTextMessage(message.getChatId().toString(), String.format(
                                     "Zone <b>%s</b> is <b>disarming</b> now",
                                     zone.getName()));
-                            sendTextMessage(message.getChatId().toString(), zoneInfo(zone));
+                            sendTextMessage(message.getChatId().toString(), zoneController.getZoneInfo(zone));
                         }
-                        Notification.sendMail("Telegram security change", String.format("<h2>All zones are disarming</h2>\n" +
-                                        "<h3>by user %s</h3>",
-                                message.getFrom().getFirstName()));
                         break;
                     }
                     case "/ss" :
@@ -140,22 +130,11 @@ public class Telegram extends TelegramLongPollingCommandBot {
                             String[] command = message.getText().split(" ");
                             try {
                                 Zone zone = zoneService.get(Integer.parseInt(command[1]));
-                                zone.setSecure(command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
-                                zoneService.save(zone);
+                                zoneController.setSecure(zone, command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
                                 sendTextMessage(message.getChatId().toString(), String.format(
                                         "Zone <b>%s</b> changed security to <b>%s</b>",
                                         zone.getName(),
                                         zone.getSecure()));
-                                Notification.sendMail("Telegram security change", String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +
-                                                "<h2>Status: <span style=\"color: %s;\">%s</span></h2>\n" +
-                                                "<h2>Secure: <span style=\"color: %s;\">%s</span></h2>\n" +
-                                                "<h3>by user %s</h3>",
-                                        zone.getName(),
-                                        zone.getStatus(),
-                                        zone.getStatus(),
-                                        zone.getSecure() ? "GREEN" : "GREY",
-                                        zone.getSecure(),
-                                        message.getFrom().getFirstName()));
                             } catch (Exception e) {
                                 LOG.error("Error to change state for zone {} to {}", command[1], command[2]);
                                 sendTextMessage(message.getChatId().toString(), "Can't find zone with id: " + command[1]);
@@ -173,7 +152,7 @@ public class Telegram extends TelegramLongPollingCommandBot {
                     case "/gs" : {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
-                            sendTextMessage(message.getChatId().toString(), zoneInfo(zone));
+                            sendTextMessage(message.getChatId().toString(), zoneController.getZoneInfo(zone));
                         }
                         break;
                     }

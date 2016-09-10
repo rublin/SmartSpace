@@ -1,12 +1,12 @@
 package org.rublin.web;
 
-import org.rublin.controller.Telegram;
+import org.rublin.controller.TelegramController;
+import org.rublin.controller.ZoneController;
 import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
 import org.rublin.service.ZoneService;
-import org.rublin.util.Notification;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -36,7 +36,8 @@ public class StateServlet extends HttpServlet {
     private StateRestController stateController;
     private TriggerRestController triggerController;
     private ZoneService zoneService;
-    private Telegram telegram;
+    private ZoneController zoneController;
+    private TelegramController telegramController;
     private BotSession session;
 
     @Override
@@ -46,14 +47,15 @@ public class StateServlet extends HttpServlet {
         stateController = context.getBean(StateRestController.class);
         triggerController = context.getBean(TriggerRestController.class);
         zoneService = context.getBean(ZoneService.class);
+        zoneController = context.getBean(ZoneController.class);
 
         //Telegram bot support
-        telegram = context.getBean(Telegram.class);
+        telegramController = context.getBean(TelegramController.class);
         TelegramBotsApi api = new TelegramBotsApi();
         try {
-            api.registerBot(telegram);
+            api.registerBot(telegramController);
         } catch (TelegramApiException e) {
-            LOG.error("Failed to register bot {} due to error {}: {}", telegram.getBotUsername(), e.getMessage(), e.getApiResponse());
+            LOG.error("Failed to register bot {} due to error {}: {}", telegramController.getBotUsername(), e.getMessage(), e.getApiResponse());
         }
     }
 
@@ -74,21 +76,13 @@ public class StateServlet extends HttpServlet {
                     LOG.info("new analog event {} from trigger {}", state, trigger.getName());
                     event = new AnalogEvent(trigger, Double.parseDouble(state));
                 }
+                stateController.save(trigger, event);
                 Zone zone = trigger.getZone();
                 if (zone.getSecure()) {
-                    zone.setStatus(ZoneStatus.RED);
-                    zoneService.save(zone);
-                    Notification.sendMailWithAttach(String.format("Trigger %s activity", trigger.getName()),
-                            String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
-                                            "<h2>Trigger: <span style=\"color: blue;\">%s</span></h2>\n" +
-                                            "<h2>Status: <span style=\"color: %s;\">%s</span></h2>",
-                                    zone.getName(),
-                                    trigger.getName(),
-                                    Boolean.parseBoolean(event.getState().toString()) ? "green" : "red",
-                                    Boolean.parseBoolean(event.getState().toString()) ? "close | without move" : "open | with move"), "http://192.168.0.31/Streaming/channels/1/picture");
                     LOG.info("Security issue in zone {} form trigger {}", zone.getName(), trigger.getName());
+                    zoneController.setStatus(zone, ZoneStatus.RED);
                 }
-                stateController.save(trigger, event);
+
                 //trigger.setEvent(event);
             } else if (action.equals("edit")) {
                 Trigger trigger = triggerController.get(Integer.parseInt(triggerId));
@@ -131,19 +125,7 @@ public class StateServlet extends HttpServlet {
         String name = req.getParameter("name");
         String secure = req.getParameter("secure");
         if (secure != null) {
-            zone.setSecure(Boolean.valueOf(secure));
-            zone.setStatus(ZoneStatus.GREEN);
-            zoneService.save(zone);
-            Notification.sendMail(String.format("Zone %s ", zone.getName()),
-                    String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +
-                                    "<h2>Status: <span style=\"color: %s;\">%s</span></h2>\n" +
-                                    "<h2>Secure: <span style=\"color: %s;\">%s</span></h2>",
-                            zone.getName(),
-                            zone.getStatus(),
-                            zone.getStatus(),
-                            zone.getSecure() ? "GREEN" : "GREY",
-                            zone.getSecure()));
-            LOG.info("change Zone secure state to {}", zone.getSecure());
+            zoneController.setSecure(zone, Boolean.valueOf(secure));
         } else {
             LOG.info("post trigger (edit or create) with id: ", id);
             if (id==null || id.isEmpty()) {

@@ -35,10 +35,10 @@ public class Zone {
     @Column(name = "secure", nullable = false)
     private boolean secure;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
     private List<Trigger> triggers;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
     private List<Camera> cameras;
 
     public Zone() {
