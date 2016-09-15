@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.rublin.service.TriggerService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +16,13 @@ import java.util.List;
 /**
  * Created by Sheremet on 15.06.2016.
  */
-@Controller
+//@Controller
 public class TriggerRestController {
     private static final Logger LOG = LoggerFactory.getLogger(TriggerRestController.class);
+
     @Autowired
     private TriggerService service;
+
     public void delete (int id){
         LOG.info("delete trigger id: {}", id);
         service.delete(id);
@@ -35,6 +39,7 @@ public class TriggerRestController {
         LOG.info("get trigger id: {}",id);
         return service.get(id);
     }
+    @RequestMapping(value = "/triggers", method = RequestMethod.GET)
     public List<Trigger> getAll () {
         LOG.info("get all triggers");
         return new ArrayList<>(service.getAll());

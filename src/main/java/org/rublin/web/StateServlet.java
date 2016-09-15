@@ -1,6 +1,5 @@
 package org.rublin.web;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.rublin.controller.TelegramController;
 import org.rublin.controller.ZoneController;
 import org.rublin.model.*;
@@ -113,7 +112,7 @@ public class StateServlet extends HttpServlet {
                 LOG.info("get event {} trigger", trigger.getName());
             }
         }
-        req.getRequestDispatcher("/triggerStates.jsp").forward(req, resp);
+        req.getRequestDispatcher("/eventList.jsp").forward(req, resp);
     }
 
     @Override

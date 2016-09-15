@@ -63,7 +63,7 @@ public class TriggerServlet extends HttpServlet {
             req.setAttribute("triggerList", controller.getAll());
             LOG.info("get");
         }
-        req.getRequestDispatcher("/trigger.jsp").forward(req, resp);
+        req.getRequestDispatcher("/triggerList.jsp").forward(req, resp);
     }
 */
 

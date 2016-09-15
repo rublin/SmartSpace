@@ -7,6 +7,7 @@
 <body>
 <h1><a href="https://github.com/rublin/SmartSpace" target="_blank">Smart Space Project on GitHub</a> </h1>
 <h2><a href="triggers">Manage triggers</a></h2>
-<h2><a href="states">Show events</a></h2>
+<h2><a href="/events">Show events</a></h2>
+<h2><a href="/zones">Manage Zones</a> </h2>
 </body>
 </html>
