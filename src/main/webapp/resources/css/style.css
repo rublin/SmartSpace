@@ -1,0 +1,32 @@
+dl {
+    background: none repeat scroll 0 0 #FAFAFA;
+    margin: 8px 0;
+    padding: 0;
+}
+
+dt {
+    display: inline-block;
+    width: 170px;
+}
+
+dd {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: top;
+}
+
+.normal {
+    color: green;
+}
+
+.alarm {
+    color: red;
+}
+
+header, footer {
+    background: none repeat scroll 0 0 #d2dfe2;
+    color: #0d0e9e;
+    font-size: 20px;
+    padding: 5px 20px;
+    margin: 6px 0;
+}

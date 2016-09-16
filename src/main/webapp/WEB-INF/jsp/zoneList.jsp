@@ -9,16 +9,20 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<head>
-    <title>Zone | SmartSpace</title>
-</head>
+<jsp:include page="fragments/headTag.jsp"/>
 <body>
-<h3><a href="/">Home</a></h3>
+<jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Zone</h2>
 <form method="post" action="/zones">
     <input type="hidden" name="id" value="${zone.id}">
-    Name:<input type="text" name="name" value="${zone.name}"><br>
-    Short name:<input type="text" name="shortName" value="${zone.shortName}">
+    <dl>
+        <dt>Name:</dt>
+        <dd><input type="text" name="name" value="${zone.name}"></dd>
+    </dl>
+    <dl>
+        <dt>Short name:</dt>
+        <dd><input type="text" name="shortName" value="${zone.shortName}"></dd>
+    </dl>
     <input type="submit" value="Submit">
 </form>
 <table border="1" cellspacing="0" cellpadding="8">
@@ -67,5 +71,6 @@
         </td></tr>
     </c:forEach>
 </table>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>

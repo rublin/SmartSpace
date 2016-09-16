@@ -8,33 +8,9 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<head>
-    <title>States of triggers | Smart Space</title>
-</head>
+    <jsp:include page="fragments/headTag.jsp"/>
 <body>
-<h3><a href="/">Home</a></h3>
-        <%--<jsp:useBean id="obj" scope="page" type="org.rublin.model.Zone       <tr>
-                <td>${zone.id}</td>
-                <td>${zone.name}</td>
-                <td>${zone.status}</td>
-                <td>${zone.secure}</td>
-                <td></td>
-                <td>
-                    <form method="post" >
-                        <select name="secure">
-                            <option>NOT_PROTECTED</option>
-                            <option>PARTLY_PROTECTED</option>
-                            <option>FULLY_PROTECTED</option>
-                        </select>
-                        <input type="submit" value="Send">
-                    </form>
-                </td>
-            </tr>
-        &lt;%&ndash;</jsp:useBean>--%>
-
-
-<%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
-
+<jsp:include page="fragments/bodyHeader.jsp"/>
 
 <h2>Events history</h2>
 <form method="get" action="states?action=show">
@@ -83,6 +59,6 @@
 
     </c:forEach>
 </table>
-
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>

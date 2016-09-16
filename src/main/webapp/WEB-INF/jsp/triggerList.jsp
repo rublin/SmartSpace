@@ -8,11 +8,9 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<head>
-    <title>Trigger | SmartSpace</title>
-</head>
+<jsp:include page="fragments/headTag.jsp"/>
 <body>
-<h3><a href="/">Home</a></h3>
+<jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Add trigger</h2>
 <%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
 
@@ -88,5 +86,6 @@
         </tr>
     </c:forEach>
 </table>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
