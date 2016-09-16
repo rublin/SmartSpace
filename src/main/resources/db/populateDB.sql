@@ -24,8 +24,8 @@ INSERT INTO user_roles (role, user_id) VALUES
   ('ROLE_ADMIN', 101);
 
 
-INSERT INTO zones (name, status, secure) VALUES
-  ('Home', 'GREEN', FALSE );
+INSERT INTO zones (name, short_name, status, secure) VALUES
+  ('Home', 'h1', 'GREEN', FALSE );
 INSERT INTO cameras (zone_id, name, ip, url, login, password) VALUES
   (10, 'Cam 1 floor 1', '192.168.0.31', 'http://192.168.0.31/Streaming/channels/1/picture', 'imagesaver', 'QAZxsw123');
 INSERT INTO triggers (zone_id, name, type, secure, state, min, max) VALUES

@@ -7,15 +7,17 @@ import java.util.List;
  * Created by Sheremet on 11.07.2016.
  */
 @NamedQueries({
-        @NamedQuery(name = Zone.GET, query = "SELECT o FROM Zone o WHERE o.id=:id"),
-        @NamedQuery(name = Zone.GET_All_SORTED, query = "SELECT o FROM Zone o ORDER BY o.name"),
-        @NamedQuery(name = Zone.DELETE, query = "DELETE FROM Zone o WHERE o.id=:id")
+        @NamedQuery(name = Zone.GET, query = "SELECT z FROM Zone z WHERE z.id=:id"),
+        @NamedQuery(name = Zone.GET_BY_SNAME, query = "SELECT z FROM Zone z WHERE z.shortName=:shortName"),
+        @NamedQuery(name = Zone.GET_All_SORTED, query = "SELECT z FROM Zone z ORDER BY z.name"),
+        @NamedQuery(name = Zone.DELETE, query = "DELETE FROM Zone z WHERE z.id=:id")
 })
 @Entity
 @Table(name = "zones")
 public class Zone {
 
     public static final String GET = "Zone.get";
+    public static final String GET_BY_SNAME = "Zone.getByShortName";
     public static final String GET_All_SORTED = "ControllerObject.getAllSorted";
     public static final String DELETE = "ControllerObject.delete";
 
@@ -26,6 +28,9 @@ public class Zone {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "short_name", nullable = false)
+    private String shortName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -47,9 +52,19 @@ public class Zone {
     public Zone(int id, String name) {
         this.id = id;
         this.name = name;
+        this.shortName = name.substring(0,3);
         status = ZoneStatus.GREEN;
         secure = false;
     }
+
+    public Zone(int id, String name, String shortName) {
+        this.id = id;
+        this.name = name;
+        this.shortName = shortName;
+        status = ZoneStatus.GREEN;
+        secure = false;
+    }
+
 
     public Zone(int id, String name, ZoneStatus status, boolean secure) {
         this.id = id;
@@ -60,6 +75,14 @@ public class Zone {
 
     public Zone(String name) {
         this.name = name;
+        this.shortName = name.substring(0,3);
+        this.status = ZoneStatus.GREEN;
+        this.secure = false;
+    }
+
+    public Zone(String name, String shortName) {
+        this.name = name;
+        this.shortName = shortName;
         this.status = ZoneStatus.GREEN;
         this.secure = false;
     }
@@ -111,11 +134,20 @@ public class Zone {
         return id==null;
     }
 
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
     @Override
     public String toString() {
         return "Zone{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name=" + name +
+                ", shortName=" + shortName +
                 ", status=" + status +
                 ", secure=" + secure +
                 '}';

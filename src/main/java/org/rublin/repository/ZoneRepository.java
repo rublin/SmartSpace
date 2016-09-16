@@ -10,6 +10,7 @@ import java.util.Collection;
 public interface ZoneRepository {
     Zone save (Zone object);
     Zone get(int id);
+    Zone getByShortName(String shortName);
     Collection<Zone> getAll();
     boolean delete(int id);
 }

@@ -36,6 +36,11 @@ public class JpaZoneRepository implements ZoneRepository {
     }
 
     @Override
+    public Zone getByShortName(String shortName) {
+        return em.createNamedQuery(Zone.GET_BY_SNAME, Zone.class).setParameter("shortName", shortName).getSingleResult();
+    }
+
+    @Override
     public Collection<Zone> getAll() {
         return em.createNamedQuery(Zone.GET_All_SORTED, Zone.class).getResultList();
     }

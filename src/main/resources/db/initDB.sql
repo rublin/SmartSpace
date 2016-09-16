@@ -17,11 +17,13 @@ CREATE SEQUENCE event_seq START 1000;
 
 CREATE TABLE zones
 (
-  id      INTEGER PRIMARY KEY DEFAULT nextval('zone_seq'),
-  name    VARCHAR NOT NULL ,
-  status  VARCHAR NOT NULL ,
-  secure  BOOLEAN NOT NULL
+  id        INTEGER PRIMARY KEY DEFAULT nextval('zone_seq'),
+  name      VARCHAR NOT NULL ,
+  short_name VARCHAR(4) NOT NULL ,
+  status    VARCHAR NOT NULL ,
+  secure    BOOLEAN NOT NULL
 );
+CREATE UNIQUE INDEX zone_short_name_idx ON zones (short_name);
 
 CREATE TABLE cameras
 (
@@ -49,6 +51,7 @@ CREATE TABLE users
   enabled         BOOLEAN DEFAULT TRUE
 );
 CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
+CREATE UNIQUE INDEX users_unique_telegram_name_idx ON users (telegram_name);
 
 CREATE TABLE user_roles
 (

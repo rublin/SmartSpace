@@ -1,7 +1,5 @@
 package org.rublin.web;
 
-import org.rublin.controller.TelegramController;
-import org.rublin.controller.ZoneController;
 import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
@@ -12,9 +10,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.rublin.web.rest.StateRestController;
 import org.rublin.web.rest.TriggerRestController;
-import org.telegram.telegrambots.TelegramApiException;
-import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.updatesreceivers.BotSession;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -36,9 +31,6 @@ public class StateServlet extends HttpServlet {
     private StateRestController stateController;
     private TriggerRestController triggerController;
     private ZoneService zoneService;
-    private ZoneController zoneController;
-    private TelegramController telegramController;
-    private BotSession session;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -47,16 +39,7 @@ public class StateServlet extends HttpServlet {
         stateController = context.getBean(StateRestController.class);
         triggerController = context.getBean(TriggerRestController.class);
         zoneService = context.getBean(ZoneService.class);
-        zoneController = context.getBean(ZoneController.class);
 
-        //Telegram bot support
-        telegramController = context.getBean(TelegramController.class);
-        TelegramBotsApi api = new TelegramBotsApi();
-        try {
-            api.registerBot(telegramController);
-        } catch (TelegramApiException e) {
-            LOG.error("Failed to register bot {} due to error {}: {}", telegramController.getBotUsername(), e.getMessage(), e.getApiResponse());
-        }
     }
 
     @Override
@@ -80,7 +63,7 @@ public class StateServlet extends HttpServlet {
                 Zone zone = trigger.getZone();
                 if (zone.getSecure()) {
                     LOG.info("Security issue in zone {} form trigger {}", zone.getName(), trigger.getName());
-                    zoneController.setStatus(zone, ZoneStatus.RED);
+                    //zoneController.setStatus(zone, ZoneStatus.RED);
                 }
 
                 //trigger.setEvent(event);
@@ -126,7 +109,7 @@ public class StateServlet extends HttpServlet {
 
         String secure = req.getParameter("secure");
         if (secure != null) {
-            zoneController.setSecure(zone, Boolean.valueOf(secure));
+//            zoneController.setSecure(zone, Boolean.valueOf(secure));
         } else {
             LOG.info("post trigger (edit or create) with id: {}, secureTrigger is: {}", id, req.getParameter("secureTrigger"));
             boolean secureTrigger = req.getParameter("secureTrigger") == null ? Boolean.FALSE : Boolean.TRUE;
@@ -155,7 +138,6 @@ public class StateServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        session.close();
         super.destroy();
         context.close();
     }

@@ -1,6 +1,7 @@
 package org.rublin.repository.mock;
 
 import org.rublin.model.Zone;
+import org.rublin.model.ZoneStatus;
 import org.rublin.service.ZoneService;
 import org.rublin.util.exception.NotFoundException;
 
@@ -35,6 +36,21 @@ public class InMemoryObjectRepository implements ZoneService {
 
     @Override
     public Collection<Zone> getAll() {
+        return null;
+    }
+
+    @Override
+    public void setSecure(Zone zone, boolean security) {
+
+    }
+
+    @Override
+    public Zone setStatus(Zone zone, ZoneStatus status) {
+        return null;
+    }
+
+    @Override
+    public String getInfo(Zone zone) {
         return null;
     }
 }

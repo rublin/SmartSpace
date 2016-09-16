@@ -14,4 +14,6 @@ public interface TriggerService {
     void delete(int id) throws NotFoundException;
     Trigger get(int id) throws NotFoundException;
     Collection<Trigger> getAll();
+    String getInfo(Zone zone);
+
 }

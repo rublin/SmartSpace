@@ -37,9 +37,6 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     private ZoneService zoneService;
 
     @Autowired
-    private ZoneController zoneController;
-
-    @Autowired
     private UserService userService;
 
     private void sendTextMessage(String id, String html) {
@@ -106,22 +103,22 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                     case "/aa": {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
-                            zoneController.setSecure(zone, true);
+                            zoneService.setSecure(zone, true);
                             sendTextMessage(message.getChatId().toString(), String.format(
                                     "Zone <b>%s</b> is <b>arming</b> now",
                                     zone.getName()));
-                            sendTextMessage(message.getChatId().toString(), zoneController.getZoneInfo(zone));
+                            sendTextMessage(message.getChatId().toString(), zoneService.getInfo(zone));
                         }
                         break;
                     }
                     case "/da" : {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
-                            zoneController.setSecure(zone, false);
+                            zoneService.setSecure(zone, false);
                             sendTextMessage(message.getChatId().toString(), String.format(
                                     "Zone <b>%s</b> is <b>disarming</b> now",
                                     zone.getName()));
-                            sendTextMessage(message.getChatId().toString(), zoneController.getZoneInfo(zone));
+                            sendTextMessage(message.getChatId().toString(), zoneService.getInfo(zone));
                         }
                         break;
                     }
@@ -130,7 +127,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                             String[] command = message.getText().split(" ");
                             try {
                                 Zone zone = zoneService.get(Integer.parseInt(command[1]));
-                                zoneController.setSecure(zone, command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
+                                zoneService.setSecure(zone, command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
                                 sendTextMessage(message.getChatId().toString(), String.format(
                                         "Zone <b>%s</b> changed security to <b>%s</b>",
                                         zone.getName(),
@@ -152,7 +149,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                     case "/gs" : {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
-                            sendTextMessage(message.getChatId().toString(), zoneController.getZoneInfo(zone));
+                            sendTextMessage(message.getChatId().toString(), zoneService.getInfo(zone));
                         }
                         break;
                     }
