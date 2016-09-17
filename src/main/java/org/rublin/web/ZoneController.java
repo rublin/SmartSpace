@@ -27,7 +27,7 @@ public class ZoneController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String zoneList(Model model) {
-        LOG.debug("requested all zones: {}", zoneService.getAll().toString());
+        LOG.debug("requested all zones");
         model.addAttribute("zoneList", zoneService.getAll());
         return "zoneList";
     }
@@ -56,6 +56,7 @@ public class ZoneController {
             zone = zoneService.get(Integer.valueOf(id));
             zoneService.setSecure(zone, Boolean.valueOf(secure));
         }
+        LOG.info("zone {} is secured to {}", id, secure);
         return "redirect:/zones";
     }
 
@@ -68,8 +69,10 @@ public class ZoneController {
         LOG.info("id is: " + id);
         if (id.isEmpty()) {
             zone = new Zone(name, shortName);
+            LOG.info("new zone {} added", zone);
         } else {
             zone = new Zone(Integer.valueOf(id), name, shortName);
+            LOG.info("zone {} changed", zone);
         }
         zoneService.save(zone);
         return "redirect:/zones";

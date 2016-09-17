@@ -105,6 +105,44 @@ public class Trigger {
         state = true;
     }
 
+    public Trigger(int id, Zone zone, String name, Type type, boolean secure, Double minThreshold, Double maxThreshold) {
+        this.id = id;
+        this.zone = zone;
+        this.name = name;
+        this.type = type;
+        this.secure = secure;
+        this.state = true;
+        this.minThreshold = minThreshold;
+        this.maxThreshold = maxThreshold;
+    }
+
+    public Trigger(int id, Zone zone, String name, Type type, boolean secure) {
+        this.id = id;
+        this.zone = zone;
+        this.name = name;
+        this.type = type;
+        this.secure = secure;
+        this.state = true;
+    }
+
+    public Trigger(String name, Zone zone, Type type, boolean secure) {
+        this.zone = zone;
+        this.name = name;
+        this.type = type;
+        this.secure = secure;
+        this.state = true;
+    }
+
+    public Trigger(String name, Zone zone, Type type, boolean secure, Double minThreshold, Double maxThreshold) {
+        this.zone = zone;
+        this.name = name;
+        this.type = type;
+        this.secure = secure;
+        this.state = true;
+        this.minThreshold = minThreshold;
+        this.maxThreshold = maxThreshold;
+    }
+
     public String getName() {
         return name;
     }
@@ -178,8 +216,9 @@ public class Trigger {
         return "Trigger{" +
                 "id= " + getId() +
                 ", name= " + getName() +
-                //", type= " + getType() +
-                //", state= " + event == null ? "null" : event.getState() + " at " +
+                ", type= " + getType() +
+                ", state= " + state +
+                ", zone= " + zone +
                 '}';
     }
 }

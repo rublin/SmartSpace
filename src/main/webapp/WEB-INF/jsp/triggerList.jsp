@@ -14,13 +14,16 @@
 <h2>Add trigger</h2>
 <%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
 
-<h2>Triggers in system</h2>
 
-<form method="post" >
+
+<form method="post" action="/triggers">
     <input type="hidden" name="id" value="${trigger.id}">
     <%--Zone:<select name="zoneId">
     <c:forEach var="zone" items="${zoneList}"--%>
-    Name:<input type="text" name="name" value="${trigger.name}"><br>
+    <dl>
+        <dt>Name:</dt>
+        <dd><input type="text" name="name" value="${trigger.name}"><br></dd>
+    </dl>
     <c:choose>
         <c:when test="${not empty trigger.id}">
             <c:choose>
@@ -37,17 +40,40 @@
             </c:choose>
         </c:when>
         <c:when test="${empty trigger.id}">
-            Digital<input type="radio" name="type" value="digital" CHECKED >
-            Analog<input type="radio" name="type" value="analog" ><br>
-            Secure<input type="checkbox" name="secureTrigger"><br>
-            min value:<input type="number" name="minThreshold" value="${trigger.minThreshold}">
-            max value:<input type="number" name="maxThreshold" value="${trigger.maxThreshold}">
+
+            <dl>
+                <dt>Digital</dt>
+                <dd><input type="radio" name="type" value="digital" CHECKED ></dd>
+            </dl>
+            <dl>
+                <dt>Analog</dt>
+                <dd><input type="radio" name="type" value="analog" ></dd>
+            </dl>
+            <dl>
+                <dt>min value:</dt>
+                <dd><input type="number" name="minThreshold" value="${trigger.minThreshold}"></dd>
+            </dl>
+            <dl>
+                <dt>max value:</dt>
+                <dd><input type="number" name="maxThreshold" value="${trigger.maxThreshold}"></dd>
+            </dl>
         </c:when>
     </c:choose>
-    <br>
+    <dl>
+        <dt>Secure:</dt>
+        <dd><input type="checkbox" name="secureTrigger" value="${trigger.secure}"></dd>
+    </dl>
+    <dl>
+        <dt>Zone:</dt>
+        <dd><select name="zoneId">
+            <c:forEach var="zone" items="${zoneList}">
+            <option value="${zone.id}">${zone.name}</option>
+            </c:forEach>
+        </dd>
+    </dl><br>
     <input type="submit" value="Submit">
 </form>
-
+<h2>Triggers in system</h2>
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
     <tr>
@@ -55,7 +81,8 @@
         <th>name</th>
         <th>zone</th>
         <th>type</th>
-        <%--<th>current state</th>--%>
+        <th>state</th>
+        <th>secure</th>
         <th>update state</th>
         <th></th>
     </tr>
@@ -67,7 +94,8 @@
             <td>${trigger.name}</td>
             <td>${trigger.zone.name}</td>
             <td>${trigger.type}</td>
-                <%--<td>${trigger.event.getState()}</td>--%>
+            <td>${trigger.state}</td>
+            <td>${trigger.secure}</td>
             <td>
                 <c:choose>
                     <c:when test="${trigger.type=='DIGITAL'}">
@@ -79,9 +107,9 @@
                 </c:choose>
             </td>
             <td>
-                <a href="states?action=edit&triggerId=${trigger.id}">edit</a>
+                <a href="/triggers/select?id=${trigger.id}">edit</a>
                 <br>
-                <a href="states?action=delete&triggerId=${trigger.id}">delete</a>
+                <a href="/triggers/delete?id=${trigger.id}">delete</a>
             </td>
         </tr>
     </c:forEach>
