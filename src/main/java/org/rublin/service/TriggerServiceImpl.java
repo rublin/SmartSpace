@@ -27,7 +27,7 @@ public class TriggerServiceImpl implements TriggerService {
     private TriggerRepository repository;
 
     @Autowired
-    private StateService eventService;
+    private EventService eventService;
 
     @Override
     public Trigger save(Trigger trigger, Zone obj) {

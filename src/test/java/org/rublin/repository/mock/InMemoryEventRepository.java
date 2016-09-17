@@ -3,7 +3,7 @@ package org.rublin.repository.mock;
 import org.rublin.model.*;
 import org.rublin.model.event.Event;
 import org.springframework.stereotype.Repository;
-import org.rublin.repository.StateRepository;
+import org.rublin.repository.EventRepository;
 import org.rublin.util.TriggerInit;
 
 import java.time.LocalDateTime;
@@ -17,8 +17,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Sheremet on 15.06.2016.
  */
 @Repository
-public class InMemoryStateRepository implements StateRepository {
-    //private static final Logger LOG = getLogger(InMemoryStateRepository.class);
+public class InMemoryEventRepository implements EventRepository {
+    //private static final Logger LOG = getLogger(InMemoryEventRepository.class);
     private Map<Integer, List<Event>> repository = new ConcurrentHashMap<>();
     {
         repository.put(1, new CopyOnWriteArrayList<>());

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Sheremet on 15.06.2016.
  */
-public interface StateService {
+public interface EventService {
     void save (Trigger trigger, Event event);
     List<Event> get(Trigger trigger);
     List<Event> getAll();

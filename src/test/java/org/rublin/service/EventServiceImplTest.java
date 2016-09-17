@@ -27,10 +27,10 @@ import static org.rublin.EventTestData.*;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-public class StateServiceImplTest {
+public class EventServiceImplTest {
 
     @Autowired
-    protected StateService service;
+    protected EventService service;
 
     @Test
     public void testDigitalSave() throws Exception {

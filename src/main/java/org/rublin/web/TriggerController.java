@@ -59,7 +59,6 @@ public class TriggerController {
         String type = request.getParameter("type");
         String name = request.getParameter("name");
         boolean secureTrigger = request.getParameter("secureTrigger") != null;
-        LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!checkbox is: {}", request.getParameter("secureTrigger"));
         Zone zone = zoneService.get(Integer.valueOf(request.getParameter("zoneId")));
         String min = request.getParameter("minThreshold");
         String max = request.getParameter("maxThreshold");

@@ -111,7 +111,7 @@ public class Zone {
         this.status = status;
     }
 
-    public boolean getSecure() {
+    public boolean isSecure() {
         return secure;
     }
 

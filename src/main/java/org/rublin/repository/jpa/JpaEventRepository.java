@@ -5,9 +5,9 @@ import org.rublin.model.Type;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
+import org.rublin.repository.EventRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.rublin.repository.StateRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 @Repository
 @Transactional(readOnly = true)
-public class JpaStateRepository implements StateRepository {
+public class JpaEventRepository implements EventRepository {
 
     @PersistenceContext
     private EntityManager em;

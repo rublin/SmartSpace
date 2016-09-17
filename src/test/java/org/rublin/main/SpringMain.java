@@ -27,13 +27,13 @@ public class SpringMain {
             triggerService.save(new Trigger("Move 2 floor 2", Type.DIGITAL), obj);
 //            triggerService.save(new Trigger("Door 2 floor", Type.DIGITAL));
             triggerService.getAll().forEach(System.out::println);
-            StateService stateService = (StateServiceImpl) springContext.getBean(StateService.class);
+            EventService eventService = (EventServiceImpl) springContext.getBean(EventService.class);
             Trigger trigger103 = triggerService.get(103);
             Event event = new DigitEvent(trigger103, true);
             System.out.println(event);
-            stateService.save(trigger103, event);
-            stateService.save(triggerService.get(103), new DigitEvent(triggerService.get(103), false));
-            stateService.get(triggerService.get(103)).forEach(System.out::println);
+            eventService.save(trigger103, event);
+            eventService.save(triggerService.get(103), new DigitEvent(triggerService.get(103), false));
+            eventService.get(triggerService.get(103)).forEach(System.out::println);
             StateRestController stateController = (StateRestController)springContext.getBean(StateRestController.class);
             stateController.get(triggerService.get(103)).forEach(System.out::println);
             userService.getAll().forEach(System.out::println);

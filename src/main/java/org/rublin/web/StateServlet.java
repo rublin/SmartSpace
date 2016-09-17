@@ -61,7 +61,7 @@ public class StateServlet extends HttpServlet {
                 }
                 stateController.save(trigger, event);
                 Zone zone = trigger.getZone();
-                if (zone.getSecure()) {
+                if (zone.isSecure()) {
                     LOG.info("Security issue in zone {} form trigger {}", zone.getName(), trigger.getName());
                     //zoneController.setStatus(zone, ZoneStatus.RED);
                 }

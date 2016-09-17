@@ -4,7 +4,7 @@ import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.repository.mock.InMemoryObjectRepository;
-import org.rublin.repository.mock.InMemoryStateRepository;
+import org.rublin.repository.mock.InMemoryEventRepository;
 import org.rublin.repository.mock.InMemoryTriggerRepository;
 import org.rublin.web.CurrentZone;
 
@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         InMemoryObjectRepository objectRepository = new InMemoryObjectRepository();
         InMemoryTriggerRepository triggerRepository = new InMemoryTriggerRepository();
-        InMemoryStateRepository stateRepository = new InMemoryStateRepository();
+        InMemoryEventRepository stateRepository = new InMemoryEventRepository();
         Zone obj = objectRepository.get(CurrentZone.getId());
         //stateRepository.get(triggerRepository.get(1)).forEach(System.out::println);
         stateRepository.save(triggerRepository.get(1), new DigitEvent(triggerRepository.get(1),false));

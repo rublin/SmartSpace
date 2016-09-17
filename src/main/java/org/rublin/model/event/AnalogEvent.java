@@ -35,6 +35,7 @@ public class AnalogEvent extends AbstractEvent<Double> {
         super(trigger);
         this.state = state;
         super.setType(Type.ANALOG);
+        time = LocalDateTime.now();
     }
 
     public AnalogEvent(Trigger trigger, Double state, LocalDateTime time) {

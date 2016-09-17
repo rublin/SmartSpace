@@ -3,8 +3,7 @@ package org.rublin.web.rest;
 import org.rublin.model.*;
 import org.rublin.model.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.rublin.service.StateService;
+import org.rublin.service.EventService;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 //@Controller
 public class StateRestController {
     @Autowired
-    private StateService service;
+    private EventService service;
 
     public void save (Trigger trigger, Event event) {
         service.save(trigger, event);

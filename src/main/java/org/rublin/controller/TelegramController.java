@@ -131,7 +131,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                                 sendTextMessage(message.getChatId().toString(), String.format(
                                         "Zone <b>%s</b> changed security to <b>%s</b>",
                                         zone.getName(),
-                                        zone.getSecure()));
+                                        zone.isSecure()));
                             } catch (Exception e) {
                                 LOG.error("Error to change state for zone {} to {}", command[1], command[2]);
                                 sendTextMessage(message.getChatId().toString(), "Can't find zone with id: " + command[1]);

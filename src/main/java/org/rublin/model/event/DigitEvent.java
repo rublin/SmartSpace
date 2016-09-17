@@ -30,6 +30,7 @@ public class DigitEvent extends AbstractEvent<Boolean> {
         super(trigger);
         this.state = state;
         super.setType(Type.DIGITAL);
+        time = LocalDateTime.now();
     }
 
     public DigitEvent(Trigger trigger, boolean state, LocalDateTime time) {

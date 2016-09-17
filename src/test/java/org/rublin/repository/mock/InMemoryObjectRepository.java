@@ -53,4 +53,9 @@ public class InMemoryObjectRepository implements ZoneService {
     public String getInfo(Zone zone) {
         return null;
     }
+
+    @Override
+    public void sendNotification(Zone zone) {
+
+    }
 }

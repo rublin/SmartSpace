@@ -99,10 +99,10 @@
             <td>
                 <c:choose>
                     <c:when test="${trigger.type=='DIGITAL'}">
-                        <a href="states?action=addEvent&triggerId=${trigger.id}&state=true">state</a>
+                        <a href="events/add?triggerId=${trigger.id}&state=true">state</a>
                     </c:when>
                     <c:when test="${trigger.type=='ANALOG'}">
-                        <a href="states?action=addEvent&triggerId=${trigger.id}&state=20.0">state</a>
+                        <a href="events/add?triggerId=${trigger.id}&state=20.0">state</a>
                     </c:when>
                 </c:choose>
             </td>

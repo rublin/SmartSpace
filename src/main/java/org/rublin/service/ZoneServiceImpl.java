@@ -55,7 +55,7 @@ public class ZoneServiceImpl implements ZoneService {
             zone.setStatus(ZoneStatus.GREEN);
         }
         zoneRepository.save(zone);
-        LOG.info("change Zone secure state to {}", zone.getSecure());
+        LOG.info("change Zone secure state to {}", zone.isSecure());
         Notification.sendMail(String.format("Zone %s ", zone.getName()),
                 String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +
                                 "<h2>Status: <span style=\"color: %s;\">%s</span></h2>\n" +
@@ -63,8 +63,8 @@ public class ZoneServiceImpl implements ZoneService {
                         zone.getName(),
                         zone.getStatus(),
                         zone.getStatus(),
-                        zone.getSecure() ? "GREEN" : "GREY",
-                        zone.getSecure()));
+                        zone.isSecure() ? "GREEN" : "GREY",
+                        zone.isSecure()));
     }
 
     @Override
@@ -91,5 +91,14 @@ public class ZoneServiceImpl implements ZoneService {
                 zone.getId(),
                 zone.getName(),
                 zone.getStatus().toString(),
-                zone.getSecure() ? "YES" : "NO");    }
+                zone.isSecure() ? "YES" : "NO");    }
+
+    @Override
+    public void sendNotification(Zone zone) {
+        Notification.sendMailWithAttach(String.format("Zone %s (%s) triggers notification", zone.getName(), zone.getShortName()),
+                String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
+                                "%s",
+                        zone.getName(),
+                        triggerService.getInfo(zone)), "http://192.168.0.31/Streaming/channels/1/picture");
+    }
 }
