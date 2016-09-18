@@ -12,10 +12,6 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Add trigger</h2>
-<%--<jsp:useBean id="trigger" type="org.rublin.model.Trigger"request"/>--%>
-
-
-
 <form method="post" action="/triggers">
     <input type="hidden" name="id" value="${trigger.id}">
     <%--Zone:<select name="zoneId">
