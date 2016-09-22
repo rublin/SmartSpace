@@ -72,7 +72,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     //@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Role> roles;
 
@@ -83,6 +83,28 @@ public class User {
     private Date registered = new Date();
 
     public User() {}
+
+    public User(String firstName, String lastName, Set<Role> roles, String email, String password, String mobile, String telegramName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.telegramName = telegramName;
+        this.mobile = mobile;
+        this.roles = roles;
+        this.enabled = true;
+    }
+    public User(int id, String firstName, String lastName, Set<Role> roles, String email, String password, String mobile, String telegramName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.telegramName = telegramName;
+        this.mobile = mobile;
+        this.roles = roles;
+        this.enabled = true;
+    }
 
     public boolean isNew() {
         return (this.id == null);
@@ -166,6 +188,18 @@ public class User {
 
     public void setRegistered(Date registered) {
         this.registered = registered;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
