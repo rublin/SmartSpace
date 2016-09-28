@@ -20,7 +20,10 @@
         <intercept-url pattern="/login" access="permitAll"/>
         <intercept-url pattern="/events/**" access="permitAll"/>
 
-        <intercept-url pattern="/**/admin/**" access="hasRole('ROLE_ADMIN')"/>
+        <access-denied-handler error-page="/403"/>
+        <intercept-url pattern="/**/users/**" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/**/edit/**" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/**/delete/**" access="hasRole('ROLE_ADMIN')"/>
         <intercept-url pattern="/**" access="isAuthenticated()"/>
 
         <!--<form-login/>-->

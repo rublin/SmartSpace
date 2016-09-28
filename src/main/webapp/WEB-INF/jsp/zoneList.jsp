@@ -13,7 +13,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Zone</h2>
-<form method="post" action="/zones">
+<form method="post" action="/zones/edit">
     <input type="hidden" name="id" value="${zone.id}">
     <dl>
         <dt>Name:</dt>

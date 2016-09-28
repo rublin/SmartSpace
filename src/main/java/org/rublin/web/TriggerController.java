@@ -53,7 +53,7 @@ public class TriggerController {
         model.addAttribute("zoneList", zoneService.getAll());
         return "triggerList";
     }
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String updateOrCreate(HttpServletRequest request) {
         String id = request.getParameter("id");
         String type = request.getParameter("type");

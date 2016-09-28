@@ -60,7 +60,7 @@ public class ZoneController {
         return "redirect:/zones";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "edit", method = RequestMethod.POST)
     public String createOrUpdate(HttpServletRequest request) {
         Zone zone;
         String id = request.getParameter("id");

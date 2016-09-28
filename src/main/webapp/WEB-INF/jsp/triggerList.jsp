@@ -12,7 +12,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Add trigger</h2>
-<form method="post" action="/triggers">
+<form method="post" action="/triggers/edit">
     <input type="hidden" name="id" value="${trigger.id}">
     <%--Zone:<select name="zoneId">
     <c:forEach var="zone" items="${zoneList}"--%>
