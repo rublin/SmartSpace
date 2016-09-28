@@ -45,7 +45,7 @@ public class CameraController {
         return "cameraList";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/admin", method = RequestMethod.POST)
     public String createOrUpdate(HttpServletRequest request) {
         String id = request.getParameter("id");
         String name = request.getParameter("name");
@@ -66,7 +66,7 @@ public class CameraController {
         return "redirect:/camera";
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/delete", method = RequestMethod.GET)
     public String delete(HttpServletRequest request) {
         String id = request.getParameter("id");
         cameraService.delete(Integer.valueOf(id));

@@ -13,11 +13,11 @@ ALTER SEQUENCE event_seq RESTART WITH 1000;
 
 -- user
 INSERT INTO users (fname, lname, email, password, telegram_name, mobile)
-VALUES ('Olena', 'Sheremet', 'olenka@sheremet.org', 'P@ssw0rd', 'Helenko', '+380950724288');
+VALUES ('Bohdan', 'Khmelnytsky', 'user@gmail.com', 'P@ssw0rd', 'Helenko', '+380957654321');
 
 -- admin
 INSERT INTO users (fname, lname, email, password, telegram_id, telegram_name, mobile)
-VALUES ('Ruslan', 'Sheremet', 'toor.ua@gmail.com', 'P@ssw0rd', 241931659, 'rublinua', '+380950724287');
+VALUES ('Ivan', 'Mazepa', 'admin@gmail.com', 'P@ssw0rd', 241931659, 'rublinua', '+380951234567');
 
 INSERT INTO user_roles (role, user_id) VALUES
   ('ROLE_USER', 100),

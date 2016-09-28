@@ -106,6 +106,10 @@ public class User {
         this.enabled = true;
     }
 
+    public User(Integer id, String firstName, String lastName, String email, String password, String mobile, String telegramName, Role role, Role... roles) {
+        this(id, firstName, lastName, EnumSet.of(role, roles), email, password, mobile, telegramName);
+    }
+
     public boolean isNew() {
         return (this.id == null);
     }

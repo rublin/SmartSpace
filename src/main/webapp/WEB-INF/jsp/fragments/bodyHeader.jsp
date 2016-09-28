@@ -8,6 +8,7 @@
     <a href="/events">Events</a>
     <a href="/camera">Camera</a>
     <a href="/users">Users</a>
+    <a href="/logout">logout</a>
     <%--<a href="/">Home</a>--%>
 </header>
 <%--<h3><a href="${pageContext.request.contextPath}">???</a> </h3>--%>

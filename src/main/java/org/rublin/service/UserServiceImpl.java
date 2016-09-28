@@ -1,11 +1,15 @@
 package org.rublin.service;
 
+import org.rublin.AuthorizedUser;
 import org.rublin.model.user.User;
 import org.rublin.repository.UserRepository;
 import org.rublin.util.UserUtil;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +19,8 @@ import java.util.Objects;
 /**
  * Created by Ruslan Sheremet (rublin) on 04.09.2016.
  */
-@Service
-public class UserServiceImpl implements UserService {
+@Service("userService")
+public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Autowired
     private UserRepository repository;
@@ -77,5 +81,14 @@ public class UserServiceImpl implements UserService {
         User user = get(id);
         user.setEnabled(enable);
         repository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = repository.getByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User " + email + " is not found");
+        }
+        return new AuthorizedUser(user);
     }
 }

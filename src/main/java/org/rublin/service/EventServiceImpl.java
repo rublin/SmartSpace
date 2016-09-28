@@ -37,6 +37,8 @@ public class EventServiceImpl implements EventService {
                         zoneService.sendNotification(zone);
                     }
                 }
+            } else {
+                eventRepository.save(trigger, event);
             }
         } else if (trigger.getType() == Type.ANALOG && trigger.getMinThreshold() > (double)event.getState() || trigger.getMaxThreshold() < (double)event.getState()) {
             event.setAlarm(true);
