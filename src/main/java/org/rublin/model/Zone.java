@@ -66,9 +66,10 @@ public class Zone {
     }
 
 
-    public Zone(int id, String name, ZoneStatus status, boolean secure) {
+    public Zone(int id, String name, String shortName, ZoneStatus status, boolean secure) {
         this.id = id;
         this.name = name;
+        this.shortName = shortName;
         this.status = status;
         this.secure = secure;
     }

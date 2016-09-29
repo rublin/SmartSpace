@@ -9,7 +9,7 @@ import org.rublin.model.Type;
  * Created by Sheremet on 28.06.2016.
  */
 public class TriggerTestData {
-    public static final Zone OBJECT = ControlledObjectTestData.OBJECT;
+    public static final Zone OBJECT = ZoneTestData.ZONE;
     public static final int DIGITAL_TRIGGER_ID = 103;
     public static final int ANALOG_TRIGGER_ID = 104;
 
