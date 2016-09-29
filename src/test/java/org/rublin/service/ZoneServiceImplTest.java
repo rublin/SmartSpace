@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
+import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -37,6 +39,11 @@ public class ZoneServiceImplTest {
         MATCHER.assertCollectionEquals(Arrays.asList(ZONE, newZone), service.getAll());
     }
 
+    @Test(expected = DataAccessException.class)
+    public void testDuplicateSave() throws Exception {
+        service.save(new Zone("Home2", "h1"));
+    }
+
     @Test
     public void testDelete() throws Exception {
         Zone newObj = new Zone("new");
@@ -46,9 +53,19 @@ public class ZoneServiceImplTest {
         MATCHER.assertCollectionEquals(Collections.singletonList(newObj) , service.getAll());
     }
 
+    @Test(expected = NotFoundException.class)
+    public void testNotFoundDelete() throws Exception {
+        service.delete(1);
+    }
+
     @Test
     public void testGet() throws Exception {
         MATCHER.assertEquals(ZONE, service.get(ZONE_ID));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void testNotFoundGet() throws Exception {
+        service.delete(1);
     }
 
     @Test
