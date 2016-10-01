@@ -23,6 +23,8 @@ public class EventTestData {
     public static final int ANALOG_EVENT1_ID = 1006;
     public static final Trigger DIGITAL_TRIGGER = TriggerTestData.DIGITAL_TRIGGER;
     public static final Trigger ANALOG_TRIGGER = TriggerTestData.ANALOG_TRIGGER;
+    public static final int DIGITAL_TRIGGER_ID = TriggerTestData.DIGITAL_TRIGGER_ID;
+    public static final int ANALOG_TRIGGER_ID = TriggerTestData.ANALOG_TRIGGER_ID;
 
     public static final DigitEvent DIGIT_EVENT1 = new DigitEvent(DIGIT_EVENT1_ID, DIGITAL_TRIGGER, true, LocalDateTime.of(2016, Month.JUNE, 20, 11, 00, 00));
     public static final DigitEvent DIGIT_EVENT2 = new DigitEvent(DIGIT_EVENT1_ID+1, DIGITAL_TRIGGER, false, LocalDateTime.of(2016, Month.MAY, 30, 11, 00, 00));
@@ -33,7 +35,7 @@ public class EventTestData {
     public static final AnalogEvent ANALOG_EVENT1 = new AnalogEvent(ANALOG_EVENT1_ID, ANALOG_TRIGGER, 22.5, LocalDateTime.of(2016, Month.JUNE, 1, 14, 00, 00));
     public static final AnalogEvent ANALOG_EVENT2 = new AnalogEvent(ANALOG_EVENT1_ID+1, ANALOG_TRIGGER, 19.8, LocalDateTime.of(2016, Month.JUNE, 1, 21, 00, 00));
 
-    public static final ModelMatcher<Event, String> MATCHER = new ModelMatcher<>(Event::toString);
+    public static final ModelMatcher<Event> MATCHER = new ModelMatcher<>(Event.class);
 
     public static List<Event> events() {
         List<Event> events = new ArrayList<>();

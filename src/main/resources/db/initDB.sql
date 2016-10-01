@@ -36,6 +36,7 @@ CREATE TABLE cameras
   password VARCHAR NOT NULL ,
   FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE
 );
+CREATE UNIQUE INDEX camera_url_idx ON cameras (url);
 
 CREATE TABLE users
 (

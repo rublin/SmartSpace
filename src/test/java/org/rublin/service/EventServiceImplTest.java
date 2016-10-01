@@ -2,6 +2,7 @@ package org.rublin.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.rublin.model.Trigger;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
@@ -32,18 +33,23 @@ public class EventServiceImplTest {
     @Autowired
     protected EventService service;
 
+    @Autowired
+    private TriggerService triggerService;
+
     @Test
     public void testDigitalSave() throws Exception {
-        Event event = new DigitEvent(DIGITAL_TRIGGER, true);
-        service.save(DIGITAL_TRIGGER, event);
-        MATCHER.assertCollectionEquals(Arrays.asList(event, DIGIT_EVENT1, DIGIT_EVENT6, DIGIT_EVENT5, DIGIT_EVENT4, DIGIT_EVENT3, DIGIT_EVENT2), service.get(DIGITAL_TRIGGER));
+        Trigger trigger = triggerService.get(DIGITAL_TRIGGER_ID);
+        Event event = new DigitEvent(trigger, true);
+        service.save(trigger, event);
+        MATCHER.assertCollectionEquals(Arrays.asList(event, DIGIT_EVENT1, DIGIT_EVENT6, DIGIT_EVENT5, DIGIT_EVENT4, DIGIT_EVENT3, DIGIT_EVENT2), service.get(trigger));
 
     }
     @Test
     public void testAnalogSave() throws Exception {
-        Event event = new AnalogEvent(ANALOG_TRIGGER, 29.0);
-        service.save(ANALOG_TRIGGER, event);
-        MATCHER.assertCollectionEquals(Arrays.asList(event, ANALOG_EVENT2, ANALOG_EVENT1), service.get(ANALOG_TRIGGER));
+        Trigger trigger = triggerService.get(ANALOG_TRIGGER_ID);
+        Event event = new AnalogEvent(trigger, 24.0);
+        service.save(trigger, event);
+        MATCHER.assertCollectionEquals(Arrays.asList(event, ANALOG_EVENT2, ANALOG_EVENT1), service.get(trigger));
     }
 
     @Test(expected = DataAccessException.class)

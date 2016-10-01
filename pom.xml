@@ -20,6 +20,8 @@
         <spring.version>4.2.6.RELEASE</spring.version>
         <spring-security.version>4.1.1.RELEASE</spring-security.version>
 
+        <jackson-json.version>2.8.0</jackson-json.version>
+
         <!-- Logging -->
         <logback.version>1.1.7</logback.version>
         <slf4j.version>1.7.21</slf4j.version>
@@ -140,6 +142,11 @@
             <artifactId>spring-security-taglibs</artifactId>
             <version>${spring-security.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
 
         <!--DataBase-->
         <dependency>
@@ -195,6 +202,23 @@
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!--JSON-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate5</artifactId>
+            <version>${jackson-json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-json.version}</version>
         </dependency>
 
         <!--Notifications and controls-->

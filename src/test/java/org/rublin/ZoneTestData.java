@@ -14,5 +14,5 @@ public class ZoneTestData {
     public static final Zone ZONE_YELLOW = new Zone(ZONE_ID, "Home", "h1", ZoneStatus.YELLOW, false);
     public static final String INFO = "id: <b>10</b>, name: <b>Home</b>, status: <b>GREEN</b>, secure: <b>NO</b>";
 
-    public static final ModelMatcher<Zone, String> MATCHER = new ModelMatcher<>(Zone::toString);
+    public static final ModelMatcher<Zone> MATCHER = new ModelMatcher<>(Zone.class);
 }

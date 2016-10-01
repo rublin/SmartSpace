@@ -65,7 +65,7 @@ public class ZoneServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void testNotFoundGet() throws Exception {
-        service.delete(1);
+        service.get(1);
     }
 
     @Test

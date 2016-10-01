@@ -1,6 +1,8 @@
 package org.rublin.service;
 
 import static org.rublin.TriggerTestData.*;
+
+import org.junit.Assert;
 import org.rublin.model.Trigger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,16 +33,19 @@ public class TriggerServiceImplTest {
     @Autowired
     protected TriggerService service;
 
+    @Autowired
+    private ZoneService zoneService;
+
     @Test
     public void testSave() throws Exception {
         Trigger trigger = new Trigger("new");
-        service.save(trigger, OBJECT);
+        service.save(trigger, ZONE);
         MATCHER.assertCollectionEquals(Arrays.asList(DIGITAL_TRIGGER, trigger, ANALOG_TRIGGER), service.getAll());
     }
 
     @Test(expected = DataAccessException.class)
     public void testDuplicateNameSave() throws Exception {
-        service.save(new Trigger("Door 1 floor"), OBJECT);
+        service.save(new Trigger("Door 1 floor"), ZONE);
     }
 
     @Test
@@ -68,5 +73,10 @@ public class TriggerServiceImplTest {
     public void testGetAll() throws Exception {
         Collection<Trigger> all = service.getAll();
         MATCHER.assertCollectionEquals(Arrays.asList(DIGITAL_TRIGGER, ANALOG_TRIGGER), all);
+    }
+
+    @Test
+    public void testGetInfo() throws Exception {
+        Assert.assertEquals(TRIGGERS_INFO, service.getInfo(zoneService.get(ZONE_ID)));
     }
 }

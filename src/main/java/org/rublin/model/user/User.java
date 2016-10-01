@@ -105,6 +105,18 @@ public class User {
         this.roles = roles;
         this.enabled = true;
     }
+    public User(int id, String firstName, String lastName, Set<Role> roles, String email, String password, String mobile, String telegramName, int telegramId) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.telegramName = telegramName;
+        this.telegramId = telegramId;
+        this.mobile = mobile;
+        this.roles = roles;
+        this.enabled = true;
+    }
 
     public User(Integer id, String firstName, String lastName, String email, String password, String mobile, String telegramName, Role role, Role... roles) {
         this(id, firstName, lastName, EnumSet.of(role, roles), email, password, mobile, telegramName);
@@ -214,6 +226,10 @@ public class User {
                 ", surname=" + lastName +
                 ", email=" + email +
                 ", roles=" + roles +
+                ", telegram id=" + telegramId +
+                ", telegram name=" + telegramName +
+                ", mobile=" + mobile +
+                ", enabled=" + enabled +
                 ')';
     }
 }

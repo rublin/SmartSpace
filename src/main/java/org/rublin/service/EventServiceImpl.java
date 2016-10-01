@@ -28,7 +28,7 @@ public class EventServiceImpl implements EventService {
         Zone zone = trigger.getZone();
         if (trigger.isSecure()) {
             if (zone.isSecure()) {
-                if (trigger.getType() == Type.DIGITAL || trigger.getMinThreshold() > (double)event.getState() || trigger.getMaxThreshold() < (double)event.getState()){
+                if (trigger.getType() == Type.DIGITAL || trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
                     event.setAlarm(true);
                     eventRepository.save(trigger, event);
                     if (zone.getStatus() != ZoneStatus.RED) {
@@ -40,10 +40,10 @@ public class EventServiceImpl implements EventService {
             } else {
                 eventRepository.save(trigger, event);
             }
+        } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
+            alarmEvent(event, trigger, zone);
         } else if (trigger.getType() == Type.ANALOG && trigger.getMinThreshold() > (double)event.getState() || trigger.getMaxThreshold() < (double)event.getState()) {
-            event.setAlarm(true);
-            eventRepository.save(trigger, event);
-            zoneService.setStatus(zone, ZoneStatus.RED);
+            alarmEvent(event, trigger, zone);
         } else {
             eventRepository.save(trigger, event);
         }
@@ -62,5 +62,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
         return eventRepository.getBetween(from, to);
+    }
+
+    private void alarmEvent(Event event, Trigger trigger, Zone zone) {
+        event.setAlarm(true);
+        eventRepository.save(trigger, event);
+        zoneService.setStatus(zone, ZoneStatus.RED);
     }
 }

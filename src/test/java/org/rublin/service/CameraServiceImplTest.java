@@ -3,7 +3,9 @@ package org.rublin.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rublin.model.Camera;
+import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -30,15 +32,14 @@ public class CameraServiceImplTest {
 
     @Test
     public void testSave() throws Exception {
-//        Camera camera = new Camera(CAM_ID_105, ZONE);
         service.save(CAM_105, ZONE);
         MATCHER.assertCollectionEquals(Arrays.asList(CAM_102, CAM_105), service.getAll());
     }
 
-    /*@Test(expected = DataAccessException.class)
+    @Test(expected = DataAccessException.class)
     public void testDuplicationNameSave() throws Exception {
-        service.save(new Camera("Cam 1 floor 1", "192.168.0.31", "imagesaver", "QAZxsw123", "http://192.168.0.31/Streaming/channels/1/picture", ZONE), ZONE);
-    }*/
+        service.save(new Camera("Cam floor 1", "192.168.0.30", "imagesaver", "QAZxsw123", "http://192.168.0.31/Streaming/channels/1/picture", ZONE), ZONE);
+    }
 
     @Test
     public void testDelete() throws Exception {
@@ -47,10 +48,20 @@ public class CameraServiceImplTest {
         MATCHER.assertCollectionEquals(Collections.singletonList(CAM_105), service.getAll());
     }
 
+    @Test(expected = NotFoundException.class)
+    public void testNotFoundDelete() throws Exception {
+        service.get(1);
+    }
+
     @Test
     public void testGet() throws Exception {
         Camera camera = service.get(CAM_ID_102);
         MATCHER.assertEquals(CAM_102, camera);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void testNotFoundGet() throws Exception {
+        service.get(1);
     }
 
     @Test
