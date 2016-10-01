@@ -24,12 +24,12 @@
         <c:when test="${not empty trigger.id}">
             <c:choose>
                 <c:when test="${trigger.type=='DIGITAL'}">
-                    Digital<input type="radio" name="type" value="digital" CHECKED disabled>
-                    Analog<input type="radio" name="type" value="analog" disabled>
+                    Digital<input type="radio" name="type" value="digital" CHECKED hidden>
+                    Analog<input type="radio" name="type" value="analog" hidden>
                 </c:when>
                 <c:when test="${trigger.type=='ANALOG'}">
-                    Digital<input type="radio" name="type" value="digital" disabled>
-                    Analog<input type="radio" name="type" value="analog" CHECKED disabled><br>
+                    Digital<input type="radio" name="type" value="digital" hidden>
+                    Analog<input type="radio" name="type" value="analog" CHECKED hidden><br>
                     min value:<input type="number" name="minThreshold" value="${trigger.minThreshold}">
                     max value:<input type="number" name="maxThreshold" value="${trigger.maxThreshold}">
                 </c:when>
