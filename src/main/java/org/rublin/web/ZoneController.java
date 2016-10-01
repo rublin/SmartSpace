@@ -1,9 +1,6 @@
 package org.rublin.web;
 
 import org.rublin.model.Zone;
-import org.rublin.service.ZoneService;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,63 +15,45 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Controller
 @RequestMapping(value = "/zones")
-public class ZoneController {
-
-    public static final Logger LOG = getLogger(ZoneController.class);
-
-    @Autowired
-    private ZoneService zoneService;
+public class ZoneController extends AbstractZoneController{
 
     @RequestMapping(method = RequestMethod.GET)
     public String zoneList(Model model) {
         LOG.debug("requested all zones");
-        model.addAttribute("zoneList", zoneService.getAll());
+        model.addAttribute("zoneList", super.getAll());
         return "zoneList";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String delete(HttpServletRequest request) {
         String id = request.getParameter("id");
-        LOG.info("Zone with id: {} deleted", id);
-        zoneService.delete(Integer.valueOf(id));
+        super.delete(Integer.valueOf(id));
         return "redirect:/zones";
     }
     @RequestMapping(value = "/select", method = RequestMethod.GET)
     public String update(HttpServletRequest request, Model model) {
         String id = request.getParameter("id");
-        model.addAttribute("zone", zoneService.get(Integer.valueOf(id)));
-        model.addAttribute("zoneList", zoneService.getAll());
+        model.addAttribute("zone", super.get(Integer.valueOf(id)));
+        model.addAttribute("zoneList", super.getAll());
         return "zoneList";
     }
 
     @RequestMapping(value = "/secure", method = RequestMethod.POST)
     public String secure(HttpServletRequest request) {
-        Zone zone;
         String secure = request.getParameter("secure");
         String id = request.getParameter("id");
         if (secure != null) {
-            zone = zoneService.get(Integer.valueOf(id));
-            zoneService.setSecure(zone, Boolean.valueOf(secure));
+            super.setSecure(Integer.valueOf(id), Boolean.valueOf(secure));
         }
-        LOG.info("zone {} is secured to {}", id, secure);
         return "redirect:/zones";
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     public String createOrUpdate(HttpServletRequest request) {
-        Zone zone;
         String id = request.getParameter("id");
         String name = request.getParameter("name");
         String shortName = request.getParameter("shortName");
-        LOG.info("id is: " + id);
-        if (id.isEmpty()) {
-            zone = new Zone(name, shortName);
-            LOG.info("new zone {} added", zone);
-        } else {
-            zone = new Zone(Integer.valueOf(id), name, shortName);
-            LOG.info("zone {} changed", zone);
-        }
-        zoneService.save(zone);
+        super.createOrUpdate(new Zone(name, shortName), id);
         return "redirect:/zones";
     }
 

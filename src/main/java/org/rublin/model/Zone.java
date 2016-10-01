@@ -1,5 +1,7 @@
 package org.rublin.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -40,10 +42,12 @@ public class Zone {
     @Column(name = "secure", nullable = false)
     private boolean secure;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Trigger> triggers;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Camera> cameras;
 
     public Zone() {
@@ -88,7 +92,7 @@ public class Zone {
         this.secure = false;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -131,6 +135,7 @@ public class Zone {
         this.triggers.add(trigger);
     }
 
+    @JsonIgnore
     public boolean isNew() {
         return id==null;
     }
