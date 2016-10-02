@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Ruslan Sheremet (rublin) on 10.09.2016.
@@ -44,12 +45,12 @@ public class JpaCameraRepository implements CameraRepository {
     }
 
     @Override
-    public Collection<Camera> getAll() {
+    public List<Camera> getAll() {
         return em.createNamedQuery(Camera.GET_ALL_SORTED, Camera.class).getResultList();
     }
 
     @Override
-    public Collection<Camera> getByZone(Zone zone) {
+    public List<Camera> getByZone(Zone zone) {
         return em.createNamedQuery(Camera.GET_BY_ZONE, Camera.class).setParameter("zone", zone).getResultList();
     }
 }

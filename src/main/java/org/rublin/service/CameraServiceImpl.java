@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Ruslan Sheremet (rublin) on 10.09.2016.
@@ -35,12 +36,12 @@ public class CameraServiceImpl implements CameraService {
     }
 
     @Override
-    public Collection<Camera> getAll() {
+    public List<Camera> getAll() {
         return repository.getAll();
     }
 
     @Override
-    public Collection<Camera> getByZone(Zone zone) {
+    public List<Camera> getByZone(Zone zone) {
         return repository.getByZone(zone);
     }
 }

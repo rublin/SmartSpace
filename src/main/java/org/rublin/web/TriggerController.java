@@ -57,7 +57,6 @@ public class TriggerController extends AbstractTriggerController {
         String min = request.getParameter("minThreshold");
         String max = request.getParameter("maxThreshold");
         Trigger trigger;
-        LOG.debug("id {}, name {}, type {}, secure {}, min {}, max {}, zone {}", id, name, type, secureTrigger, min, max, zone.getName());
         if (type.equals("digital")) {
             trigger = new Trigger(name, zone, Type.DIGITAL, secureTrigger);
         } else {

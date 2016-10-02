@@ -20,27 +20,22 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Controller
 @RequestMapping(value = "/camera")
-public class CameraController {
+public class CameraController extends AbstractCameraController {
 
-    public static final Logger LOG = getLogger(CameraController.class);
-
-    @Autowired
-    private CameraService cameraService;
     @Autowired
     private ZoneService zoneService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String cameraList(Model model) {
-        model.addAttribute("cameraList", cameraService.getAll());
+        model.addAttribute("cameraList", super.getAll());
         model.addAttribute("zoneList", zoneService.getAll());
         return "cameraList";
     }
 
     @RequestMapping(value = "/select", method = RequestMethod.GET)
     public String update(HttpServletRequest request, Model model) {
-        Camera camera = getCamera(request.getParameter("id"));
-        model.addAttribute("camera", camera);
-        model.addAttribute("cameraList", cameraService.getAll());
+        model.addAttribute("camera", super.get(Integer.valueOf(request.getParameter("id"))));
+        model.addAttribute("cameraList", super.getAll());
         model.addAttribute("zoneList", zoneService.getAll());
         return "cameraList";
     }
@@ -54,27 +49,14 @@ public class CameraController {
         String url = request.getParameter("url");
         String ip = request.getParameter("ip");
         Zone zone = zoneService.get(Integer.valueOf(request.getParameter("zoneId")));
-        Camera camera;
-        if (id.isEmpty()) {
-            camera = new Camera(name, ip, login, password, url, zone);
-            LOG.info("new camera {} added", camera);
-        } else {
-            camera = new Camera(Integer.valueOf(id), name, ip, login, password, url, zone);
-            LOG.info("camera {} updated", camera);
-        }
-        cameraService.save(camera, zone);
+        super.createOrUpdate(new Camera(name, ip, login, password, url, zone), zone, id);
         return "redirect:/camera";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String delete(HttpServletRequest request) {
         String id = request.getParameter("id");
-        cameraService.delete(Integer.valueOf(id));
-        LOG.info("camera with id {} deleted", id);
+        super.delete(Integer.valueOf(id));
         return "redirect:/camera";
-    }
-
-    private Camera getCamera(String id) {
-        return cameraService.get(Integer.valueOf(id));
     }
 }
