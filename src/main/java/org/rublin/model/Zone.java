@@ -42,7 +42,7 @@ public class Zone {
     @Column(name = "secure", nullable = false)
     private boolean secure;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Trigger> triggers;
 

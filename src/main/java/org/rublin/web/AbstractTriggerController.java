@@ -35,6 +35,11 @@ public abstract class AbstractTriggerController {
         return triggerService.get(id);
     }
 
+    public List<Trigger> getByState(boolean state) {
+        LOG.debug("get by state: {}", state);
+        return triggerService.getByState(state);
+    }
+
     public Trigger createOrUpdate(Trigger trigger, Zone zone, String id) {
         if (id == null || id.equals("")) {
             LOG.info("new trigger {} added in zone {}", trigger, zone.getName());

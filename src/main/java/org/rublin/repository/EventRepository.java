@@ -14,4 +14,5 @@ public interface EventRepository {
     List<Event> get(Trigger trigger);
     List<Event> getAll();
     List<Event> getBetween(LocalDateTime from, LocalDateTime to);
+    List<Event> getAlarmed();
 }

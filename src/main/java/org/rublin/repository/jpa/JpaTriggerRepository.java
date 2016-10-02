@@ -9,6 +9,7 @@ import org.rublin.repository.TriggerRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Sheremet on 28.06.2016.
@@ -41,6 +42,11 @@ public class JpaTriggerRepository implements TriggerRepository {
     @Override
     public Trigger get(int id) {
         return em.find(Trigger.class, id);
+    }
+
+    @Override
+    public List<Trigger> getByState(boolean state) {
+        return em.createNamedQuery(Trigger.GET_BY_STATE, Trigger.class).setParameter("state", state).getResultList();
     }
 
     @Override

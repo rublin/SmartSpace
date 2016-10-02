@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NamedQueries({
         @NamedQuery(name = DigitEvent.GET, query = "SELECT e FROM DigitEvent e WHERE e.trigger.id=:trigger_id ORDER BY e.time DESC "),
         @NamedQuery(name = DigitEvent.GET_ALL, query = "SELECT e FROM DigitEvent e WHERE e.type='DIGITAL'"),
+        @NamedQuery(name = DigitEvent.GET_ALARMED, query = "SELECT e FROM DigitEvent e WHERE e.alarm=true"),
         @NamedQuery(name = DigitEvent.GET_BETWEEN, query = "SELECT e FROM DigitEvent e WHERE e.type='DIGITAL' AND e.time BETWEEN :from AND :to")
 })
 @Entity
@@ -21,6 +22,7 @@ public class DigitEvent extends AbstractEvent<Boolean> {
     public static final String GET = "DigitEvent.get";
     public static final String GET_ALL = "DigitEvent.getAllSorted";
     public static final String GET_BETWEEN = "DigitEvent.getBetween";
+    public static final String GET_ALARMED = "DigitEvent.getAlarmed";
 
     @Column(name = "digital_state")
     private Boolean state;

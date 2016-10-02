@@ -4,14 +4,9 @@ import org.rublin.ZoneTestData;
 import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
-import org.rublin.model.event.DigitEvent;
-import org.rublin.model.event.Event;
-import org.rublin.repository.EventRepository;
 import org.rublin.service.*;
-import org.rublin.web.CurrentZone;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.rublin.web.rest.StateRestController;
 
 import java.util.Arrays;
 

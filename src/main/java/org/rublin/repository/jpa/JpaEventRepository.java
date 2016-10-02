@@ -2,6 +2,7 @@ package org.rublin.repository.jpa;
 
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
+import org.rublin.model.event.AbstractEvent;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
@@ -64,6 +65,13 @@ public class JpaEventRepository implements EventRepository {
                 .setParameter("from", from)
                 .setParameter("to", to)
                 .getResultList();
+        return mergeListsWithSort(digitEvents, analogEvents);
+    }
+
+    @Override
+    public List<Event> getAlarmed() {
+        List<DigitEvent> digitEvents = em.createNamedQuery(DigitEvent.GET_ALARMED, DigitEvent.class).getResultList();
+        List<AnalogEvent> analogEvents = em.createNamedQuery(AnalogEvent.GET_ALARMED, AnalogEvent.class).getResultList();
         return mergeListsWithSort(digitEvents, analogEvents);
     }
 

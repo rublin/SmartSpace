@@ -7,6 +7,7 @@ import org.rublin.repository.TriggerRepository;
 import org.rublin.util.TriggerInit;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,6 +39,11 @@ public class InMemoryTriggerRepository implements TriggerRepository {
     @Override
     public Trigger get(int id) {
         return repository.get(id);
+    }
+
+    @Override
+    public List<Trigger> getByState(boolean state) {
+        return null;
     }
 
     @Override

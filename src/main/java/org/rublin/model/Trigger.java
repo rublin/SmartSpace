@@ -94,6 +94,8 @@ public class Trigger {
         this.type = type;
         this.secure = secure;
         state = true;
+        maxThreshold = 0.0;
+        minThreshold = 0.0;
     }
 
     public Trigger(String name, Type type, boolean secure, Double minThreshold, Double maxThreshold) {
@@ -123,6 +125,8 @@ public class Trigger {
         this.type = type;
         this.secure = secure;
         this.state = true;
+        maxThreshold = 0.0;
+        minThreshold = 0.0;
     }
 
     public Trigger(String name, Zone zone, Type type, boolean secure) {
@@ -131,6 +135,8 @@ public class Trigger {
         this.type = type;
         this.secure = secure;
         this.state = true;
+        maxThreshold = 0.0;
+        minThreshold = 0.0;
     }
 
     public Trigger(String name, Zone zone, Type type, boolean secure, Double minThreshold, Double maxThreshold) {

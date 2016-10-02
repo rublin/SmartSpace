@@ -26,19 +26,14 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Controller
 @RequestMapping(value = "/events")
-public class EventsController {
-
-    public static final Logger LOG = getLogger(EventsController.class);
-
-    @Autowired
-    private EventService eventService;
+public class EventsController extends AbstractEventController {
 
     @Autowired
     private TriggerService triggerService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String eventList(Model model) {
-        model.addAttribute("eventList", eventService.getAll());
+        model.addAttribute("eventList", super.getAll());
         model.addAttribute("triggerList", triggerService.getAll());
         return "eventList";
     }
@@ -46,9 +41,8 @@ public class EventsController {
     @RequestMapping(value = "/byTrigger", method = RequestMethod.GET)
     public String getByTrigger(HttpServletRequest request, Model model) {
         Trigger trigger = getTrigger(request.getParameter("triggerId"));
-        model.addAttribute("eventList", eventService.get(trigger));
+        model.addAttribute("eventList", super.getByTrigger(trigger));
         model.addAttribute("triggerList", triggerService.getAll());
-        LOG.info("select events by trigger {}", trigger);
         return "eventList";
     }
 
@@ -56,14 +50,7 @@ public class EventsController {
     public String create(HttpServletRequest request) {
         String state = request.getParameter("state");
         Trigger trigger = getTrigger(request.getParameter("triggerId"));
-        Event event;
-        if (trigger.getType() == Type.ANALOG) {
-            event = new AnalogEvent(trigger, Double.valueOf(state));
-        } else {
-            event = new DigitEvent(trigger, Boolean.valueOf(state));
-        }
-        eventService.save(trigger, event);
-        LOG.info("new event {} added", event);
+        super.create(state, trigger);
         return "OK";
     }
 
@@ -71,7 +58,7 @@ public class EventsController {
     public String getBetween(HttpServletRequest request, Model model) {
         LocalDateTime from = TimeUtil.parseLocalDateTime(resetParam("from", request));
         LocalDateTime to = TimeUtil.parseLocalDateTime(resetParam("to", request));
-        model.addAttribute("eventList", eventService.getBetween(from, to));
+        model.addAttribute("eventList", super.getBetween(from, to));
         model.addAttribute("triggerList", triggerService.getAll());
         return "eventList";
     }

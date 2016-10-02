@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NamedQueries({
         @NamedQuery(name = AnalogEvent.GET, query = "SELECT e FROM AnalogEvent e WHERE e.trigger.id=:trigger_id ORDER BY e.time DESC"),
         @NamedQuery(name = AnalogEvent.GET_ALL, query = "SELECT e FROM AnalogEvent e WHERE e.type='ANALOG'"),
+        @NamedQuery(name = AnalogEvent.GET_ALARMED, query = "SELECT e FROM AnalogEvent e WHERE e.alarm=true"),
         @NamedQuery(name = AnalogEvent.GET_BETWEEN, query = "SELECT e FROM AnalogEvent e WHERE e.type='ANALOG' AND e.time BETWEEN :from AND :to")
 })
 @Entity
@@ -23,6 +24,7 @@ public class AnalogEvent extends AbstractEvent<Double> {
     public static final String GET = "AnalogEvent.get";
     public static final String GET_ALL = "AnalogEvent.getAllSorted";
     public static final String GET_BETWEEN = "AnalogEvent.getBetween";
+    public static final String GET_ALARMED = "AnalogEvent.getAlarmed";
 
     @Column(name = "analog_state")
     private Double state;

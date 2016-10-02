@@ -45,6 +45,11 @@ public class TriggerServiceImpl implements TriggerService {
     }
 
     @Override
+    public List<Trigger> getByState(boolean state) {
+        return repository.getByState(state);
+    }
+
+    @Override
     public Collection<Trigger> getAll() {
         return repository.getAll();
     }

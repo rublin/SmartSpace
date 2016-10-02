@@ -64,6 +64,11 @@ public class EventServiceImpl implements EventService {
         return eventRepository.getBetween(from, to);
     }
 
+    @Override
+    public List<Event> getAlarmed() {
+        return eventRepository.getAlarmed();
+    }
+
     private void alarmEvent(Event event, Trigger trigger, Zone zone) {
         event.setAlarm(true);
         eventRepository.save(trigger, event);

@@ -54,4 +54,9 @@ public class TriggerRestController extends AbstractTriggerController {
     public List<Trigger> getAll () {
         return new ArrayList<>(super.getAll());
     }
+
+    @RequestMapping(value = "/state/{state}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Trigger> getByState(@PathVariable("state") boolean state) {
+        return super.getByState(state);
+    }
 }

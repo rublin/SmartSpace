@@ -51,4 +51,9 @@ public class InMemoryEventRepository implements EventRepository {
     public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
         return null;
     }
+
+    @Override
+    public List<Event> getAlarmed() {
+        return null;
+    }
 }
