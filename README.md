@@ -1,20 +1,28 @@
 #  Smart Space
+### Version is *1.5-SNAPSHOT*
+
 SmartSpace is a Java Enterprise Web Application for manage your smart home or other IoT staff.
 ![SmartSpace logo](https://github.com/rublin/SmartSpace/Banner11.png)
+
 ### Features:
+
 * simple WEB interface
 * authorization and role based authentication
 * zones (parts of controlled object) include triggers and cameras
 * triggers generate events
 * [Telegram Bot API](https://github.com/rubenlagus/TelegramBots) used to manage system
 * include REST API to communicate with client (Frontend)
+
 ### Telegram Bot API features
+
 * take photo from camera
 * show info from zones
 * arming/disarming zones
 * receiving notifications - *will be added in next release*
 ![Telegram Bot](https://github.com/rublin/SmartSpace/TelegramBot.png)
+
 # Installation
+
 ### Prepare your database - [postgresql.properties](https://github.com/rublin/SmartSpace/resources/db/postgresql.properties):
 
 ```
