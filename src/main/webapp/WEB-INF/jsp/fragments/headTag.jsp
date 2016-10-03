@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Smart Space</title>
     <link rel="stylesheet" href="resources/css/style.css">
+    <link rel="shortcut icon" href="resources/images/favicon-16.png">
     <%--<style>
         input[type=text] {
             width: 30%;

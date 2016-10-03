@@ -19,6 +19,7 @@
     <http>
         <intercept-url pattern="/login" access="permitAll"/>
         <intercept-url pattern="/events/**" access="permitAll"/>
+        <intercept-url pattern="favicon.ico" access="permitAll"/>
 
         <access-denied-handler error-page="/403"/>
         <intercept-url pattern="/**/users/**" access="hasRole('ROLE_ADMIN')"/>
