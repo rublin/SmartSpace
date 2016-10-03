@@ -214,10 +214,6 @@ public class User {
         this.mobile = mobile;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
     @Override
     public String toString() {
         return "User (" +

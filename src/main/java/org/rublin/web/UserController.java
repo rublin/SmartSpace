@@ -24,42 +24,31 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Controller
 @RequestMapping(value = "users")
-public class UserController {
-
-    private static final Logger LOG = getLogger(UserController.class);
-
-    @Autowired
-    private UserService userService;
+public class UserController extends AbstractUserController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String userList(Model model) {
-        model.addAttribute("userList", userService.getAll());
-        LOG.info("show all users");
+        model.addAttribute("userList", super.getAll());
         return "userList";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String delete(HttpServletRequest request) {
         String id = request.getParameter("id");
-        userService.delete(Integer.valueOf(id));
-        LOG.info("user with id {} deleted", id);
+        super.delete(Integer.valueOf(id));
         return "redirect:/users";
     }
 
     @RequestMapping(value = "/enable", method = RequestMethod.GET)
     public String enable(HttpServletRequest request) {
-        User user = getUser(request.getParameter("id"));
-        user.setEnabled(user.isEnabled() ? false : true);
-        userService.save(user);
-        LOG.info("user {} was {}", user, user.isEnabled() ? "enabled" : "disabled");
+        super.enable(Integer.valueOf(request.getParameter("id")));
         return "redirect:/users";
     }
 
     @RequestMapping(value = "/select", method = RequestMethod.GET)
     public String select(HttpServletRequest request, Model model) {
-        User user = getUser(request.getParameter("id"));
-        model.addAttribute("user", user);
-        model.addAttribute("userList", userService.getAll());
+        model.addAttribute("user", super.get(Integer.valueOf(request.getParameter("id"))));
+        model.addAttribute("userList", super.getAll());
         return "userList";
     }
 
@@ -73,22 +62,11 @@ public class UserController {
         String password = request.getParameter("password");
         String mobile = request.getParameter("mobile");
         String telegramName = request.getParameter("telegram_name");
-        User user;
         if (role == null) {
             role = "ROLE_USER";
         }
         Set<Role> roles = new HashSet<>(Arrays.asList(Role.valueOf(role)));
-        if (id.isEmpty()) {
-            user = new User(fname, lname, roles, email, password, mobile, telegramName);
-            LOG.info("new user {} created", user);
-        } else {
-            user = new User(Integer.valueOf(id), fname, lname, roles, email, password, mobile, telegramName);
-            LOG.info("user {} was changed", user);
-        }
-        userService.save(user);
+        super.createOrUpdate(new User(fname, lname, roles, email, password, mobile, telegramName), id);
         return "redirect:/users";
-    }
-    private User getUser(String id) {
-        return userService.get(Integer.valueOf(id));
     }
 }
