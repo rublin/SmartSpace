@@ -24,7 +24,7 @@ public class CameraRestController extends AbstractCameraController {
         return super.get(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/admin/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") int id) {
         super.delete(id);
     }
@@ -34,16 +34,16 @@ public class CameraRestController extends AbstractCameraController {
         return super.getAll();
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/admin/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Camera> create(@RequestBody Camera camera) {
         Camera created = super.createOrUpdate(camera, camera.getZone(), null);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
+                .path(REST_URL + "/admin/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uri).body(created);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/admin/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody Camera camera, @PathVariable("id") String id) {
         super.createOrUpdate(camera, camera.getZone(), id);
     }

@@ -23,17 +23,17 @@ public class UserRestCotroller extends AbstractUserController {
         return super.get(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/admin/{id}", method = RequestMethod.DELETE)
     public void delete (@PathVariable("id") int id) {
         super.delete(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/admin/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody User user, @PathVariable("id") String id) {
         super.createOrUpdate(user, id);
     }
 
-    @RequestMapping(value = "/enable/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/admin/enable/{id}", method = RequestMethod.PUT)
     public void enable(@PathVariable("id") int id) {
         super.enable(id);
     }
@@ -42,11 +42,11 @@ public class UserRestCotroller extends AbstractUserController {
         return super.getAll();
     }
 
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/admin/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> create (@RequestBody User user) {
         User created = super.createOrUpdate(user, null);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_ULR + "/{id}")
+                .path(REST_ULR + "/admin/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uri).body(created);
     }
