@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import org.rublin.AuthorizedUser;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.service.TriggerService;
@@ -26,7 +27,7 @@ public abstract class AbstractTriggerController {
     }
 
     public void delete(int id) {
-        LOG.info("trigger with id {} deleted", id);
+        LOG.info("delete trigger with id {} by user {}", id, AuthorizedUser.log());
         triggerService.delete(id);
     }
 
@@ -42,10 +43,10 @@ public abstract class AbstractTriggerController {
 
     public Trigger createOrUpdate(Trigger trigger, Zone zone, String id) {
         if (id == null || id.equals("")) {
-            LOG.info("new trigger {} added in zone {}", trigger, zone.getName());
+            LOG.info("new trigger {} added in zone {} by user {}", trigger, zone.getName(), AuthorizedUser.log());
         } else {
             trigger.setId(Integer.valueOf(id));
-            LOG.info("trigger {} changed in zone {}", trigger, zone.getName());
+            LOG.info("trigger {} changed in zone {} by user {}", trigger, zone.getName(), AuthorizedUser.log());
         }
         return triggerService.save(trigger, zone);
     }

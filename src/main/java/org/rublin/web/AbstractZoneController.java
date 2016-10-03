@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import org.rublin.AuthorizedUser;
 import org.rublin.model.Zone;
 import org.rublin.service.ZoneService;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public abstract class AbstractZoneController {
     }
 
     public void delete(int id) {
-        LOG.info("Zone with id: {} deleted", id);
+        LOG.info("delete zone with id {} by user {} ", id, AuthorizedUser.log());
         zoneService.delete(id);
     }
 
@@ -35,15 +36,15 @@ public abstract class AbstractZoneController {
 
     public void setSecure(int id, boolean secure) {
         zoneService.setSecure(zoneService.get(id), secure);
-        LOG.info("zone {} is secured to {}", id, secure);
+        LOG.info("zone {} is secured to {} to {}", id, secure, AuthorizedUser.log());
     }
 
     public Zone createOrUpdate(Zone zone, String id) {
         if (id == null || id.equals("")) {
-            LOG.info("new zone {} added", zone);
+            LOG.info("new zone {} added by user {}", zone.getName(), AuthorizedUser.log());
         } else {
             zone.setId(Integer.valueOf(id));
-            LOG.info("zone {} changed", zone);
+            LOG.info("zone {} changed {}", zone.getName(), AuthorizedUser.log());
         }
         return zoneService.save(zone);
     }

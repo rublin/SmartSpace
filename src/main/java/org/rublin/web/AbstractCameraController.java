@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import org.rublin.AuthorizedUser;
 import org.rublin.model.Camera;
 import org.rublin.model.Zone;
 import org.rublin.service.CameraService;
@@ -30,16 +31,16 @@ public class AbstractCameraController {
     }
 
     public void delete(int id) {
-        LOG.info("delete camera with id {}", id);
+        LOG.info("delete camera with id {} by user {}", id, AuthorizedUser.log());
         cameraService.delete(id);
     }
 
     public Camera createOrUpdate(Camera camera, Zone zone, String id) {
         if (id == null || id.equals("")) {
-            LOG.info("new camera {} added in zone", camera, zone);
+            LOG.info("new camera {} added in zone {} by user {}", camera, zone.getName(), AuthorizedUser.log());
         } else {
             camera.setId(Integer.valueOf(id));
-            LOG.info("camera {} changed in zone", camera, zone);
+            LOG.info("camera {} changed in zone {} by user {}", camera, zone.getName(), AuthorizedUser.log());
         }
         return cameraService.save(camera, zone);
     }

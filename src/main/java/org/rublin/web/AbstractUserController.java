@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import org.rublin.AuthorizedUser;
 import org.rublin.model.user.User;
 import org.rublin.service.UserService;
 import org.slf4j.Logger;
@@ -29,16 +30,16 @@ public class AbstractUserController {
     }
 
     public void delete(int id) {
-        LOG.info("delete user with id {}", id);
+        LOG.info("delete user with id {} by user {}", id, AuthorizedUser.log());
         userService.delete(id);
     }
 
     public User createOrUpdate(User user, String id) {
         if (id == null || id.equals("")) {
-            LOG.info("user {} added", user);
+            LOG.info("user {} added by user {}", user, AuthorizedUser.log());
         } else {
             user.setId(Integer.valueOf(id));
-            LOG.info("user {} changed", user);
+            LOG.info("user {} changed by user {}", user, AuthorizedUser.log());
         }
         return userService.save(user);
     }
@@ -47,6 +48,6 @@ public class AbstractUserController {
         User user = userService.get(id);
         user.setEnabled(user.isEnabled() ? false : true);
         userService.save(user);
-        LOG.info("user {} was {}", user, user.isEnabled() ? "enabled" : "disabled");
+        LOG.info("user {} was {} by user {}", user, user.isEnabled() ? "enabled" : "disabled", AuthorizedUser.log());
     }
 }

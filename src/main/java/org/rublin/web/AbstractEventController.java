@@ -1,5 +1,6 @@
 package org.rublin.web;
 
+import org.rublin.AuthorizedUser;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.event.AnalogEvent;
@@ -29,7 +30,7 @@ public class AbstractEventController {
     }
 
     public List<Event> getByTrigger(Trigger trigger) {
-        LOG.info("select events by trigger {}", trigger);
+        LOG.info("select events by trigger {}", trigger.getName());
         return (List<Event>)eventService.get(trigger);
     }
 
@@ -41,7 +42,7 @@ public class AbstractEventController {
             event = new DigitEvent(trigger, Boolean.valueOf(state));
         }
         eventService.save(trigger, event);
-        LOG.info("new event {} added", event);
+        LOG.info("new event {} added from trigger {} by user {}", event, trigger.getName(), AuthorizedUser.log());
     }
 
     public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
