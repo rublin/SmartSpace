@@ -8,10 +8,25 @@ SmartSpace model level contains:
 - **Camera** is a ip camera (Hikvision in my example). It uses for notification
 - **Event** is a message from triggers. Event also can be DIGITAL (from DIGITAL trigger) or ANALOG (from ANALOG trigger). Event generates by Arduino, using HTTP GET request.
 - **User** has ROLE_ADMIN or ROLE_USER. User has mobile, email and telegram for manage and notifications.
+
 ## GET /rest/zone/
+
 Returns a collection of Zones.
+
 #### Example result
+
+```json
+[
+  {
+    "id": 10,
+    "name": "Home",
+    "shortName": "h1",
+    "status": "GREEN",
+    "secure": false
+  }
+]
 ```
 
 # Latest Updates
 
+Added REST API methods
