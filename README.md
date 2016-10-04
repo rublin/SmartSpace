@@ -2,7 +2,8 @@
 ### Version is *1.5-SNAPSHOT*
 
 SmartSpace is a Java Enterprise Web Application for manage your smart home or other IoT staff.
-![SmartSpace logo](https://github.com/rublin/SmartSpace/Banner11.png)
+
+![](Banner11.png =150x150)
 
 ### Features:
 
@@ -19,7 +20,8 @@ SmartSpace is a Java Enterprise Web Application for manage your smart home or ot
 * show info from zones
 * arming/disarming zones
 * receiving notifications - *will be added in next release*
-![Telegram Bot](https://github.com/rublin/SmartSpace/TelegramBot.png)
+
+![](TelegramBot.png)
 
 # Installation
 
