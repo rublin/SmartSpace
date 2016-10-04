@@ -27,6 +27,47 @@ Returns a collection of Zones.
 ]
 ```
 
+## GET /rest/zone/:id
+
+Returns a single Zone, specified by the id parameter.
+
+#### Example result
+
+```json
+{
+  "id": 10,
+  "name": "Home",
+  "shortName": "h1",
+  "status": "GREEN",
+  "secure": false
+}
+```
+
+## POST /rest/zone/admin/
+
+Creates a new Zone, returns the created zone if successful. Required JSON in the body:
+
+```json
+{
+  "name": "Test Zone",
+  "shortName": "tz",
+  "status": "GREEN"
+}
+```
+
+#### Example result
+
+```json
+{
+  "id": 11,
+  "name": "Test Zone",
+  "shortName": "tz",
+  "status": "GREEN",
+  "secure": false
+}
+```
+
+
 # Latest Updates
 
 Added REST API methods
