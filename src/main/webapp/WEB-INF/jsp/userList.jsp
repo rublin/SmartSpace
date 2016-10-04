@@ -12,7 +12,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Add user</h2>
-<form method="post" action="/users">
+<form method="post" action="${pageContext.request.contextPath}/users">
     <input type="hidden" name="id" value="${user.id}">
     <dl>
         <dt>First name:</dt>
@@ -73,18 +73,18 @@
                 <c:choose>
                     <c:when test="${user.enabled}">
                     enabled<br>
-                    <a href="/users/enable?id=${user.id}">disable</a></td>
+                    <a href="users/enable?id=${user.id}">disable</a></td>
             </c:when>
             <c:otherwise>
                 disabled<br>
-                <a href="/users/enable?id=${user.id}">enable</a></td>
+                <a href="users/enable?id=${user.id}">enable</a></td>
             </c:otherwise>
                 </c:choose>
             <td>
 
-                <a href="/users/select?id=${user.id}">edit</a>
+                <a href="users/select?id=${user.id}">edit</a>
                 <br>
-                <a href="/users/delete?id=${user.id}">delete</a>
+                <a href="users/delete?id=${user.id}">delete</a>
             </td>
         </tr>
     </c:forEach>

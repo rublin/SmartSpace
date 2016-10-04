@@ -13,7 +13,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Zone</h2>
-<form method="post" action="/zones/edit">
+<form method="post" action="${pageContext.request.contextPath}/zones/edit">
     <input type="hidden" name="id" value="${zone.id}">
     <dl>
         <dt>Name:</dt>
@@ -55,12 +55,12 @@
             </c:choose>
 
         <td>
-            <a href="/zones/select?id=${zone.id}">edit</a>
+            <a href="zones/select?id=${zone.id}">edit</a>
             <br>
-            <a href="/zones/delete?id=${zone.id}">delete</a>
+            <a href="zones/delete?id=${zone.id}">delete</a>
         </td>
         <td>
-            <form method="post" action="/zones/secure">
+            <form method="post" action="zones/secure">
                 <input type="hidden" name="id" value="${zone.id}">
                 <select name="secure">
                     <option>true</option>

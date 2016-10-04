@@ -2,13 +2,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <header>
-    <a href="/">Home</a>
-    <a href="/zones">Zones</a>
-    <a href="/triggers">Triggers</a>
-    <a href="/events">Events</a>
-    <a href="/camera">Camera</a>
-    <a href="/users">Users</a>
-    <a href="/logout">logout</a>
+    <a href="${pageContext.request.contextPath}/">Home</a>
+    <a href="${pageContext.request.contextPath}/zones">Zones</a>
+    <a href="${pageContext.request.contextPath}/triggers">Triggers</a>
+    <a href="${pageContext.request.contextPath}/events">Events</a>
+    <a href="${pageContext.request.contextPath}/camera">Camera</a>
+    <a href="${pageContext.request.contextPath}/users">Users</a>
+    <a href="${pageContext.request.contextPath}/logout">logout</a>
     <%--<a href="/">Home</a>--%>
 </header>
 <%--<h3><a href="${pageContext.request.contextPath}">???</a> </h3>--%>

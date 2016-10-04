@@ -12,7 +12,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Add trigger</h2>
-<form method="post" action="/triggers/edit">
+<form method="post" action="${pageContext.request.contextPath}/triggers/edit">
     <input type="hidden" name="id" value="${trigger.id}">
     <%--Zone:<select name="zoneId">
     <c:forEach var="zone" items="${zoneList}"--%>
@@ -103,9 +103,9 @@
                 </c:choose>
             </td>
             <td>
-                <a href="/triggers/select?id=${trigger.id}">edit</a>
+                <a href="triggers/select?id=${trigger.id}">edit</a>
                 <br>
-                <a href="/triggers/delete?id=${trigger.id}">delete</a>
+                <a href="triggers/delete?id=${trigger.id}">delete</a>
             </td>
         </tr>
     </c:forEach>

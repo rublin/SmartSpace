@@ -12,7 +12,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <h2>Add camera</h2>
-<form method="post" action="/camera/edit">
+<form method="post" action="${pageContext.request.contextPath}/camera/edit">
     <input type="hidden" name="id" value="${camera.id}">
     <%--Zone:<select name="zoneId">
     <c:forEach var="zone" items="${zoneList}"--%>
@@ -75,9 +75,9 @@
                 <img src="${camera.URL}" height="80" width="80">
             </td>
             <td>
-                <a href="/camera/select?id=${camera.id}">edit</a>
+                <a href="${pageContext.request.contextPath}/camera/select?id=${camera.id}">edit</a>
                 <br>
-                <a href="/camera/delete?id=${camera.id}">delete</a>
+                <a href="${pageContext.request.contextPath}/camera/delete?id=${camera.id}">delete</a>
             </td>
         </tr>
     </c:forEach>

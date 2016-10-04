@@ -13,7 +13,7 @@
 <jsp:include page="fragments/bodyHeader.jsp"/>
 
 <h2>Events history</h2>
-<form method="get" action="/events/byTrigger">
+<form method="get" action="${pageContext.request.contextPath}/events/byTrigger">
 <select name="triggerId">
     <c:forEach var="trigger" items="${triggerList}">
         <%--<option>${trigger.id}</option>--%>
@@ -22,7 +22,7 @@
 </select>
     <input type="submit" value="Select">
 </form>
-<form method="get" action="/events/filter">
+<form method="get" action="events/filter">
     <dl>
         <dt>From:</dt>
         <dd><input type="datetime-local" name="from" > </dd>

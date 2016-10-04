@@ -6,7 +6,7 @@ SmartSpace is a Java Enterprise Web Application for manage your smart home or ot
 
 ### Features:
 
-* simple WEB interface
+* simple WEB interface ([demo](http://free.rublin.org:8080/smartSpace/))
 * authorization and role based authentication
 * zones (parts of controlled object) include triggers and cameras
 * triggers generate events
