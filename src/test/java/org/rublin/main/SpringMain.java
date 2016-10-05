@@ -19,6 +19,7 @@ public class SpringMain {
         try (ConfigurableApplicationContext springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml")){
             ZoneService zoneService = (ZoneServiceImpl) springContext.getBean(ZoneService.class);
             UserService userService = (UserService) springContext.getBean(UserService.class);
+//            EventService eventService = (EventService) springContext.getBean(EventService.class);
             Zone zone = zoneService.get(ZoneTestData.ZONE_ID);
 
             System.out.println(Arrays.toString(springContext.getBeanDefinitionNames()));
@@ -26,7 +27,8 @@ public class SpringMain {
             triggerService.save(new Trigger("Move 2 floor 2", Type.DIGITAL), zone);
 //            triggerService.save(new Trigger("Door 2 floor", Type.DIGITAL));
             triggerService.getAll().forEach(System.out::println);
-//            EventService eventService = (EventServiceImpl) springContext.getBean(EventService.class);
+            EventService eventService = (EventServiceImpl) springContext.getBean(EventService.class);
+            eventService.getAlarmed().forEach(System.out::println);
 //            Trigger trigger103 = triggerService.get(103);
 //            Event event = new DigitEvent(trigger103, true);
 //            System.out.println(event);

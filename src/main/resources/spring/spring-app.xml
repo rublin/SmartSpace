@@ -10,8 +10,10 @@
     <!--<context:component-scan base-package="org.rublin.repository.jdbc"/>-->
     <context:component-scan base-package="org.rublin.service"/>
     <context:component-scan base-package="org.rublin.controller"/>
-    <bean id="telegramAPI" class="org.rublin.controller.TelegramStartUp"
+
+    <!--telegram support-->
+    <!--<bean id="telegramAPI" class="org.rublin.controller.TelegramStartUp"
           init-method="startTelegramBotApi" destroy-method="stopTelegramApi">
-        <!--<property name="message" value=""-->
-    </bean>
+        &lt;!&ndash;<property name="message" value=""&ndash;&gt;
+    </bean>-->
 </beans>

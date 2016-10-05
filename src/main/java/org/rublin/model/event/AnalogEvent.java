@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NamedQueries({
         @NamedQuery(name = AnalogEvent.GET, query = "SELECT e FROM AnalogEvent e WHERE e.trigger.id=:trigger_id ORDER BY e.time DESC"),
         @NamedQuery(name = AnalogEvent.GET_ALL, query = "SELECT e FROM AnalogEvent e WHERE e.type='ANALOG'"),
-        @NamedQuery(name = AnalogEvent.GET_ALARMED, query = "SELECT e FROM AnalogEvent e WHERE e.alarm=true"),
+        @NamedQuery(name = AnalogEvent.GET_ALARMED, query = "SELECT e FROM AnalogEvent e WHERE e.type='ANALOG' AND e.alarm=true"),
         @NamedQuery(name = AnalogEvent.GET_BETWEEN, query = "SELECT e FROM AnalogEvent e WHERE e.type='ANALOG' AND e.time BETWEEN :from AND :to")
 })
 @Entity

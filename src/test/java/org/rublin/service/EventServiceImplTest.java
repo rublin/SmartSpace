@@ -77,4 +77,9 @@ public class EventServiceImplTest {
     public void testGet() throws Exception {
         MATCHER.assertCollectionEquals(Arrays.asList(DIGIT_EVENT1, DIGIT_EVENT6, DIGIT_EVENT5, DIGIT_EVENT4, DIGIT_EVENT3, DIGIT_EVENT2), service.get(DIGITAL_TRIGGER));
     }
+
+    @Test
+    public void testGetAlarmed() throws Exception {
+        MATCHER.assertCollectionEquals(Arrays.asList(DIGIT_EVENT1, DIGIT_EVENT2), service.getAlarmed());
+    }
 }
