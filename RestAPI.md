@@ -9,6 +9,8 @@ SmartSpace model level contains:
 - **Event** is a message from triggers. Event also can be DIGITAL (from DIGITAL trigger) or ANALOG (from ANALOG trigger). Event generates by Arduino, using HTTP GET request.
 - **User** has ROLE_ADMIN or ROLE_USER. User has mobile, email and telegram for manage and notifications.
 
+# Zone
+
 ## GET /rest/zone/
 
 Returns a collection of Zones.
@@ -42,8 +44,6 @@ Returns a single Zone, specified by the id parameter.
   "secure": false
 }
 ```
-
-# Zone
 
 ## POST /rest/zone/admin/
 
