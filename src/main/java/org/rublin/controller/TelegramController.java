@@ -1,6 +1,7 @@
 package org.rublin.controller;
 
 import org.rublin.model.Zone;
+import org.rublin.service.CameraService;
 import org.rublin.service.UserService;
 import org.rublin.service.ZoneService;
 import org.rublin.util.Notification;
@@ -30,14 +31,17 @@ public class TelegramController extends TelegramLongPollingCommandBot {
 
     public static Set<Integer> telegramIds = new HashSet<>();
 
-    private static final String BOT_USERNAME = Notification.readProperties().getProperty("telegram.bot.username");
-    private static final String BOT_TOKEN = Notification.readProperties().getProperty("telegram.bot.token");
+    private static final String BOT_USERNAME = Notification.TELEGRAM_BOT_NAME;
+    private static final String BOT_TOKEN = Notification.TELEGRAM_TOKEN;
 
     @Autowired
     private ZoneService zoneService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CameraService cameraService;
 
     private void sendTextMessage(String id, String html) {
         SendMessage sendMessageRequest = new SendMessage();
@@ -144,7 +148,9 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                                     message.getText()));
                         }
                         break;
-                    case "/ca" : sendPhotoMessage(message.getChatId().toString(), new File(Notification.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture")));
+                    case "/ca" : {
+                        cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), new File(Notification.getImageFromCamera(camera))));
+                    }
                         break;
                     case "/gs" : {
                         Collection<Zone> zones = zoneService.getAll();

@@ -46,7 +46,7 @@ public class Zone {
     @JsonIgnore
     private List<Trigger> triggers;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Camera> cameras;
 
@@ -146,6 +146,14 @@ public class Zone {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    public List<Camera> getCameras() {
+        return cameras;
+    }
+
+    public void setCameras(List<Camera> cameras) {
+        this.cameras = cameras;
     }
 
     @Override

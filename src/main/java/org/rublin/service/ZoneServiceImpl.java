@@ -28,6 +28,9 @@ public class ZoneServiceImpl implements ZoneService {
     @Autowired
     private TriggerService triggerService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public Zone save(Zone zone) {
         return zoneRepository.save(zone);
@@ -64,7 +67,7 @@ public class ZoneServiceImpl implements ZoneService {
                         zone.getStatus(),
                         zone.getStatus(),
                         zone.isSecure() ? "GREEN" : "GREY",
-                        zone.isSecure()));
+                        zone.isSecure()), userService.getAll());
     }
 
     @Override
@@ -80,7 +83,7 @@ public class ZoneServiceImpl implements ZoneService {
                 String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
                                 "%s",
                         zone.getName(),
-                        triggerService.getInfo(zone)), "http://192.168.0.31/Streaming/channels/1/picture");
+                        triggerService.getInfo(zone)), zone.getCameras(), userService.getAll());
         return zone;
     }
 
@@ -99,6 +102,6 @@ public class ZoneServiceImpl implements ZoneService {
                 String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
                                 "%s",
                         zone.getName(),
-                        triggerService.getInfo(zone)), "http://192.168.0.31/Streaming/channels/1/picture");
+                        triggerService.getInfo(zone)), zone.getCameras(), userService.getAll());
     }
 }
