@@ -42,7 +42,8 @@ public class AbstractEventController {
             event = new DigitEvent(trigger, Boolean.valueOf(state));
         }
         eventService.save(trigger, event);
-        LOG.info("new event {} added from trigger {} by user {}", event, trigger.getName(), AuthorizedUser.log());
+//        LOG.info("new event {} added from trigger {} by user {}", event, trigger.getName(), AuthorizedUser.log());
+        LOG.info("new event {} added from trigger {}", event, trigger.getName());
     }
 
     public List<Event> getBetween(LocalDateTime from, LocalDateTime to) {
