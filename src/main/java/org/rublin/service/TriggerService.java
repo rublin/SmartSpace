@@ -16,6 +16,6 @@ public interface TriggerService {
     Trigger get(int id) throws NotFoundException;
     List<Trigger> getByState(boolean state);
     Collection<Trigger> getAll();
+    String getHtmlInfo(Zone zone);
     String getInfo(Zone zone);
-
 }

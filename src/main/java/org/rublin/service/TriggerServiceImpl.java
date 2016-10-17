@@ -55,7 +55,7 @@ public class TriggerServiceImpl implements TriggerService {
     }
 
     @Override
-    public String getInfo(Zone zone) {
+    public String getHtmlInfo(Zone zone) {
         StringBuilder result = new StringBuilder("<h2>Triggers</h2>\n" +
                 "<table >\n" +
                 "    <thead>\n" +
@@ -65,15 +65,25 @@ public class TriggerServiceImpl implements TriggerService {
                 "    </tr>\n" +
                 "    </thead>\n");
         for (Trigger t : zone.getTriggers()) {
-            List<Event> events = eventService.get(t);
             result.append(String.format("<tr style=\"color: %s\">" +
                             "        <td>%s</td><td>%s</td>" +
                             "</tr>",
-                    Boolean.parseBoolean(events.get(0).getState().toString()) ? "green" : "red",
+                    t.isState() ? "green" : "red",
                     t.getName(),
-                    Boolean.parseBoolean(events.get(0).getState().toString()) ? "close | without move" : "open | with move"));
+                    t.isState() ? "GOOD" : "BAD"));
         }
         LOG.info(result.toString());
+        return result.toString();
+    }
+
+    @Override
+    public String getInfo(Zone zone) {
+        StringBuilder result = new StringBuilder(String.format("Zone %s notification:\n", zone.getName()));
+        for (Trigger t : zone.getTriggers()) {
+            result.append(String.format("Trigger: <b>%s</b>; Status: <b>%s</b>\n",
+                    t.getName(),
+                    t.isState() ? "GOOD" : "BAD"));
+        }
         return result.toString();
     }
 }

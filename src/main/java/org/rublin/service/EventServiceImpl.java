@@ -22,20 +22,19 @@ public class EventServiceImpl implements EventService {
     private EventRepository eventRepository;
     @Autowired
     private ZoneService zoneService;
+    @Autowired
+    private TriggerService triggerService;
 
     @Override
     public void save(Trigger trigger, Event event) {
         Zone zone = trigger.getZone();
+        setTriggerState(event, trigger, zone);
         if (trigger.isSecure()) {
             if (zone.isSecure()) {
                 if (trigger.getType() == Type.DIGITAL || trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
-                    event.setAlarm(true);
+                    alarmEvent(event, trigger, zone);
+                } else {
                     eventRepository.save(trigger, event);
-                    if (zone.getStatus() != ZoneStatus.RED) {
-                        zoneService.setStatus(zone, ZoneStatus.RED);
-                    } else {
-                        zoneService.sendNotification(zone);
-                    }
                 }
             } else {
                 eventRepository.save(trigger, event);
@@ -73,5 +72,17 @@ public class EventServiceImpl implements EventService {
         event.setAlarm(true);
         eventRepository.save(trigger, event);
         zoneService.setStatus(zone, ZoneStatus.RED);
+        zoneService.sendNotification(zone);
+    }
+
+    private void setTriggerState (Event event, Trigger trigger, Zone zone) {
+        if (event.isDigital()) {
+            trigger.setState((Boolean) event.getState());
+        } else if (trigger.getMinThreshold() > (double)event.getState() || trigger.getMaxThreshold() < (double)event.getState()){
+            trigger.setState(false);
+        } else {
+            trigger.setState(true);
+        }
+        triggerService.save(trigger, zone);
     }
 }

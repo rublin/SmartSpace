@@ -21,10 +21,10 @@ public class TriggerTestData {
             "        <th>State</th>\n" +
             "    </tr>\n" +
             "    </thead>\n" +
-            "<tr style=\"color: green\">        <td>Door 1 floor</td><td>close | without move</td></tr><tr style=\"color: red\">        <td>Temperature 2 floor</td><td>open | with move</td></tr>";
+            "<tr style=\"color: green\">        <td>Door 1 floor</td><td>GOOD</td></tr><tr style=\"color: green\">        <td>Temperature 2 floor</td><td>GOOD</td></tr>";
 
 
-    public static final Trigger DIGITAL_TRIGGER = new Trigger(DIGITAL_TRIGGER_ID, ZONE, "Door 1 floor", Type.DIGITAL, false);
+    public static final Trigger DIGITAL_TRIGGER = new Trigger(DIGITAL_TRIGGER_ID, ZONE, "Door 1 floor", Type.DIGITAL, true);
     public static final Trigger ANALOG_TRIGGER = new Trigger(ANALOG_TRIGGER_ID, ZONE, "Temperature 2 floor", Type.ANALOG, false, 15.0, 25.0);
 
     public static final ModelMatcher<Trigger> MATCHER = new ModelMatcher<>(Trigger.class);

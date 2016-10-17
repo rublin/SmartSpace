@@ -54,12 +54,12 @@ public class EventServiceImplTest {
 
     @Test(expected = DataAccessException.class)
     public void testDigitalDuplicateSave() throws Exception {
-        service.save(DIGITAL_TRIGGER, new DigitEvent(DIGITAL_TRIGGER, false, LocalDateTime.of(2016, Month.JUNE, 20, 11, 00, 00)));
+        service.save(DIGITAL_TRIGGER, new DigitEvent(DIGITAL_TRIGGER, true, LocalDateTime.of(2016, Month.JUNE, 20, 11, 00, 00)));
     }
 
     @Test(expected = DataAccessException.class)
     public void testAnalogDuplicateSave() throws Exception {
-        service.save(ANALOG_TRIGGER, new AnalogEvent(ANALOG_TRIGGER, 123.189, LocalDateTime.of(2016, Month.JUNE, 1, 21, 00, 00)));
+        service.save(ANALOG_TRIGGER, new AnalogEvent(ANALOG_TRIGGER, 21.0, LocalDateTime.of(2016, Month.JUNE, 1, 21, 00, 00)));
     }
 
     @Test

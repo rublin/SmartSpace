@@ -1,5 +1,6 @@
 package org.rublin.util;
 
+import org.rublin.controller.TelegramController;
 import org.rublin.model.Camera;
 import org.rublin.model.user.User;
 import org.rublin.service.UserService;
@@ -60,6 +61,9 @@ public class Notification {
     public static final String TELEGRAM_TOKEN;
     public static final boolean USE_TELEGRAM_NOTIFICATION;
 
+    @Autowired
+    private static TelegramController telegramController;
+
 
     private static Properties getMailProperties() {
         Properties mailProperties = new Properties();
@@ -80,7 +84,7 @@ public class Notification {
         users.forEach(user -> emails.append(user.getEmail() + ", "));
         return emails.substring(0, emails.lastIndexOf(","));
     }
-    public static void sendMailWithAttach(String subject, String text, List<Camera> cameraList, List<User> users) {
+    public static void sendMailWithAttach(String subject, String text, List<File> photos, List<User> users) {
         if (USE_MAIL_NOTIFICATION) {
             Session session = Session.getInstance(getMailProperties(),
                     new javax.mail.Authenticator() {
@@ -114,8 +118,9 @@ public class Notification {
 
                 // second part (the image)
                 messageBodyPart = new MimeBodyPart();
-                for (Camera camera : cameraList) {
-                    String filename = getImageFromCamera(camera);
+                for (File  photo : photos) {
+                    String filename = photo.getPath();
+
                     DataSource fds = new FileDataSource(filename);
 
                     messageBodyPart.setDataHandler(new DataHandler(fds));
@@ -157,7 +162,6 @@ public class Notification {
 
                 Transport.send(message);
                 LOG.info("Mail {} send success", subject);
-
             } catch (MessagingException e) {
                 LOG.error("Mail {} send error. Exception is: {}", subject, e.getMessage());
                 throw new RuntimeException(e);

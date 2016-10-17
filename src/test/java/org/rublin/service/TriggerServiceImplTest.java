@@ -77,6 +77,6 @@ public class TriggerServiceImplTest {
 
     @Test
     public void testGetInfo() throws Exception {
-        Assert.assertEquals(TRIGGERS_INFO, service.getInfo(zoneService.get(ZONE_ID)));
+        Assert.assertEquals(TRIGGERS_INFO, service.getHtmlInfo(zoneService.get(ZONE_ID)));
     }
 }

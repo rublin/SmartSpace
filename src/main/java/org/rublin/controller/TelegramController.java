@@ -30,6 +30,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     private static final Logger LOG = getLogger(Notification.class);
 
     public static Set<Integer> telegramIds = new HashSet<>();
+    private static Set<Long> chatIds = new HashSet<>();
 
     private static final String BOT_USERNAME = Notification.TELEGRAM_BOT_NAME;
     private static final String BOT_TOKEN = Notification.TELEGRAM_TOKEN;
@@ -97,11 +98,23 @@ public class TelegramController extends TelegramLongPollingCommandBot {
         return false;
     }
 
+    public void sendAlarmMessage(String message) {
+        chatIds.forEach(id -> sendTextMessage(id.toString(), message));
+    }
+    public void sendAlarmMessage(List<File> photos) {
+        photos.forEach(photo ->
+                chatIds.forEach(id ->
+                        sendPhotoMessage(id.toString(), photo)
+                ));
+
+    }
+
     @Override
     public void processNonCommandUpdate(Update update) {
         if(update.hasMessage()) {
             Message message = update.getMessage();
             if (isAuthorize(message.getFrom())){
+                chatIds.add(message.getChatId());
                 LOG.info(message.getText().substring(0,3).toLowerCase());
                 switch (message.getText().substring(0,3).toLowerCase()) {
                     case "/aa": {

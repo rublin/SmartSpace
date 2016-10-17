@@ -1,5 +1,7 @@
 package org.rublin.service;
 
+import org.rublin.controller.TelegramController;
+import org.rublin.model.Camera;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.repository.ZoneRepository;
@@ -10,7 +12,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -30,6 +35,9 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TelegramController telegramController;
 
     @Override
     public Zone save(Zone zone) {
@@ -74,16 +82,15 @@ public class ZoneServiceImpl implements ZoneService {
     public Zone setStatus(Zone zone, ZoneStatus status) {
         zone.setStatus(status);
         zoneRepository.save(zone);
-        /*try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
+ /*       List<File> photos = getPhotos(zone);
+        String message = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
+                        "%s",
+                zone.getName(),
+                triggerService.getHtmlInfo(zone));
+        telegramController.sendAlarmMessage(triggerService.getInfo(zone));
+        telegramController.sendAlarmMessage(photos);
         Notification.sendMailWithAttach(String.format("Zone %s activity", zone.getName()),
-                String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
-                                "%s",
-                        zone.getName(),
-                        triggerService.getInfo(zone)), zone.getCameras(), userService.getAll());
+                message, photos, userService.getAll());*/
         return zone;
     }
 
@@ -98,10 +105,22 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public void sendNotification(Zone zone) {
-        Notification.sendMailWithAttach(String.format("Zone %s (%s) triggers notification", zone.getName(), zone.getShortName()),
-                String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
-                                "%s",
-                        zone.getName(),
-                        triggerService.getInfo(zone)), zone.getCameras(), userService.getAll());
+        String subject = String.format("Zone %s (%s) triggers notification", zone.getName(), zone.getShortName());
+        String mailBody = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
+                        "%s",
+                zone.getName(),
+                triggerService.getHtmlInfo(zone));
+        List<File> photos = getPhotos(zone);
+        telegramController.sendAlarmMessage(triggerService.getInfo(zone));
+        telegramController.sendAlarmMessage(photos);
+        Notification.sendMailWithAttach(subject,
+                mailBody, photos, userService.getAll());
+        LOG.info("Notification sending");
+    }
+
+    private List<File> getPhotos(Zone zone) {
+        List<File> photos = new ArrayList<>();
+        zone.getCameras().forEach(camera -> photos.add(new File(Notification.getImageFromCamera(camera))));
+        return photos;
     }
 }
