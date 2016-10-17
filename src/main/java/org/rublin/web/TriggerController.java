@@ -3,9 +3,7 @@ package org.rublin.web;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.Zone;
-import org.rublin.service.TriggerService;
 import org.rublin.service.ZoneService;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Ruslan Sheremet (rublin) on 11.09.2016.

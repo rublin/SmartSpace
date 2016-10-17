@@ -55,6 +55,7 @@ public class CameraServiceImplTest {
 
     @Test
     public void testGet() throws Exception {
+//        Test get by id. Expected camera entity
         Camera camera = service.get(CAM_ID_102);
         MATCHER.assertEquals(CAM_102, camera);
     }

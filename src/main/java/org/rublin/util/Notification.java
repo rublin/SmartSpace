@@ -1,17 +1,15 @@
 package org.rublin.util;
 
-import org.rublin.controller.TelegramController;
 import org.rublin.model.Camera;
 import org.rublin.model.user.User;
-import org.rublin.service.UserService;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import sun.misc.BASE64Encoder;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.*;
+import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -61,10 +59,6 @@ public class Notification {
     public static final String TELEGRAM_TOKEN;
     public static final boolean USE_TELEGRAM_NOTIFICATION;
 
-    @Autowired
-    private static TelegramController telegramController;
-
-
     private static Properties getMailProperties() {
         Properties mailProperties = new Properties();
         mailProperties.put("mail.smtp.auth", "true");
@@ -87,7 +81,7 @@ public class Notification {
     public static void sendMailWithAttach(String subject, String text, List<File> photos, List<User> users) {
         if (USE_MAIL_NOTIFICATION) {
             Session session = Session.getInstance(getMailProperties(),
-                    new javax.mail.Authenticator() {
+                    new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(LOGIN, PASSWORD);
                         }
@@ -146,7 +140,7 @@ public class Notification {
     public static void sendMail(String subject, String text, List<User> users) {
         if (USE_MAIL_NOTIFICATION) {
             Session session = Session.getInstance(getMailProperties(),
-                    new javax.mail.Authenticator() {
+                    new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(LOGIN, PASSWORD);
                         }

@@ -2,9 +2,6 @@ package org.rublin.web;
 
 import org.rublin.model.user.Role;
 import org.rublin.model.user.User;
-import org.rublin.service.UserService;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Ruslan Sheremet (rublin) on 18.09.2016.

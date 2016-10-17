@@ -1,6 +1,5 @@
 package org.rublin.web;
 
-import org.rublin.AuthorizedUser;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.event.AnalogEvent;

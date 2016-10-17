@@ -1,14 +1,8 @@
 package org.rublin.web;
 
 import org.rublin.model.Trigger;
-import org.rublin.model.Type;
-import org.rublin.model.event.AnalogEvent;
-import org.rublin.model.event.DigitEvent;
-import org.rublin.model.event.Event;
-import org.rublin.service.EventService;
 import org.rublin.service.TriggerService;
 import org.rublin.util.TimeUtil;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Ruslan Sheremet (rublin) on 15.09.2016.

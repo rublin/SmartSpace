@@ -172,6 +172,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                         }
                         break;
                     }
+                    default: sendTextMessage(message.getChatId().toString(), String.format("Your command does not support. Try to use /help"));
                 }
             } else {
                 sendTextMessage(message.getChatId().toString(), String.format(

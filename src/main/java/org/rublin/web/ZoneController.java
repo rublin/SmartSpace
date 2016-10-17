@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 /**
  * Created by Ruslan Sheremet (rublin) on 15.09.2016.
  */

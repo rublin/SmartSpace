@@ -1,7 +1,6 @@
 package org.rublin.service;
 
 import org.rublin.controller.TelegramController;
-import org.rublin.model.Camera;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.repository.ZoneRepository;
