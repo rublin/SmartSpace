@@ -1,5 +1,6 @@
 package org.rublin.service;
 
+import org.rublin.controller.ModemController;
 import org.rublin.controller.TelegramController;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
@@ -37,6 +38,9 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Autowired
     private TelegramController telegramController;
+
+    @Autowired
+    private ModemController modemController;
 
     @Override
     public Zone save(Zone zone) {
@@ -114,6 +118,7 @@ public class ZoneServiceImpl implements ZoneService {
         telegramController.sendAlarmMessage(photos);
         Notification.sendMailWithAttach(subject,
                 mailBody, photos, userService.getAll());
+        modemController.call("0950724287");
         LOG.info("Notification sending");
     }
 

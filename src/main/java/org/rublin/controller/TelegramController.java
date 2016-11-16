@@ -192,14 +192,4 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     public String getBotToken() {
         return BOT_TOKEN;
     }
-
-
-    /*public static void main(String[] args) {
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        try {
-            telegramBotsApi.registerBot(new Telegram());
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

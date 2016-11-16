@@ -46,9 +46,9 @@ public class Notification {
         USE_TELEGRAM_NOTIFICATION = Boolean.parseBoolean(properties.getProperty("telegram.bot"));
         TELEGRAM_BOT_NAME = properties.getProperty("telegram.bot.username");
         TELEGRAM_TOKEN = properties.getProperty("telegram.bot.token");
-
-
+        SMS_PORT = properties.getProperty("sms.port");
     }
+
     private static final boolean USE_MAIL_NOTIFICATION;
     private static final String SMTP;
     private static final String PORT;
@@ -58,6 +58,7 @@ public class Notification {
     public static final String TELEGRAM_BOT_NAME;
     public static final String TELEGRAM_TOKEN;
     public static final boolean USE_TELEGRAM_NOTIFICATION;
+    public static final String SMS_PORT;
 
     private static Properties getMailProperties() {
         Properties mailProperties = new Properties();

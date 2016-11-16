@@ -16,4 +16,7 @@
           init-method="startTelegramBotApi" destroy-method="stopTelegramApi">
         <!--<property name="message" value=""-->
     </bean>
+    <!--sms support-->
+    <bean id="modemController" class="org.rublin.controller.ModemController" init-method="start" destroy-method="stop">
+    </bean>
 </beans>
