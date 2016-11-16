@@ -1,11 +1,11 @@
 package org.rublin.service;
 
+import org.rublin.controller.EmailController;
 import org.rublin.controller.ModemController;
 import org.rublin.controller.TelegramController;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.repository.ZoneRepository;
-import org.rublin.util.Notification;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class ZoneServiceImpl implements ZoneService {
         }
         zoneRepository.save(zone);
         LOG.info("change Zone secure state to {}", zone.isSecure());
-        Notification.sendMail(String.format("Zone %s ", zone.getName()),
+        EmailController.sendMail(String.format("Zone %s ", zone.getName()),
                 String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +
                                 "<h2>Status: <span style=\"color: %s;\">%s</span></h2>\n" +
                                 "<h2>Secure: <span style=\"color: %s;\">%s</span></h2>",
@@ -92,7 +92,7 @@ public class ZoneServiceImpl implements ZoneService {
                 triggerService.getHtmlInfo(zone));
         telegramController.sendAlarmMessage(triggerService.getInfo(zone));
         telegramController.sendAlarmMessage(photos);
-        Notification.sendMailWithAttach(String.format("Zone %s activity", zone.getName()),
+        EmailController.sendMailWithAttach(String.format("Zone %s activity", zone.getName()),
                 message, photos, userService.getAll());*/
         return zone;
     }
@@ -116,7 +116,7 @@ public class ZoneServiceImpl implements ZoneService {
         List<File> photos = getPhotos(zone);
         telegramController.sendAlarmMessage(triggerService.getInfo(zone));
         telegramController.sendAlarmMessage(photos);
-        Notification.sendMailWithAttach(subject,
+        EmailController.sendMailWithAttach(subject,
                 mailBody, photos, userService.getAll());
         modemController.call("0950724287");
         LOG.info("Notification sending");
@@ -124,7 +124,7 @@ public class ZoneServiceImpl implements ZoneService {
 
     private List<File> getPhotos(Zone zone) {
         List<File> photos = new ArrayList<>();
-        zone.getCameras().forEach(camera -> photos.add(new File(Notification.getImageFromCamera(camera))));
+        zone.getCameras().forEach(camera -> photos.add(new File(EmailController.getImageFromCamera(camera))));
         return photos;
     }
 }

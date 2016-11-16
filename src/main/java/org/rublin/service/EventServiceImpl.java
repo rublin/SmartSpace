@@ -5,7 +5,6 @@ import org.rublin.model.Type;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
-import org.rublin.util.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.rublin.repository.EventRepository;

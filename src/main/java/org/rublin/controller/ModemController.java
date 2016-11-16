@@ -2,14 +2,17 @@ package org.rublin.controller;
 
 import jssc.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.rublin.util.Resources.*;
+import static org.slf4j.LoggerFactory.getLogger;
+
 
 /**
  * Send mobile notification (sms or calls) using modem (usb modem or mobile phone
  */
 public class ModemController {
 
-    private static Logger LOG = LoggerFactory.getLogger(ModemController.class);
+    private static final Logger LOG = getLogger(ModemController.class);
 
     private static SerialPort serialPort;
     private static final String AT_CALL = "ATD";
@@ -77,7 +80,7 @@ public class ModemController {
 
     public void start() {
         try {
-            serialPort = new SerialPort ("COM5");
+            serialPort = new SerialPort(SMS_PORT);
             serialPort.openPort ();
             serialPort.setParams (SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.writeBytes("AT\r".getBytes());

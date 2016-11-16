@@ -4,7 +4,6 @@ import org.rublin.model.Zone;
 import org.rublin.service.CameraService;
 import org.rublin.service.UserService;
 import org.rublin.service.ZoneService;
-import org.rublin.util.Notification;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +19,8 @@ import java.io.File;
 import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.rublin.util.Resources.*;
+
 
 /**
  * Created by Sheremet on 28.08.2016.
@@ -27,13 +28,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Controller
 public class TelegramController extends TelegramLongPollingCommandBot {
 
-    private static final Logger LOG = getLogger(Notification.class);
+    private static final Logger LOG = getLogger(EmailController.class);
 
     public static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
 
-    private static final String BOT_USERNAME = Notification.TELEGRAM_BOT_NAME;
-    private static final String BOT_TOKEN = Notification.TELEGRAM_TOKEN;
+    private static final String BOT_USERNAME = TELEGRAM_BOT_NAME;
+    private static final String BOT_TOKEN = TELEGRAM_TOKEN;
 
     @Autowired
     private ZoneService zoneService;
@@ -59,7 +60,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     private void sendPhotoMessage(String id, File file) {
         SendPhoto sendPhotoRequest = new SendPhoto();
         sendPhotoRequest.setChatId(id);
-//        sendPhotoRequest.setNewPhoto(Notification.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
+//        sendPhotoRequest.setNewPhoto(EmailController.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
         sendPhotoRequest.setNewPhoto(file);
         LOG.info("Sending photo: {}", sendPhotoRequest.toString());
         try {
@@ -162,7 +163,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                         }
                         break;
                     case "/ca" : {
-                        cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), new File(Notification.getImageFromCamera(camera))));
+                        cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), new File(EmailController.getImageFromCamera(camera))));
                     }
                         break;
                     case "/gs" : {

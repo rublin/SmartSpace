@@ -1,4 +1,4 @@
-package org.rublin.util;
+package org.rublin.controller;
 
 import org.rublin.model.Camera;
 import org.rublin.model.user.User;
@@ -23,42 +23,14 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.rublin.util.Resources.*;
 
 /**
  * Created by Sheremet on 21.08.2016.
  */
-public class Notification {
-    private static final String PROPERTIES = "notification/mail.properties";
-    private static final Logger LOG = getLogger(Notification.class);
-    static {
-        Properties properties = new Properties();
-        try (InputStream input = Notification.class.getClassLoader().getResourceAsStream(PROPERTIES)) {
-            properties.load(input);
-        } catch (IOException e) {
-            LOG.error("Error to read mail.property file. Exception is: " + e.getMessage());
-        }
-        USE_MAIL_NOTIFICATION = Boolean.parseBoolean(properties.getProperty("mail.notification"));
-        SMTP = properties.getProperty("mail.smtp");
-        PORT = properties.getProperty("mail.port");
-        LOGIN = properties.getProperty("mail.login");
-        PASSWORD = properties.getProperty("mail.password");
-        FROM = properties.getProperty("mail.from");
-        USE_TELEGRAM_NOTIFICATION = Boolean.parseBoolean(properties.getProperty("telegram.bot"));
-        TELEGRAM_BOT_NAME = properties.getProperty("telegram.bot.username");
-        TELEGRAM_TOKEN = properties.getProperty("telegram.bot.token");
-        SMS_PORT = properties.getProperty("sms.port");
-    }
+public class EmailController {
+    private static final Logger LOG = getLogger(EmailController.class);
 
-    private static final boolean USE_MAIL_NOTIFICATION;
-    private static final String SMTP;
-    private static final String PORT;
-    private static final String LOGIN;
-    private static final String PASSWORD;
-    private static final String FROM;
-    public static final String TELEGRAM_BOT_NAME;
-    public static final String TELEGRAM_TOKEN;
-    public static final boolean USE_TELEGRAM_NOTIFICATION;
-    public static final String SMS_PORT;
 
     private static Properties getMailProperties() {
         Properties mailProperties = new Properties();
@@ -191,11 +163,5 @@ public class Notification {
             LOG.error("Error to download image from camera " + camera.getName() + e.getMessage());
         }
         return filename;
-    }
-
-    public static void main(String[] args) {
-//        sendMail("Test mail", "Some text here...");
-//        sendMailWithAttach("test", "Some text and image", "http://sd.keepcalm-o-matic.co.uk/i/glory-to-ukraine-and-fuck-putin.png");
-//        System.out.println(getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"));
     }
 }
