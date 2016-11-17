@@ -46,6 +46,7 @@ public class ModemController {
 
     /**
      * Send sms with message to the number
+     *
      * @param number mobile number
      * @param message sms text message
      * @return
@@ -56,6 +57,7 @@ public class ModemController {
             serialPort.writeBytes(AT_TEXT_MODE.getBytes());
             serialPort.writeBytes(String.format("%s\"%s\"\r", AT_SMS, number).getBytes());
             serialPort.writeBytes(String.format("%s\032\r", message).getBytes());
+            LOG.info("Send sms to {} success", number);
             return serialPort.readString();
         } catch (SerialPortException e) {
             LOG.error(e.getMessage());

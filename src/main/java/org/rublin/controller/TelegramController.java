@@ -4,6 +4,7 @@ import org.rublin.model.Zone;
 import org.rublin.service.CameraService;
 import org.rublin.service.UserService;
 import org.rublin.service.ZoneService;
+import org.rublin.util.Image;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -163,7 +164,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                         }
                         break;
                     case "/ca" : {
-                        cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), new File(EmailController.getImageFromCamera(camera))));
+                        cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), Image.getImageFromCamera(camera)));
                     }
                         break;
                     case "/gs" : {

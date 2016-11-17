@@ -1,5 +1,6 @@
 package org.rublin.main;
 
+import org.rublin.controller.ModemController;
 import org.rublin.model.*;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
@@ -13,6 +14,7 @@ import org.rublin.repository.mock.InMemoryTriggerRepository;
 public class Main {
     private static final int ZONE_ID = 10;
     public static void main(String[] args) throws InterruptedException {
+        /*
         InMemoryObjectRepository objectRepository = new InMemoryObjectRepository();
         InMemoryTriggerRepository triggerRepository = new InMemoryTriggerRepository();
         InMemoryEventRepository stateRepository = new InMemoryEventRepository();
@@ -36,5 +38,12 @@ public class Main {
         Trigger analog = triggerRepository.save(new Trigger("FAT"), obj);
         stateRepository.save(triggerRepository.get(analog.getId()), new AnalogEvent(analog, 12.0));
         stateRepository.get(triggerRepository.get(analog.getId())).forEach(System.out::println);
+        */
+//        ModemController modem = new ModemController();
+//        modem.start();
+//        modem.sendSms("+380950724287", "Zone Zone1 notification:\n" +
+//                "Trigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("\\<.*\\>", ""));
+//        modem.stop();
+        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
     }
 }

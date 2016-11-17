@@ -1,21 +1,18 @@
 package org.rublin.service;
 
-import org.rublin.controller.EmailController;
 import org.rublin.controller.ModemController;
 import org.rublin.controller.TelegramController;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.repository.ZoneRepository;
+import org.rublin.controller.Notification;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -31,16 +28,7 @@ public class ZoneServiceImpl implements ZoneService {
     private ZoneRepository zoneRepository;
 
     @Autowired
-    private TriggerService triggerService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TelegramController telegramController;
-
-    @Autowired
-    private ModemController modemController;
+    private Notification notification;
 
     @Override
     public Zone save(Zone zone) {
@@ -70,30 +58,13 @@ public class ZoneServiceImpl implements ZoneService {
         }
         zoneRepository.save(zone);
         LOG.info("change Zone secure state to {}", zone.isSecure());
-        EmailController.sendMail(String.format("Zone %s ", zone.getName()),
-                String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +
-                                "<h2>Status: <span style=\"color: %s;\">%s</span></h2>\n" +
-                                "<h2>Secure: <span style=\"color: %s;\">%s</span></h2>",
-                        zone.getName(),
-                        zone.getStatus(),
-                        zone.getStatus(),
-                        zone.isSecure() ? "GREEN" : "GREY",
-                        zone.isSecure()), userService.getAll());
+        notification.sendInfoToAllUsers(zone);
     }
 
     @Override
     public Zone setStatus(Zone zone, ZoneStatus status) {
         zone.setStatus(status);
         zoneRepository.save(zone);
- /*       List<File> photos = getPhotos(zone);
-        String message = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
-                        "%s",
-                zone.getName(),
-                triggerService.getHtmlInfo(zone));
-        telegramController.sendAlarmMessage(triggerService.getInfo(zone));
-        telegramController.sendAlarmMessage(photos);
-        EmailController.sendMailWithAttach(String.format("Zone %s activity", zone.getName()),
-                message, photos, userService.getAll());*/
         return zone;
     }
 
@@ -108,23 +79,9 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public void sendNotification(Zone zone) {
-        String subject = String.format("Zone %s (%s) triggers notification", zone.getName(), zone.getShortName());
-        String mailBody = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
-                        "%s",
-                zone.getName(),
-                triggerService.getHtmlInfo(zone));
-        List<File> photos = getPhotos(zone);
-        telegramController.sendAlarmMessage(triggerService.getInfo(zone));
-        telegramController.sendAlarmMessage(photos);
-        EmailController.sendMailWithAttach(subject,
-                mailBody, photos, userService.getAll());
-        modemController.call("0950724287");
         LOG.info("Notification sending");
+        notification.sendAlarmNotification(zone);
     }
 
-    private List<File> getPhotos(Zone zone) {
-        List<File> photos = new ArrayList<>();
-        zone.getCameras().forEach(camera -> photos.add(new File(EmailController.getImageFromCamera(camera))));
-        return photos;
-    }
+
 }
