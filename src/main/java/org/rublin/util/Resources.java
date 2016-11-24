@@ -25,4 +25,5 @@ public class Resources {
     public static final String TELEGRAM_BOT_NAME = PROPERTIES.getString("telegram.bot.username");
     public static final String TELEGRAM_TOKEN = PROPERTIES.getString("telegram.bot.token");
     public static final String SMS_PORT = PROPERTIES.getString("sms.port");
+    public static final boolean USE_SMS = Boolean.valueOf(PROPERTIES.getString("sms.send"));
 }

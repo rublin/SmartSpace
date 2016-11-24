@@ -46,16 +46,11 @@ public class Main {
 
         ModemController modemController = new ModemController();
         modemController.start();
-        List<String> sms = modemController.readSms();
+        modemController.call("+380950724287");
+        /*List<String> sms = modemController.readSms();
         StringBuffer sb = new StringBuffer();
         sms.forEach(System.out::println);
         sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r"));
-        System.out.println(sb);
-//        sms.forEach("www.smspdu.com/?action=ppdu&pdu="::concat);
-//        System.out.println(String.join("\r", sms));
-//        emailController.sendMail("SMS received", String.join("\r", sms), Arrays.asList("toor.ua@gmail.com"));
-//        modemController.readSms().forEach(System.out::println);
-//        System.out.println(modemController.readSms(0));
-//        System.out.println(modemController.readSms(3));
+        System.out.println(sb);*/
     }
 }

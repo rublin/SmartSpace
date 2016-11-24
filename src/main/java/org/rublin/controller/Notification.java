@@ -1,13 +1,12 @@
 package org.rublin.controller;
 
-import org.rublin.controller.EmailController;
-import org.rublin.controller.ModemController;
-import org.rublin.controller.TelegramController;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
 import org.rublin.service.TriggerService;
 import org.rublin.service.UserService;
 import org.rublin.util.Image;
+import org.rublin.util.Resources;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.rublin.util.Resources.USE_MAIL_NOTIFICATION;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Send different types of notifications, using other controllers
@@ -29,6 +29,7 @@ import static org.rublin.util.Resources.USE_MAIL_NOTIFICATION;
  */
 @Controller
 public class Notification {
+    private static final Logger LOG = getLogger(Notification.class);
 
     @Autowired
     private  EmailController emailController;
@@ -61,6 +62,7 @@ public class Notification {
                 zone.isSecure());
         List<String> emails = getEmails(userService.getAll());
         sendEmail(emails, subject, message);
+        LOG.info("Sending info notification {} to {}", subject, emails);
     }
 
     public  void sendAlarmNotification(Zone zone) {
@@ -74,19 +76,35 @@ public class Notification {
         sendTelegram(message);
         sendTelegram(photos);
         sendEmail(getEmails(userService.getAll()), subject, mailBody, photos);
-        userService.getAll().forEach(
-                user -> sendSms(user.getMobile(), message.replaceAll("<[^>]*>", ""))
-        );
-
-        /**
-         * Send call notification if is night (time between 22 and 06)
-         */
-        LocalDateTime time = LocalDateTime.now();
-        if (time.getHour() >= 22 || time.getHour() <= 6) {
-            userService.getAll().forEach(
-                    user -> sendCall(user.getMobile())
-            );
+        LOG.info("Using sms notification is {}", Resources.USE_SMS);
+        if (Resources.USE_SMS) {
+            /**
+             * Send call notification if it is night (time between 22 and 06)
+             */
+            LocalDateTime time = LocalDateTime.now();
+            if (time.getHour() >= 22 || time.getHour() <= 6) {
+                userService.getAll().forEach(
+                        user -> sendCall(user.getMobile())
+                );
+            } else {
+                /**
+                 * Send sms notification to each user
+                 */
+                userService.getAll().forEach(
+                        user -> sendSms(user.getMobile(), message.replaceAll("<[^>]*>", ""))
+                );
+            }
+        } else {
+            /**
+             * Send short call notifications
+             * 5000 equals to 5 sec
+             */
+            userService.getAll().forEach(user -> sendCall(user.getMobile(), 5000));
         }
+    }
+
+    private void sendCall(String mobile, int i) {
+        modemController.call(mobile, i);
     }
 
     private  void sendEmail(List<String> emails, String subject, String message, List<File> files) {
