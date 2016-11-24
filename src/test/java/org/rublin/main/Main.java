@@ -1,12 +1,9 @@
 package org.rublin.main;
 
 import org.rublin.controller.ModemController;
-import org.rublin.model.*;
-import org.rublin.model.event.AnalogEvent;
-import org.rublin.model.event.DigitEvent;
-import org.rublin.repository.mock.InMemoryObjectRepository;
-import org.rublin.repository.mock.InMemoryEventRepository;
-import org.rublin.repository.mock.InMemoryTriggerRepository;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Sheremet on 15.06.2016.
@@ -44,6 +41,21 @@ public class Main {
 //        modem.sendSms("+380950724287", "Zone Zone1 notification:\n" +
 //                "Trigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("\\<.*\\>", ""));
 //        modem.stop();
-        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
+//        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
+
+
+        ModemController modemController = new ModemController();
+        modemController.start();
+        List<String> sms = modemController.readSms();
+        StringBuffer sb = new StringBuffer();
+        sms.forEach(System.out::println);
+        sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r"));
+        System.out.println(sb);
+//        sms.forEach("www.smspdu.com/?action=ppdu&pdu="::concat);
+//        System.out.println(String.join("\r", sms));
+//        emailController.sendMail("SMS received", String.join("\r", sms), Arrays.asList("toor.ua@gmail.com"));
+//        modemController.readSms().forEach(System.out::println);
+//        System.out.println(modemController.readSms(0));
+//        System.out.println(modemController.readSms(3));
     }
 }

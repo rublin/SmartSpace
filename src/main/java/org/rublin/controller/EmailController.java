@@ -1,5 +1,6 @@
 package org.rublin.controller;
 
+import org.rublin.model.user.User;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 
@@ -16,6 +17,7 @@ import javax.mail.internet.MimeMultipart;
 import java.io.*;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.rublin.util.Resources.*;
@@ -26,7 +28,6 @@ import static org.rublin.util.Resources.*;
 @Controller
 public class EmailController {
     private static final Logger LOG = getLogger(EmailController.class);
-
 
     private  Properties getMailProperties() {
         Properties mailProperties = new Properties();
@@ -42,9 +43,6 @@ public class EmailController {
         return mailProperties;
     }
 
-    private String getUserEmails(List<String> emails) {
-        return String.join(", ", emails);
-    }
     public void sendMailWithAttach(String subject, String text, List<File> photos, List<String> emails) {
             Session session = Session.getInstance(getMailProperties(),
                     new Authenticator() {
@@ -117,10 +115,12 @@ public class EmailController {
                 message.setContent(text, "text/html");
 
                 Transport.send(message);
-                LOG.info("Mail {} send success", subject);
+                LOG.info("Mail {} to {} send success", subject, message.getAllRecipients());
             } catch (MessagingException e) {
                 LOG.error("Mail {} send error. Exception is: {}", subject, e.getMessage());
                 throw new RuntimeException(e);
             }
         }
+
+
 }

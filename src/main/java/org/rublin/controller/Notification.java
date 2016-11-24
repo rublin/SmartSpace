@@ -45,6 +45,9 @@ public class Notification {
     @Autowired
     private  TriggerService triggerService;
 
+    public void sendEmailNotification(String subject, String message) {
+        sendEmail(getEmails(userService.getAll()), subject, message);
+    }
 
     public  void sendInfoToAllUsers(Zone zone) {
         String subject = String.format("Zone %s ", zone.getName());
@@ -74,6 +77,7 @@ public class Notification {
         userService.getAll().forEach(
                 user -> sendSms(user.getMobile(), message.replaceAll("<[^>]*>", ""))
         );
+
         /**
          * Send call notification if is night (time between 22 and 06)
          */
@@ -105,11 +109,7 @@ public class Notification {
     private  void sendTelegram(List<File> files) {
         telegramController.sendAlarmMessage(files);
     }
-    private  List<String> getEmails(List<User> users) {
-        return userService.getAll().stream()
-                .map(user -> user.getEmail())
-                .collect(Collectors.toList());
-    }
+
     private  List<File> getPhotos(Zone zone) {
         return zone.getCameras().stream()
                 .map(camera -> Image.getImageFromCamera(camera))
@@ -117,5 +117,11 @@ public class Notification {
 //        List<File> photos = new ArrayList<>();
 //        zone.getCameras().forEach(camera -> photos.add(new File(Image.getImageFromCamera(camera))));
 //        return photos;
+    }
+
+    private  List<String> getEmails(List<User> users) {
+        return users.stream()
+                .map(user -> user.getEmail())
+                .collect(Collectors.toList());
     }
 }
