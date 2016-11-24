@@ -28,6 +28,7 @@ public class ModemController {
     private static final String AT_SMS = "AT+CMGS=";
     private static final String AT_READ_ALL_SMS = "AT+CMGL=\"ALL\"\r";
     private static final String AT_READ_SMS = "AT+CMGR=";
+    private static final int CALL_END_TIME = 500;
 
     /**
      * Make a call to phone number
@@ -67,7 +68,7 @@ public class ModemController {
             LOG.info("Try to end call to {}", number);
             try {
                 serialPort.writeBytes(AT_END_CALL.getBytes());
-                waitSerialResponse();
+                waitSerialResponse(CALL_END_TIME);
                 return serialPort.readString();
             } catch (SerialPortException e) {
                 LOG.error("Unexpected error: {}", e);
@@ -185,9 +186,21 @@ public class ModemController {
                 .collect(Collectors.joining());
     }
 
+    /**
+     * Wait default timeout (10 millis)
+     */
     private void waitSerialResponse() {
+        waitSerialResponse(10);
+    }
+
+    /**
+     * Wait custom timeout
+     *
+     * @param timeout
+     */
+    private void waitSerialResponse(int timeout) {
         try {
-            Thread.sleep(10);
+            Thread.sleep(timeout);
         } catch (InterruptedException e) {
             LOG.error("Unexpected error: {}", e);
         }

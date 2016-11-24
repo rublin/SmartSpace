@@ -1,6 +1,7 @@
 package org.rublin.main;
 
 import org.rublin.controller.ModemController;
+import org.rublin.controller.Notification;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
  */
 public class Main {
     private static final int ZONE_ID = 10;
+    static ModemController modemController;
     public static void main(String[] args) throws InterruptedException {
         /*
         InMemoryObjectRepository objectRepository = new InMemoryObjectRepository();
@@ -43,14 +45,25 @@ public class Main {
 //        modem.stop();
 //        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
 
+        List<String> phones = Arrays.asList("+380950724288", "+380950724287");
 
-        ModemController modemController = new ModemController();
+        modemController = new ModemController();
         modemController.start();
-        modemController.call("+380950724287");
+//        modemController.call("+380950724287");
+        phones.forEach(p -> sendCall(p, 10000));
         /*List<String> sms = modemController.readSms();
         StringBuffer sb = new StringBuffer();
         sms.forEach(System.out::println);
         sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r"));
         System.out.println(sb);*/
+    }
+    public static void sendCall(String mobile, int i) {
+        System.out.println(mobile);
+        System.out.println(modemController.call(mobile, i));
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

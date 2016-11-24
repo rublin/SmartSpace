@@ -99,11 +99,11 @@ public class Notification {
              * Send short call notifications
              * 5000 equals to 5 sec
              */
-            userService.getAll().forEach(user -> sendCall(user.getMobile(), 5000));
+            userService.getAll().forEach(user -> sendCall(user.getMobile(), Resources.CALL_TIMEOUT));
         }
     }
 
-    private void sendCall(String mobile, int i) {
+    public void sendCall(String mobile, int i) {
         modemController.call(mobile, i);
     }
 

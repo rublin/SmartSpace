@@ -24,6 +24,7 @@ public class Resources {
     public static final boolean USE_TELEGRAM_NOTIFICATION = Boolean.parseBoolean(PROPERTIES.getString("telegram.bot"));
     public static final String TELEGRAM_BOT_NAME = PROPERTIES.getString("telegram.bot.username");
     public static final String TELEGRAM_TOKEN = PROPERTIES.getString("telegram.bot.token");
-    public static final String SMS_PORT = PROPERTIES.getString("sms.port");
-    public static final boolean USE_SMS = Boolean.valueOf(PROPERTIES.getString("sms.send"));
+    public static final String SMS_PORT = PROPERTIES.getString("modem.port");
+    public static final boolean USE_SMS = Boolean.valueOf(PROPERTIES.getString("modem.sms"));
+    public static final int CALL_TIMEOUT = Integer.valueOf(PROPERTIES.getString("modem.call_timeout"));
 }
