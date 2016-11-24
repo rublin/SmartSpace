@@ -2,9 +2,11 @@ package org.rublin.controller;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.TelegramApiException;
+import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.updatesreceivers.BotSession;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.generics.BotSession;
+
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -20,13 +22,13 @@ public class TelegramStartUp  {
     private TelegramController telegramController;
 
     public void startTelegramBotApi() {
-
         TelegramBotsApi api = new TelegramBotsApi();
         try {
-            api.registerBot(telegramController);
+            session =
+                    api.registerBot(telegramController);
             LOG.info("Telegram BOT started!");
         } catch (TelegramApiException e) {
-            LOG.error("Failed to register bot {} due to error {}: {}", telegramController.getBotUsername(), e.getMessage(), e.getApiResponse());
+            LOG.error("Failed to register bot {} due to error {}", telegramController.getBotUsername(), e.getMessage());
         }
     }
     public void stopTelegramApi() {
