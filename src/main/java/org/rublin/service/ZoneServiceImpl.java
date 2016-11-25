@@ -78,9 +78,9 @@ public class ZoneServiceImpl implements ZoneService {
                 zone.isSecure() ? "YES" : "NO");    }
 
     @Override
-    public void sendNotification(Zone zone) {
+    public void sendNotification(Zone zone, boolean isSecure) {
         LOG.info("Notification sending");
-        notification.sendAlarmNotification(zone);
+        notification.sendAlarmNotification(zone, isSecure);
     }
 
 

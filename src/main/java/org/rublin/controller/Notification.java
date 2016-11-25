@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,9 @@ public class Notification {
     @Autowired
     private  TriggerService triggerService;
 
+    @Autowired
+    private SoundController soundController;
+
     public void sendEmailNotification(String subject, String message) {
         sendEmail(getEmails(userService.getAll()), subject, message);
     }
@@ -65,18 +69,27 @@ public class Notification {
         LOG.info("Sending info notification {} to {}", subject, emails);
     }
 
-    public  void sendAlarmNotification(Zone zone) {
-        List<File> photos = getPhotos(zone);
+    public  void sendAlarmNotification(Zone zone, boolean isSecure) {
+        sendSound(isSecure);
         String message = triggerService.getInfo(zone);
-        String subject = String.format("Zone %s (%s) triggers notification", zone.getName(), zone.getShortName());
         String mailBody = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
                         "%s",
                 zone.getName(),
                 triggerService.getHtmlInfo(zone));
+        String subjectHeader;
+        List<File> photos = new ArrayList<>();
+        if (isSecure) {
+             photos = getPhotos(zone);
+            sendTelegram(photos);
+            subjectHeader = "Security issue";
+        } else {
+            subjectHeader = "Other issue";
+        }
+        String subject = String.format("%s form zone %s", subjectHeader, zone.getName(), zone.getShortName());
         sendTelegram(message);
-        sendTelegram(photos);
         sendEmail(getEmails(userService.getAll()), subject, mailBody, photos);
         LOG.info("Using sms notification is {}", Resources.USE_SMS);
+
         if (Resources.USE_SMS) {
             /**
              * Send call notification if it is night (time between 22 and 06)
@@ -105,6 +118,19 @@ public class Notification {
 
     public void sendCall(String mobile, int i) {
         modemController.call(mobile, i);
+    }
+
+    public void sendSound(boolean isSecurity) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File security = new File(classLoader.getResource("sound/security_alarm.wav").getFile());
+        File other = new File(classLoader.getResource("sound/other_alarm.wav").getFile());
+        if (isSecurity) {
+            soundController.play(security);
+            LOG.info("Played security sound");
+        } else {
+            soundController.play(other);
+            LOG.info("Played other sound");
+        }
     }
 
     private  void sendEmail(List<String> emails, String subject, String message, List<File> files) {

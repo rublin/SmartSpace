@@ -55,7 +55,7 @@ public class InMemoryObjectRepository implements ZoneService {
     }
 
     @Override
-    public void sendNotification(Zone zone) {
+    public void sendNotification(Zone zone, boolean isSecure) {
 
     }
 }

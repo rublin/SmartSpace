@@ -71,7 +71,7 @@ public class EventServiceImpl implements EventService {
         event.setAlarm(true);
         eventRepository.save(trigger, event);
         zoneService.setStatus(zone, ZoneStatus.RED);
-        zoneService.sendNotification(zone);
+        zoneService.sendNotification(zone, trigger.isSecure());
     }
 
     private void setTriggerState (Event event, Trigger trigger, Zone zone) {

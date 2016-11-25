@@ -13,22 +13,26 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 
 /**
- * Send mobile notification (sms or calls) using modem (usb modem or mobile phone
+ * Send mobile notification (sms or calls) using modem (usb modem or mobile phone)
+ *
+ * @author Ruslan Sheremet
+ * @see SerialPort
+ * @since 1.0
  */
 public class ModemController {
 
     private static final Logger LOG = getLogger(ModemController.class);
 
-    private static SerialPort serialPort;
-    private static final String AT_CALL = "ATD";
-    private static final String AT_ANSWER_CALL = "ATA\r";
-    private static final String AT_END_CALL = "AT+CHUP\r";
-    private static final String AT_DIGITAL_MODE = "AT+CMGF=0";
-    private static final String AT_TEXT_MODE = "AT+CMGF=1\r";
-    private static final String AT_SMS = "AT+CMGS=";
-    private static final String AT_READ_ALL_SMS = "AT+CMGL=\"ALL\"\r";
-    private static final String AT_READ_SMS = "AT+CMGR=";
-    private static final int CALL_END_TIME = 500;
+    private  SerialPort serialPort;
+    private  final String AT_CALL = "ATD";
+    private  final String AT_ANSWER_CALL = "ATA\r";
+    private  final String AT_END_CALL = "AT+CHUP\r";
+    private  final String AT_DIGITAL_MODE = "AT+CMGF=0";
+    private  final String AT_TEXT_MODE = "AT+CMGF=1\r";
+    private  final String AT_SMS = "AT+CMGS=";
+    private  final String AT_READ_ALL_SMS = "AT+CMGL=\"ALL\"\r";
+    private  final String AT_READ_SMS = "AT+CMGR=";
+    private  final int CALL_END_TIME = 500;
 
     /**
      * Make a call to phone number

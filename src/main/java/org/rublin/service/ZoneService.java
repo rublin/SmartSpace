@@ -19,5 +19,5 @@ public interface ZoneService {
     String getInfo(Zone zone);
 
 
-    void sendNotification(Zone zone);
+    void sendNotification(Zone zone, boolean isSecure);
 }

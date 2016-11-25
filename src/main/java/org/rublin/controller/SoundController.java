@@ -9,20 +9,29 @@ import java.io.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * ???
+ * Send sound notification
  *
  * @author Ruslan Sheremet
- * @see
+ * @see AudioSystem
  * @since 1.0
  */
 @Controller
 public class SoundController {
     private static final Logger LOG = getLogger(SoundController.class);
 
+    /**
+     * Play wav file {@link File}. Playing time equals length of file
+     * @param file wav file
+     */
     public void play(File file) {
         play(file, 0);
     }
 
+    /**
+     * Play wav file during the time(sec)
+     * @param file wav file
+     * @param timeout time to play (sec)
+     */
     public void play(File file, int timeout) {
         try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file)) {
             Clip clip = AudioSystem.getClip();
@@ -45,6 +54,6 @@ public class SoundController {
     }
 
     public void stop() {
-
+//// TODO: 25.11.2016 make a method to stop sound 
     }
 }
