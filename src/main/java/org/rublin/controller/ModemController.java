@@ -44,7 +44,7 @@ public class ModemController {
             waitSerialResponse();
             return serialPort.readString();
         } catch (SerialPortException e) {
-            LOG.error(e.getMessage());
+            LOG.error("Unexpected error: {}", e);
         }
         return null;
     }

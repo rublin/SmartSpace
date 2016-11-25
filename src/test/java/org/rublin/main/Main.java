@@ -2,7 +2,12 @@ package org.rublin.main;
 
 import org.rublin.controller.ModemController;
 import org.rublin.controller.Notification;
+import org.rublin.controller.SoundController;
 
+
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,12 +50,26 @@ public class Main {
 //        modem.stop();
 //        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
 
+
+//        audio notification
+
+        String file = "D:\\tmp\\Air_Horn_in_Close_Hall_Series_audio-cutter.wav";
+        String cop = "D:\\tmp\\Police_Siren_audio-cutter.wav";
+        SoundController soundController = new SoundController();
+        soundController.play(new File(cop));
+        soundController.play(new File(file), 20);
+
+//        SMS notification
+
+        /*
         List<String> phones = Arrays.asList("+380950724288", "+380950724287");
 
         modemController = new ModemController();
         modemController.start();
 //        modemController.call("+380950724287");
         phones.forEach(p -> sendCall(p, 10000));
+
+        */
         /*List<String> sms = modemController.readSms();
         StringBuffer sb = new StringBuffer();
         sms.forEach(System.out::println);
