@@ -80,7 +80,13 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public void sendNotification(Zone zone, boolean isSecure) {
         LOG.info("Notification sending");
-        notification.sendAlarmNotification(zone, isSecure);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                notification.sendAlarmNotification(zone, isSecure);
+            }
+        });
+        thread.start();
     }
 
 

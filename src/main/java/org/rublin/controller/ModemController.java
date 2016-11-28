@@ -40,7 +40,7 @@ public class ModemController {
      * @param number phone number
      * @return response string or null if exception happens
      */
-    public String call(String number)  {
+    public synchronized String call(String number)  {
         try {
             serialPort.writeBytes((AT_CALL + number + ";\r").getBytes());
 //            System.out.println("call start");

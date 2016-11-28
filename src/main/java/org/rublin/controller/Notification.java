@@ -8,6 +8,8 @@ import org.rublin.util.Image;
 import org.rublin.util.Resources;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
@@ -53,7 +55,7 @@ public class Notification {
     public void sendEmailNotification(String subject, String message) {
         sendEmail(getEmails(userService.getAll()), subject, message);
     }
-
+    
     public  void sendInfoToAllUsers(Zone zone) {
         String subject = String.format("Zone %s ", zone.getName());
         String message = String.format("<h1>Zone: <span style=\"color: blue;\">%s</span></h1>\n" +

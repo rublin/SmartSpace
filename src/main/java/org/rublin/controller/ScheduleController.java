@@ -32,12 +32,12 @@ public class ScheduleController {
     @Scheduled(fixedDelay = 5000)
     public void readSms() {
         LOG.debug("Scheduler is running");
-        List<String> sms = modemController.readSms();
-        if (!sms.isEmpty()) {
-            LOG.info("Read {} messages", sms.size());
-            StringBuffer sb = new StringBuffer();
-            sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r<br>"));
-            notification.sendEmailNotification("Sms received", sb.toString());
-        }
+//        List<String> sms = modemController.readSms();
+//        if (!sms.isEmpty()) {
+//            LOG.info("Read {} messages", sms.size());
+//            StringBuffer sb = new StringBuffer();
+//            sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r<br>"));
+//            notification.sendEmailNotification("Sms received", sb.toString());
+//        }
     }
 }
