@@ -3,11 +3,13 @@ package org.rublin.main;
 import org.rublin.controller.ModemController;
 import org.rublin.controller.Notification;
 import org.rublin.controller.SoundController;
+import org.rublin.controller.TTSController;
 
 
 import javax.sound.sampled.*;
-import java.io.File;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
+import java.net.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +19,60 @@ import java.util.List;
 public class Main {
     private static final int ZONE_ID = 10;
     static ModemController modemController;
+    private static final String TEXT_TO_SPEECH_SERVICE =
+            "http://translate.google.com/translate_tts";
+    private static final String USER_AGENT =
+            "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) " +
+                    "Gecko/20100101 Firefox/11.0";
+
+    public void go(Language language, String text) throws Exception {
+        // Create url based on input params
+        String strUrl = TEXT_TO_SPEECH_SERVICE + "?" +
+                "tl=" + language + "&q=" + text + "&client=tw-ob";
+        URL url = new URL(strUrl);
+
+        // Etablish connection
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        // Get method
+        connection.setRequestMethod("GET");
+        // Set User-Agent to "mimic" the behavior of a web browser. In this
+        // example, I used my browser's info
+        connection.addRequestProperty("User-Agent", USER_AGENT);
+        connection.connect();
+
+        // Get content
+        BufferedInputStream bufIn =
+                new BufferedInputStream(connection.getInputStream());
+        byte[] buffer = new byte[1024];
+        int n;
+        ByteArrayOutputStream bufOut = new ByteArrayOutputStream();
+        while ((n = bufIn.read(buffer)) > 0) {
+            bufOut.write(buffer, 0, n);
+        }
+
+        // Done, save data
+        File output = new File("output.mp3");
+        BufferedOutputStream out =
+                new BufferedOutputStream(new FileOutputStream(output));
+        out.write(bufOut.toByteArray());
+        out.flush();
+        out.close();
+        System.out.println("Done");
+    }
+
+    public enum Language {
+        UK("ukraine"),
+        EN("english");
+
+        private final String language;
+        private Language(String language) {
+            this.language = language;
+        }
+
+        public String getFullName() {
+            return language;
+        }
+    }
     public static void main(String[] args) throws InterruptedException {
         /*
         InMemoryObjectRepository objectRepository = new InMemoryObjectRepository();
@@ -50,14 +106,78 @@ public class Main {
 //        modem.stop();
 //        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
 
+        Language language = Language.valueOf("UK");
+        String text = "ПРивіт";
+//        try {
+//            text = URLEncoder.encode(text, "utf-8");
+//            new Main().go(language, text);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        TTSController ttsController = new TTSController();
+        ttsController.say("Hello", "en");
 
 //        audio notification
 
-        String file = "D:\\tmp\\Air_Horn_in_Close_Hall_Series_audio-cutter.wav";
-        String cop = "D:\\tmp\\Police_Siren_audio-cutter.wav";
-        SoundController soundController = new SoundController();
-        soundController.play(new File(cop));
-        soundController.play(new File(file), 20);
+       /* AudioInputStream din = null;
+        URLConnection urlConnection;
+        try {
+            urlConnection = new URL("https://translate.google.com/translate_tts?ie=UTF-8&q=%D0%BF%D1%80%D0%B8%D0%B2%D1%96%D1%82&tl=uk&client=tw-ob").openConnection();
+            urlConnection.addRequestProperty("User-Agent",
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
+            urlConnection.connect();
+//        AudioInputStream in = AudioSystem.getAudioInputStream(new BufferedInputStream(urlConnection.getInputStream()));
+            AudioInputStream in = AudioSystem.getAudioInputStream(new URL("https://translate.google.com/translate_tts?ie=UTF-8&q=%D0%BF%D1%80%D0%B8%D0%B2%D1%96%D1%82&tl=uk&client=tw-ob"));
+        AudioFormat baseFormat = in.getFormat();
+        AudioFormat decodedFormat = new AudioFormat(
+                AudioFormat.Encoding.PCM_SIGNED,
+                baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
+                baseFormat.getChannels() * 2, baseFormat.getSampleRate(),
+                false);
+        din = AudioSystem.getAudioInputStream(decodedFormat, in);
+        DataLine.Info info = new DataLine.Info(SourceDataLine.class, decodedFormat);
+        SourceDataLine line = null;
+            line = (SourceDataLine) AudioSystem.getLine(info);
+
+        if(line != null) {
+            try {
+                line.open(decodedFormat);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+            byte[] data = new byte[4096];
+            // Start
+            line.start();
+
+            int nBytesRead;
+            while ((nBytesRead = din.read(data, 0, data.length)) != -1) {
+                line.write(data, 0, nBytesRead);
+            }
+            // Stop
+            line.drain();
+            line.stop();
+            line.close();
+            din.close();
+        }
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }
+        }*/
+
+//        String file = "D:\\tmp\\Air_Horn_in_Close_Hall_Series_audio-cutter.wav";
+//        String cop = "D:\\tmp\\Police_Siren_audio-cutter.wav";
+//        SoundController soundController = new SoundController();
+//        soundController.play(new File(cop));
+//        soundController.play(new File(file), 20);
 
 //        SMS notification
 
