@@ -1,5 +1,6 @@
 package org.rublin.service;
 
+import org.rublin.controller.Notification;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.Zone;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.rublin.repository.EventRepository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class EventServiceImpl implements EventService {
     private ZoneService zoneService;
     @Autowired
     private TriggerService triggerService;
+    @Autowired
+    private Notification notification;
 
     @Override
     public void save(Trigger trigger, Event event) {
@@ -37,6 +41,22 @@ public class EventServiceImpl implements EventService {
                 }
             } else {
                 eventRepository.save(trigger, event);
+            }
+            if (event.isDigital() && trigger.getName().equals("Move 1 floor 2") && !(boolean)event.getState()) {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.getHour() >= 5 &&
+//                        now.getHour() < 6 &&
+//                        now.getMinute() >= 30 &&
+                        now.getDayOfWeek() != DayOfWeek.SATURDAY &&
+                        now.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notification.sayWeather();
+                        }
+                    }).start();
+                }
+
             }
         } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
             alarmEvent(event, trigger, zone);

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.rublin.util.Resources.USE_MAIL_NOTIFICATION;
+import static org.rublin.util.Resources.WEATHER_CITY;
+import static org.rublin.util.Resources.WEATHER_LANG;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -49,6 +51,24 @@ public class Notification {
 
     @Autowired
     private SoundController soundController;
+
+    @Autowired
+    private TTSController ttsController;
+
+    @Autowired
+    private WeatherController weatherController;
+
+    public void sayWeather() {
+        try {
+            Thread.sleep(1000);
+            ttsController.say("Доброго ранку." + weatherController.getCondition(WEATHER_CITY, WEATHER_LANG), "uk");
+            Thread.sleep(20000);
+            ttsController.say(weatherController.getForecast(WEATHER_CITY, WEATHER_LANG), "uk");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public void sendEmailNotification(String subject, String message) {
         sendEmail(getEmails(userService.getAll()), subject, message);
