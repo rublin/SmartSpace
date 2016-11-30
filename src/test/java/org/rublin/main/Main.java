@@ -1,9 +1,7 @@
 package org.rublin.main;
 
-import org.rublin.controller.ModemController;
-import org.rublin.controller.Notification;
-import org.rublin.controller.SoundController;
-import org.rublin.controller.TTSController;
+import org.rublin.controller.*;
+import org.rublin.util.Resources;
 
 
 import javax.sound.sampled.*;
@@ -107,7 +105,10 @@ public class Main {
 //        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
 
         Language language = Language.valueOf("UK");
-        String text = "ПРивіт";
+        WeatherController weatherController = new WeatherController();
+        String weather = weatherController.getForecast(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
+        System.out.println(weather);
+
 //        try {
 //            text = URLEncoder.encode(text, "utf-8");
 //            new Main().go(language, text);
@@ -118,8 +119,12 @@ public class Main {
 //        }
 
         TTSController ttsController = new TTSController();
-        ttsController.say("Hello", "en");
+        ttsController.say(weather, "uk");
 
+//        Thread.sleep(15000);
+//        weather = weatherController.getCondition(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
+//        System.out.println(weather);
+//        ttsController.say(weather, "uk");
 //        audio notification
 
        /* AudioInputStream din = null;

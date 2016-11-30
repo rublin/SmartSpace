@@ -7,6 +7,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -30,16 +31,15 @@ public class TTSController {
      * @param language
      */
     public void say(String text, String language) {
-        String url = String.format(TTS_SERVICE, text, language);
         if (Desktop.isDesktopSupported()){
-
             try {
+                String url = String.format(TTS_SERVICE, URLEncoder.encode(text, "UTF-8"), language);
                 Desktop.getDesktop().browse(new URI(url));
                 LOG.info("Saying {} in {} location was successful", text, language);
             } catch (IOException e) {
                 LOG.error("Unexpected error", e);
             } catch (URISyntaxException e) {
-                LOG.error("Wrong URL {}", url, e);
+                LOG.error("Wrong URL with text {}", text, e);
             }
         }
     }

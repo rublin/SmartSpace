@@ -27,4 +27,7 @@ public class Resources {
     public static final String SMS_PORT = PROPERTIES.getString("modem.port");
     public static final boolean USE_SMS = Boolean.valueOf(PROPERTIES.getString("modem.sms"));
     public static final int CALL_TIMEOUT = Integer.valueOf(PROPERTIES.getString("modem.call_timeout"));
+    public static final String WEATHER_TOKEN = PROPERTIES.getString("weather.token");
+    public static final String WEATHER_CITY = PROPERTIES.getString("weather.city");
+    public static final String WEATHER_LANG = PROPERTIES.getString("weather.lang");
 }
