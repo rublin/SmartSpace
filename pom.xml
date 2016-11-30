@@ -36,7 +36,7 @@
         <!-- mail -->
         <mail.version>1.4.7</mail.version>
         <!--telegram-->
-        <telegram.version>2.4.4</telegram.version>
+        <telegram.version>v2.3.5</telegram.version>
     </properties>
 
     <build>
@@ -55,13 +55,13 @@
         </plugins>
     </build>
 
-    <!--&lt;!&ndash;For Telegram dependencies&ndash;&gt;-->
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>jitpack.io</id>-->
-            <!--<url>https://jitpack.io</url>-->
-        <!--</repository>-->
-    <!--</repositories>-->
+    <!--For Telegram dependencies-->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Logging with SLF4J & LogBack -->
@@ -230,8 +230,8 @@
             <version>${mail.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
+            <groupId>com.github.rubenlagus</groupId>
+            <artifactId>TelegramBots</artifactId>
             <version>${telegram.version}</version>
         </dependency>
         <!-- Serial port (USB Modem) -->

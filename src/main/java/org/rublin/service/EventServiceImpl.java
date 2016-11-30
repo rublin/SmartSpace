@@ -45,8 +45,8 @@ public class EventServiceImpl implements EventService {
             if (event.isDigital() && trigger.getName().equals("Move 1 floor 2") && !(boolean)event.getState()) {
                 LocalDateTime now = LocalDateTime.now();
                 if (now.getHour() >= 5 &&
-//                        now.getHour() < 6 &&
-//                        now.getMinute() >= 30 &&
+                        now.getHour() < 6 &&
+                        now.getMinute() >= 30 &&
                         now.getDayOfWeek() != DayOfWeek.SATURDAY &&
                         now.getDayOfWeek() != DayOfWeek.SUNDAY) {
                     new Thread(new Runnable() {

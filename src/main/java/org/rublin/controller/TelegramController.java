@@ -8,14 +8,13 @@ import org.rublin.util.Image;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.TelegramLongPollingCommandBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.util.*;
@@ -46,10 +45,6 @@ public class TelegramController extends TelegramLongPollingCommandBot {
 
     @Autowired
     private CameraService cameraService;
-
-    static {
-        ApiContextInitializer.init();
-    }
 
     private void sendTextMessage(String id, String html) {
         SendMessage sendMessageRequest = new SendMessage();
