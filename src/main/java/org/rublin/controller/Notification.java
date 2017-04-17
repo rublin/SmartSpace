@@ -66,7 +66,7 @@ public class Notification {
             Thread.sleep(20000);
             ttsController.say(weatherController.getForecast(WEATHER_CITY, WEATHER_LANG), "uk");
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn(e.getMessage());
         }
 
     }

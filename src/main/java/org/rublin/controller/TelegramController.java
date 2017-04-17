@@ -46,6 +46,12 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     @Autowired
     private CameraService cameraService;
 
+    @Autowired
+    private WeatherController weatherController;
+
+    @Autowired
+    private TTSController ttsController;
+
     private void sendTextMessage(String id, String html) {
         SendMessage sendMessageRequest = new SendMessage();
         sendMessageRequest.setChatId(id);
@@ -58,6 +64,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
             LOG.error(e.getMessage());
         }
     }
+
     private void sendPhotoMessage(String id, File file) {
         SendPhoto sendPhotoRequest = new SendPhoto();
         sendPhotoRequest.setChatId(id);
@@ -70,6 +77,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
             LOG.error(e.getMessage());
         }
     }
+
     private boolean isAuthorize(User user) {
         String telegramName = user.getUserName();
         int telegramId = user.getId();
@@ -103,6 +111,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     public void sendAlarmMessage(String message) {
         chatIds.forEach(id -> sendTextMessage(id.toString(), message));
     }
+
     public void sendAlarmMessage(List<File> photos) {
         photos.forEach(photo ->
                 chatIds.forEach(id ->
@@ -113,12 +122,12 @@ public class TelegramController extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        if(update.hasMessage()) {
+        if (update.hasMessage()) {
             Message message = update.getMessage();
-            if (isAuthorize(message.getFrom())){
+            if (isAuthorize(message.getFrom())) {
                 chatIds.add(message.getChatId());
-                LOG.info(message.getText().substring(0,3).toLowerCase());
-                switch (message.getText().substring(0,3).toLowerCase()) {
+                LOG.info(message.getText().substring(0, 3).toLowerCase());
+                switch (message.getText().substring(0, 3).toLowerCase()) {
                     case "/aa": {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
@@ -130,7 +139,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                         }
                         break;
                     }
-                    case "/da" : {
+                    case "/da": {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
                             zoneService.setSecure(zone, false);
@@ -141,7 +150,7 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                         }
                         break;
                     }
-                    case "/ss" :
+                    case "/ss":
                         if (message.getText().matches("\\/ss\\s\\d+\\s[0-1]")) {
                             String[] command = message.getText().split(" ");
                             try {
@@ -163,18 +172,32 @@ public class TelegramController extends TelegramLongPollingCommandBot {
                                     message.getText()));
                         }
                         break;
-                    case "/ca" : {
+                    case "/ca": {
                         cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), Image.getImageFromCamera(camera)));
                     }
-                        break;
-                    case "/gs" : {
+                    break;
+                    case "/gs": {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
                             sendTextMessage(message.getChatId().toString(), zoneService.getInfo(zone));
                         }
                         break;
+
                     }
-                    default: sendTextMessage(message.getChatId().toString(), String.format("Your command does not support. Try to use /help"));
+                    case "/wf": {
+                        String forecast = weatherController.getForecast(WEATHER_CITY, WEATHER_LANG);
+                        sendTextMessage(message.getChatId().toString(), forecast);
+                        ttsController.say(forecast, "uk");
+                        break;
+                    }
+                    case "/wc" : {
+                        String condition = weatherController.getCondition(WEATHER_CITY, WEATHER_LANG);
+                        sendTextMessage(message.getChatId().toString(), condition);
+                        ttsController.say(condition, "uk");
+                        break;
+                    }
+                    default:
+                        sendTextMessage(message.getChatId().toString(), String.format("Your command does not support. Try to use /help"));
                 }
             } else {
                 sendTextMessage(message.getChatId().toString(), String.format(
