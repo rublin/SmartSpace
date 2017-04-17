@@ -62,7 +62,7 @@ public class WeatherController {
         /**
          * need to replace text using i18n
          */
-        String result = String.format("Поточна погода (Київська метеостанція). Температура %d градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s", temp, dewpoint, humidity, wind_speed, weather);
+        String result = String.format("Поточна погода (Київська метеостанція). Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s", fixTemperature(temp), dewpoint, humidity, wind_speed, weather);
         LOG.info("Current weather {} got successfully", result);
         return result;
     }
@@ -88,5 +88,18 @@ public class WeatherController {
             LOG.error("Wrong source from URL {}", url, e);
         }
         return null;
+    }
+
+    private String fixTemperature(int temperature) {
+        if (temperature == 11) {
+            return "одинадцять";
+        } else if (temperature == 12) {
+            return "дванадцять";
+        } else if (temperature == 13) {
+            return "тринадцять";
+        } else if (temperature == 14) {
+            return "чотирнадцять";
+        }
+        return String.valueOf(temperature);
     }
 }
