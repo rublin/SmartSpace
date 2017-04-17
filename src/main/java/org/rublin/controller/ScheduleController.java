@@ -35,7 +35,7 @@ public class ScheduleController {
     @Autowired
     private TriggerService triggerService;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 60000)
     public void readSms() {
         LOG.debug("Scheduler is running");
         List<String> sms = modemController.readSms();

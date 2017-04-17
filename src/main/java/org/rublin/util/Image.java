@@ -28,7 +28,9 @@ public class Image {
         URLConnection connection = null;
         String passStr = camera.getLogin() + ":" + camera.getPassword();
         String encoding = new BASE64Encoder().encode(passStr.getBytes());
-        String filename = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy-hh-mm")) + ".jpg";
+        long timeMillis = System.currentTimeMillis();
+        String filename = timeMillis + ".jpg";
+//        String filename = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy-hh-mm")) + ".jpg";
         try {
             url = new URL(camera.getURL());
             connection = url.openConnection();
@@ -50,6 +52,7 @@ public class Image {
             LOG.error("Error to download image from camera {}. Error is: ", camera.getName(), e.getMessage());
             return new File("D:\\cam_demo.jpg");
         }
+        LOG.info("New image {} created", filename);
         return new File(filename);
     }
 }

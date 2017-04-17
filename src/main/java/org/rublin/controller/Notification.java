@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,22 +91,34 @@ public class Notification {
     }
 
     public  void sendAlarmNotification(Zone zone, boolean isSecure) {
-        sendSound(isSecure);
+        Thread sound = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendSound(isSecure);
+            }
+        });
+        sound.start();
         String message = triggerService.getInfo(zone);
         String mailBody = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
                         "%s",
                 zone.getName(),
                 triggerService.getHtmlInfo(zone));
         String subjectHeader;
-        List<File> photos = new ArrayList<>();
+        List<File> photos = new LinkedList<>();
         if (isSecure) {
-             photos = getPhotos(zone);
+             photos.addAll(getPhotos(zone));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                LOG.warn(e.getMessage());
+            }
+            photos.addAll(getPhotos(zone));
             sendTelegram(photos);
             subjectHeader = "Security issue";
         } else {
             subjectHeader = "Other issue";
         }
-        String subject = String.format("%s form zone %s", subjectHeader, zone.getName(), zone.getShortName());
+        String subject = String.format("%s form zone %s", subjectHeader, zone.getShortName());
         sendTelegram(message);
         sendEmail(getEmails(userService.getAll()), subject, mailBody, photos);
         LOG.info("Using sms notification is {}", Resources.USE_SMS);
@@ -175,9 +188,18 @@ public class Notification {
     }
 
     private  List<File> getPhotos(Zone zone) {
-        return zone.getCameras().stream()
-                .map(camera -> Image.getImageFromCamera(camera))
+        List<File> photos = zone.getCameras().stream()
+                .map(Image::getImageFromCamera)
                 .collect(Collectors.toList());
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            LOG.warn(e.getMessage());
+//        }
+//        photos.addAll(zone.getCameras().stream()
+//        .map(Image::getImageFromCamera)
+//        .collect(Collectors.toList()));
+        return photos;
 //        List<File> photos = new ArrayList<>();
 //        zone.getCameras().forEach(camera -> photos.add(new File(Image.getImageFromCamera(camera))));
 //        return photos;
