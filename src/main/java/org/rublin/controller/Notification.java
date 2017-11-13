@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,11 @@ public class Notification {
 
     @Autowired
     private WeatherController weatherController;
+
+    public void sayTime() {
+        LocalTime now = LocalTime.now();
+        ttsController.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
+    }
 
     public void sayWeather() {
         try {

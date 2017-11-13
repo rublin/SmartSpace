@@ -1,5 +1,6 @@
 package org.rublin.controller;
 
+import org.rublin.model.Zone;
 import org.rublin.service.TriggerService;
 import org.rublin.service.ZoneService;
 import org.slf4j.Logger;
@@ -53,5 +54,23 @@ public class ScheduleController {
     public void zoneActivityMonitor() {
         LOG.debug("Zone activity scheduler start");
         zoneService.activity();
+    }
+
+    @Scheduled(cron = "0 50 6 * * MON-FRI")
+    public void morningTimeSixFifty() {
+        boolean activeZonePresents = zoneService.getAll().stream()
+                .anyMatch(Zone::isActive);
+        if (activeZonePresents) {
+            notification.sayTime();
+        }
+    }
+
+    @Scheduled(cron = "0 55 6 * * MON-FRI")
+    public void morningTimeSixFiftyFive() {
+        boolean activeZonePresents = zoneService.getAll().stream()
+                .anyMatch(Zone::isActive);
+        if (activeZonePresents) {
+            notification.sayTime();
+        }
     }
 }
