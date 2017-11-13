@@ -50,6 +50,9 @@ public class Zone {
     @JsonIgnore
     private List<Camera> cameras;
 
+    @Column(name = "active")
+    private boolean active;
+
     public Zone() {
     }
 
@@ -154,6 +157,14 @@ public class Zone {
 
     public void setCameras(List<Camera> cameras) {
         this.cameras = cameras;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override

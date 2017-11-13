@@ -11,12 +11,20 @@ import java.util.Collection;
  */
 public interface ZoneService {
     Zone save(Zone zone);
-    void delete (int id) throws NotFoundException;
+
+    void delete(int id) throws NotFoundException;
+
     Zone get(int id) throws NotFoundException;
+
     Collection<Zone> getAll();
+
     void setSecure(Zone zone, boolean security);
+
     Zone setStatus(Zone zone, ZoneStatus status);
+
     String getInfo(Zone zone);
+
+    void activity();
 
 
     void sendNotification(Zone zone, boolean isSecure);

@@ -2,8 +2,10 @@ package org.rublin.service;
 
 import org.rublin.controller.ModemController;
 import org.rublin.controller.TelegramController;
+import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
+import org.rublin.model.event.Event;
 import org.rublin.repository.ZoneRepository;
 import org.rublin.controller.Notification;
 import org.rublin.util.exception.ExceptionUtil;
@@ -12,8 +14,13 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -26,6 +33,9 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Autowired
     private ZoneRepository zoneRepository;
+
+    @Autowired
+    private EventService eventService;
 
     @Autowired
     private Notification notification;
@@ -78,6 +88,25 @@ public class ZoneServiceImpl implements ZoneService {
                 zone.isSecure() ? "YES" : "NO");    }
 
     @Override
+    public void activity() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Event> lastHourEvents = eventService.getBetween(now.minusHours(1), now);
+        Map<Trigger, List<Event>> eventsByTrigger = lastHourEvents.stream()
+                .collect(groupingBy(Event::getTrigger));
+        for (Zone zone : getAll()) {
+            boolean active = zone.getTriggers().stream()
+                    .filter(Trigger::isSecure)
+                    .anyMatch(trigger -> Objects.nonNull(eventsByTrigger.get(trigger)));
+            LOG.debug("Zone {} activity is {}", zone.getName(), active);
+            if (zone.isActive() != active) {
+                LOG.info("Zone {} set activity to {}", zone.getName(), active);
+                zone.setActive(active);
+                zoneRepository.save(zone);
+            }
+        }
+    }
+
+    @Override
     public void sendNotification(Zone zone, boolean isSecure) {
         LOG.info("Notification sending");
         Thread thread = new Thread(new Runnable() {
@@ -88,6 +117,4 @@ public class ZoneServiceImpl implements ZoneService {
         });
         thread.start();
     }
-
-
 }
