@@ -227,4 +227,24 @@ public class Trigger {
                 ", zone= " + zone +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Trigger trigger = (Trigger) o;
+
+        if (id != null ? !id.equals(trigger.id) : trigger.id != null) return false;
+        if (name != null ? !name.equals(trigger.name) : trigger.name != null) return false;
+        return type == trigger.type;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        return result;
+    }
 }

@@ -17,10 +17,16 @@ import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.TelegramLongPollingCommandBot;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import static org.rublin.util.Resources.TELEGRAM_BOT_NAME;
+import static org.rublin.util.Resources.TELEGRAM_TOKEN;
+import static org.rublin.util.Resources.WEATHER_CITY;
+import static org.rublin.util.Resources.WEATHER_LANG;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.rublin.util.Resources.*;
 
 
 /**
@@ -33,6 +39,9 @@ public class TelegramController extends TelegramLongPollingCommandBot {
 
     public static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
+
+//    @Value("${telegram.bot.username}")
+//    private String username;
 
     private static final String BOT_USERNAME = TELEGRAM_BOT_NAME;
     private static final String BOT_TOKEN = TELEGRAM_TOKEN;

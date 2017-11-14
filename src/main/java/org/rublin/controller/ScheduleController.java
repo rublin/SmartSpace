@@ -58,17 +58,19 @@ public class ScheduleController {
 
     @Scheduled(cron = "0 50 6 * * MON-FRI")
     public void morningTimeSixFifty() {
-        boolean activeZonePresents = zoneService.getAll().stream()
-                .anyMatch(Zone::isActive);
-        if (activeZonePresents) {
-            notification.sayTime();
-        }
+        timeNotification();
     }
 
     @Scheduled(cron = "0 55 6 * * MON-FRI")
+//    @Scheduled(cron = "0 18 10 * * MON-FRI")
     public void morningTimeSixFiftyFive() {
+        timeNotification();
+    }
+
+    private void timeNotification() {
         boolean activeZonePresents = zoneService.getAll().stream()
                 .anyMatch(Zone::isActive);
+        LOG.info("Scheduled time job started. Active zones {}", activeZonePresents);
         if (activeZonePresents) {
             notification.sayTime();
         }
