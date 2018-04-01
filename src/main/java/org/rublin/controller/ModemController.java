@@ -2,6 +2,7 @@ package org.rublin.controller;
 
 import jssc.*;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @see SerialPort
  * @since 1.0
  */
+@Component
 public class ModemController {
 
     private static final Logger LOG = getLogger(ModemController.class);

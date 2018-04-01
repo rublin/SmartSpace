@@ -8,13 +8,13 @@ import org.rublin.util.Image;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
-import org.telegram.telegrambots.bots.TelegramLongPollingCommandBot;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.util.Collection;
@@ -22,10 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.rublin.util.Resources.TELEGRAM_BOT_NAME;
-import static org.rublin.util.Resources.TELEGRAM_TOKEN;
-import static org.rublin.util.Resources.WEATHER_CITY;
-import static org.rublin.util.Resources.WEATHER_LANG;
+import static org.rublin.util.Resources.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
@@ -33,11 +30,11 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Sheremet on 28.08.2016.
  */
 @Controller
-public class TelegramController extends TelegramLongPollingCommandBot {
+public class TelegramController extends TelegramLongPollingBot {
 
     private static final Logger LOG = getLogger(TelegramController.class);
 
-    public static Set<Integer> telegramIds = new HashSet<>();
+    private static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
 
 //    @Value("${telegram.bot.username}")
@@ -61,76 +58,8 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     @Autowired
     private TTSController ttsController;
 
-    private void sendTextMessage(String id, String html) {
-        SendMessage sendMessageRequest = new SendMessage();
-        sendMessageRequest.setChatId(id);
-        sendMessageRequest.setText(html);
-        sendMessageRequest.enableHtml(true);
-        try {
-            LOG.info(sendMessageRequest.getText());
-            sendMessage(sendMessageRequest);
-        } catch (TelegramApiException e) {
-            LOG.error(e.getMessage());
-        }
-    }
-
-    private void sendPhotoMessage(String id, File file) {
-        SendPhoto sendPhotoRequest = new SendPhoto();
-        sendPhotoRequest.setChatId(id);
-//        sendPhotoRequest.setNewPhoto(EmailController.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
-        sendPhotoRequest.setNewPhoto(file);
-        LOG.info("Sending photo: {}", sendPhotoRequest.toString());
-        try {
-            sendPhoto(sendPhotoRequest);
-        } catch (TelegramApiException e) {
-            LOG.error(e.getMessage());
-        }
-    }
-
-    private boolean isAuthorize(User user) {
-        String telegramName = user.getUserName();
-        int telegramId = user.getId();
-        LOG.debug("Received message from user {} (id: {})", telegramName, telegramId);
-        if (telegramIds.contains(telegramId)) {
-            org.rublin.model.user.User foundUser = userService.getByTelegramId(telegramId);
-            LOG.info("Telegram User {} with id {} authorized as {}. Quick authorization", telegramName, telegramId, foundUser.getFirstName());
-            if (!foundUser.getTelegramName().equals(telegramName)) {
-                foundUser.setTelegramName(telegramName);
-                LOG.info("Telegram name {} updated", telegramName);
-            }
-            return true;
-        } else {
-            List<org.rublin.model.user.User> users = userService.getAll();
-            for (org.rublin.model.user.User u : users) {
-                String foundTelegramName = u.getTelegramName();
-//                LOG.debug("Compare name");
-                if (foundTelegramName != null && foundTelegramName.equals(telegramName)) {
-                    LOG.info("Telegram User {} with id {} authorized as {}. Long authorization", telegramName, telegramId, u.getFirstName());
-                    u.setTelegramId(telegramId);
-                    telegramIds.add(telegramId);
-                    userService.update(u);
-                    return true;
-                }
-            }
-        }
-        LOG.info("Telegram User {} with id {} not authorized.", telegramName, telegramId);
-        return false;
-    }
-
-    public void sendAlarmMessage(String message) {
-        chatIds.forEach(id -> sendTextMessage(id.toString(), message));
-    }
-
-    public void sendAlarmMessage(List<File> photos) {
-        photos.forEach(photo ->
-                chatIds.forEach(id ->
-                        sendPhotoMessage(id.toString(), photo)
-                ));
-
-    }
-
     @Override
-    public void processNonCommandUpdate(Update update) {
+    public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
             Message message = update.getMessage();
             if (isAuthorize(message.getFrom())) {
@@ -225,5 +154,78 @@ public class TelegramController extends TelegramLongPollingCommandBot {
     @Override
     public String getBotToken() {
         return BOT_TOKEN;
+    }
+
+    @Override
+    public void onClosing() {
+
+    }
+
+    private void sendTextMessage(String id, String html) {
+        SendMessage sendMessageRequest = new SendMessage();
+        sendMessageRequest.setChatId(id);
+        sendMessageRequest.setText(html);
+        sendMessageRequest.enableHtml(true);
+        try {
+            LOG.info(sendMessageRequest.getText());
+            execute(sendMessageRequest);
+        } catch (TelegramApiException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    private void sendPhotoMessage(String id, File file) {
+        SendPhoto sendPhotoRequest = new SendPhoto();
+        sendPhotoRequest.setChatId(id);
+//        sendPhotoRequest.setNewPhoto(EmailController.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
+        sendPhotoRequest.setNewPhoto(file);
+        LOG.info("Sending photo: {}", sendPhotoRequest.toString());
+        try {
+            sendPhoto(sendPhotoRequest);
+        } catch (TelegramApiException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    private boolean isAuthorize(User user) {
+        String telegramName = user.getUserName();
+        int telegramId = user.getId();
+        LOG.debug("Received message from user {} (id: {})", telegramName, telegramId);
+        if (telegramIds.contains(telegramId)) {
+            org.rublin.model.user.User foundUser = userService.getByTelegramId(telegramId);
+            LOG.info("Telegram User {} with id {} authorized as {}. Quick authorization", telegramName, telegramId, foundUser.getFirstName());
+            if (!foundUser.getTelegramName().equals(telegramName)) {
+                foundUser.setTelegramName(telegramName);
+                LOG.info("Telegram name {} updated", telegramName);
+            }
+            return true;
+        } else {
+            List<org.rublin.model.user.User> users = userService.getAll();
+            for (org.rublin.model.user.User u : users) {
+                String foundTelegramName = u.getTelegramName();
+//                LOG.debug("Compare name");
+                if (foundTelegramName != null && foundTelegramName.equals(telegramName)) {
+                    LOG.info("Telegram User {} with id {} authorized as {}. Long authorization", telegramName, telegramId, u.getFirstName());
+                    u.setTelegramId(telegramId);
+                    telegramIds.add(telegramId);
+                    userService.update(u);
+                    return true;
+                }
+            }
+        }
+        LOG.info("Telegram User {} with id {} not authorized.", telegramName, telegramId);
+        return false;
+    }
+
+    public void sendAlarmMessage(String message) {
+        chatIds.forEach(id -> sendTextMessage(id.toString(), message));
+    }
+
+    public void sendAlarmMessage(List<File> photos) {
+        photos.forEach(photo ->
+                chatIds.forEach(id ->
+                        sendPhotoMessage(id.toString(), photo)
+                ));
+
     }
 }
