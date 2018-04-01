@@ -1,7 +1,9 @@
 package org.rublin.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.rublin.model.Zone;
 import org.rublin.service.CameraService;
+import org.rublin.service.MediaPlayerService;
 import org.rublin.service.UserService;
 import org.rublin.service.ZoneService;
 import org.rublin.util.Image;
@@ -30,6 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Sheremet on 28.08.2016.
  */
 @Controller
+    @RequiredArgsConstructor
 public class TelegramController extends TelegramLongPollingBot {
 
     private static final Logger LOG = getLogger(TelegramController.class);
@@ -43,20 +46,12 @@ public class TelegramController extends TelegramLongPollingBot {
     private static final String BOT_USERNAME = TELEGRAM_BOT_NAME;
     private static final String BOT_TOKEN = TELEGRAM_TOKEN;
 
-    @Autowired
-    private ZoneService zoneService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CameraService cameraService;
-
-    @Autowired
-    private WeatherController weatherController;
-
-    @Autowired
-    private TTSController ttsController;
+    private final ZoneService zoneService;
+    private final UserService userService;
+    private final CameraService cameraService;
+    private final WeatherController weatherController;
+    private final TTSController ttsController;
+    private final MediaPlayerService mediaPlayerService;
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -134,6 +129,16 @@ public class TelegramController extends TelegramLongPollingBot {
                         ttsController.say(condition, "uk");
                         break;
                     }
+                    case "/pl" : {
+                        mediaPlayerService.play("url");
+                        break;
+                    }
+
+                    case "/st" : {
+                        mediaPlayerService.stop();
+                        break;
+                    }
+
                     default:
                         sendTextMessage(message.getChatId().toString(), String.format("Your command does not support. Try to use /help"));
                 }
