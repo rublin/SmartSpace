@@ -37,14 +37,21 @@ public class MediaPlayerService {
 
     public void play(String mrl) {
         log.info("Starting to play {}", mrl);
-        try {
-            audioPlayerComponent.start();
-            audioPlayerComponent.getMediaPlayer().playMedia("http://192.99.147.61:8000");
-            sync.acquire(); // Potential race if the media has already finished, but very unlikely, and good enough for a test
-        } catch (Exception e) {
-            log.error("Playback error: {}", e);
-        }
-        audioPlayerComponent.stop();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    audioPlayerComponent.start();
+                    audioPlayerComponent.getMediaPlayer().playMedia("http://192.99.147.61:8000");
+                    sync.acquire(); // Potential race if the media has already finished, but very unlikely, and good enough for a test
+                } catch (Exception e) {
+                    log.error("Playback error: {}", e);
+                }
+            }
+        });
+       thread.start();
+       log.info("Music plays");
+//        audioPlayerComponent.stop();
         // audioPlayerComponent.release(true); // FIXME right now this causes a fatal JVM crash just before the JVM terminates, I am not sure why (the other direct audio player example does NOT crash)
 
     }
