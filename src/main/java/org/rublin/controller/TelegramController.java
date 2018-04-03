@@ -2,13 +2,10 @@ package org.rublin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.rublin.model.Zone;
-import org.rublin.service.CameraService;
-import org.rublin.service.MediaPlayerService;
-import org.rublin.service.UserService;
-import org.rublin.service.ZoneService;
+import org.rublin.service.*;
 import org.rublin.util.Image;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
@@ -32,26 +29,22 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Sheremet on 28.08.2016.
  */
 @Controller
-    @RequiredArgsConstructor
+@RequiredArgsConstructor
 public class TelegramController extends TelegramLongPollingBot {
 
     private static final Logger LOG = getLogger(TelegramController.class);
-
-    private static Set<Integer> telegramIds = new HashSet<>();
-    private static Set<Long> chatIds = new HashSet<>();
-
-//    @Value("${telegram.bot.username}")
-//    private String username;
-
     private static final String BOT_USERNAME = TELEGRAM_BOT_NAME;
     private static final String BOT_TOKEN = TELEGRAM_TOKEN;
-
+    private static Set<Integer> telegramIds = new HashSet<>();
+    private static Set<Long> chatIds = new HashSet<>();
     private final ZoneService zoneService;
     private final UserService userService;
     private final CameraService cameraService;
     private final WeatherController weatherController;
-    private final TTSController ttsController;
+    private final TextToSpeechService textToSpeechService;
     private final MediaPlayerService mediaPlayerService;
+    @Value("${radio}")
+    private String onlineRadio;
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -120,22 +113,31 @@ public class TelegramController extends TelegramLongPollingBot {
                     case "/wf": {
                         String forecast = weatherController.getForecast(WEATHER_CITY, WEATHER_LANG);
                         sendTextMessage(message.getChatId().toString(), forecast);
-                        ttsController.say(forecast, "uk");
+                        textToSpeechService.say(forecast, "uk");
                         break;
                     }
-                    case "/wc" : {
+                    case "/wc": {
                         String condition = weatherController.getCondition(WEATHER_CITY, WEATHER_LANG);
                         sendTextMessage(message.getChatId().toString(), condition);
-                        ttsController.say(condition, "uk");
+                        textToSpeechService.say(condition, "uk");
                         break;
                     }
-                    case "/pl" : {
-                        mediaPlayerService.play("url");
+                    case "/pl": {
+                        mediaPlayerService.play(onlineRadio);
                         break;
                     }
 
-                    case "/st" : {
+                    case "/st": {
                         mediaPlayerService.stop();
+                        break;
+                    }
+
+                    case "/sa": {
+                        String[] split = message.getText().split("\n");
+                        if (split.length > 1)
+                            textToSpeechService.say(split[2], split[1]);
+                        else if (split.length == 1)
+                            textToSpeechService.say(split[1], "uk");
                         break;
                     }
 

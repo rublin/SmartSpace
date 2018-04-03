@@ -2,6 +2,7 @@ package org.rublin.controller;
 
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
+import org.rublin.service.TextToSpeechService;
 import org.rublin.service.TriggerService;
 import org.rublin.service.UserService;
 import org.rublin.util.Image;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,22 +55,22 @@ public class Notification {
     private SoundController soundController;
 
     @Autowired
-    private TTSController ttsController;
+    private TextToSpeechService textToSpeechService;
 
     @Autowired
     private WeatherController weatherController;
 
     public void sayTime() {
         LocalTime now = LocalTime.now();
-        ttsController.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
+        textToSpeechService.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
     }
 
     public void sayWeather() {
         try {
             Thread.sleep(1000);
-            ttsController.say("Доброго ранку." + weatherController.getCondition(WEATHER_CITY, WEATHER_LANG), "uk");
+            textToSpeechService.say("Доброго ранку." + weatherController.getCondition(WEATHER_CITY, WEATHER_LANG), "uk");
             Thread.sleep(20000);
-            ttsController.say(weatherController.getForecast(WEATHER_CITY, WEATHER_LANG), "uk");
+            textToSpeechService.say(weatherController.getForecast(WEATHER_CITY, WEATHER_LANG), "uk");
         } catch (InterruptedException e) {
             LOG.warn(e.getMessage());
         }

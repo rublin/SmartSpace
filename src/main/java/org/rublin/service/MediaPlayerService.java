@@ -3,9 +3,7 @@ package org.rublin.service;
 import com.sun.jna.Pointer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.co.caprica.vlcj.component.AudioMediaPlayerComponent;
 import uk.co.caprica.vlcj.component.DirectAudioPlayerComponent;
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.directaudio.DirectAudioPlayer;
 
@@ -13,52 +11,42 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.SourceDataLine;
-import java.util.concurrent.Semaphore;
 
 @Slf4j
 @Service
 public class MediaPlayerService {
 
     private static final String FORMAT = "S16N";
-
     private static final int RATE = 44100;
-
     private static final int CHANNELS = 2;
 
-    private final Semaphore sync = new Semaphore(0);
+    private final JavaSoundDirectAudioPlayerComponent player;
 
-    private final JavaSoundDirectAudioPlayerComponent audioPlayerComponent;
-
-    private final AudioMediaPlayerComponent audioPlayer = new AudioMediaPlayerComponent();
-
-    public MediaPlayerService() throws Exception {
-        audioPlayerComponent = new JavaSoundDirectAudioPlayerComponent(FORMAT, RATE, CHANNELS);
+    public MediaPlayerService() {
+        try {
+            player = new JavaSoundDirectAudioPlayerComponent(FORMAT, RATE, CHANNELS);
+        } catch (Exception e) {
+            log.error("Failed to create bean: {}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     public void play(String mrl) {
         log.info("Starting to play {}", mrl);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    audioPlayerComponent.start();
-                    audioPlayerComponent.getMediaPlayer().playMedia("http://192.99.147.61:8000");
-                    sync.acquire(); // Potential race if the media has already finished, but very unlikely, and good enough for a test
-                } catch (Exception e) {
-                    log.error("Playback error: {}", e);
-                }
-            }
-        });
-       thread.start();
+        try {
+            player.start();
+            player.getMediaPlayer().playMedia(mrl);
+        } catch (Exception e) {
+            log.error("Playback error: {}", e);
+        }
        log.info("Music plays");
-//        audioPlayerComponent.stop();
         // audioPlayerComponent.release(true); // FIXME right now this causes a fatal JVM crash just before the JVM terminates, I am not sure why (the other direct audio player example does NOT crash)
 
     }
 
     public void stop() {
         log.info("Stop playing");
-        audioPlayerComponent.stop();
+        player.stop();
     }
 
     /**
@@ -67,13 +55,10 @@ public class MediaPlayerService {
     private class JavaSoundDirectAudioPlayerComponent extends DirectAudioPlayerComponent {
 
         private static final int BLOCK_SIZE = 4;
-
         private static final int SAMPLE_BITS = 16; // BLOCK_SIZE * 8 / channels ???
 
         private final AudioFormat audioFormat;
-
         private final Info info;
-
         private final SourceDataLine dataLine;
 
         public JavaSoundDirectAudioPlayerComponent(String format, int rate, int channels) throws Exception {
@@ -112,14 +97,6 @@ public class MediaPlayerService {
         @Override
         public void finished(MediaPlayer mediaPlayer) {
             log.info("finished()");
-            sync.release();
         }
     }
-//    public static void main(String[] args) {
-//        System.setProperty("jna.library.path", "C:\\Program Files\\VideoLAN\\VLC");
-//        EmbeddedMediaPlayerComponent player  = new EmbeddedMediaPlayerComponent();
-//        player.setVisible(false);
-//        player.getMediaPlayer().setVideoSurface(null);
-//        player.getMediaPlayer().playMedia("F:\\Music\\AC_DC\\0524464On.mp3");
-//    }
 }

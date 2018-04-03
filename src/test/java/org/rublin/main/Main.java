@@ -1,15 +1,13 @@
 package org.rublin.main;
 
 import org.rublin.controller.*;
+import org.rublin.service.MediaPlayerService;
+import org.rublin.service.TextToSpeechService;
 import org.rublin.util.Resources;
 
 
-import javax.sound.sampled.*;
-import java.awt.*;
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Sheremet on 15.06.2016.
@@ -118,8 +116,8 @@ public class Main {
 //            e.printStackTrace();
 //        }
 
-        TTSController ttsController = new TTSController();
-        ttsController.say(weather, "uk");
+        TextToSpeechService textToSpeechService = new TextToSpeechService(new MediaPlayerService());
+        textToSpeechService.say(weather, "uk");
 
 //        Thread.sleep(15000);
 //        weather = weatherController.getCondition(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
