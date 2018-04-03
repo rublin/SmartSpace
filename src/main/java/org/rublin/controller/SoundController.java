@@ -9,12 +9,13 @@ import java.io.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * Send sound notification
+ * Send sound notification is deprecated now. Use {@link org.rublin.service.MediaPlayerService}
  *
  * @author Ruslan Sheremet
  * @see AudioSystem
  * @since 1.0
  */
+@Deprecated
 @Controller
 public class SoundController {
     private static final Logger LOG = getLogger(SoundController.class);

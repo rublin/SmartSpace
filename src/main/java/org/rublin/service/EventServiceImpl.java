@@ -1,6 +1,6 @@
 package org.rublin.service;
 
-import org.rublin.controller.Notification;
+import org.rublin.controller.NotificationService;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.Zone;
@@ -26,7 +26,7 @@ public class EventServiceImpl implements EventService {
     @Autowired
     private TriggerService triggerService;
     @Autowired
-    private Notification notification;
+    private NotificationService notificationService;
 
     @Override
     public void save(Trigger trigger, Event event) {
@@ -52,7 +52,7 @@ public class EventServiceImpl implements EventService {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            notification.sayWeather();
+                            notificationService.sayWeather();
                         }
                     }).start();
                 }

@@ -37,12 +37,14 @@ public class TelegramController extends TelegramLongPollingBot {
     private static final String BOT_TOKEN = TELEGRAM_TOKEN;
     private static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
+
     private final ZoneService zoneService;
     private final UserService userService;
     private final CameraService cameraService;
-    private final WeatherController weatherController;
+    private final WeatherService weatherService;
     private final TextToSpeechService textToSpeechService;
     private final MediaPlayerService mediaPlayerService;
+
     @Value("${radio}")
     private String onlineRadio;
 
@@ -111,13 +113,13 @@ public class TelegramController extends TelegramLongPollingBot {
 
                     }
                     case "/wf": {
-                        String forecast = weatherController.getForecast(WEATHER_CITY, WEATHER_LANG);
+                        String forecast = weatherService.getForecast(WEATHER_CITY, WEATHER_LANG);
                         sendTextMessage(message.getChatId().toString(), forecast);
                         textToSpeechService.say(forecast, "uk");
                         break;
                     }
                     case "/wc": {
-                        String condition = weatherController.getCondition(WEATHER_CITY, WEATHER_LANG);
+                        String condition = weatherService.getCondition(WEATHER_CITY, WEATHER_LANG);
                         sendTextMessage(message.getChatId().toString(), condition);
                         textToSpeechService.say(condition, "uk");
                         break;

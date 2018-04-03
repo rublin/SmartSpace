@@ -1,13 +1,11 @@
 package org.rublin.service;
 
-import org.rublin.controller.ModemController;
-import org.rublin.controller.TelegramController;
+import org.rublin.controller.NotificationService;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
 import org.rublin.repository.ZoneRepository;
-import org.rublin.controller.Notification;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -38,7 +36,7 @@ public class ZoneServiceImpl implements ZoneService {
     private EventService eventService;
 
     @Autowired
-    private Notification notification;
+    private NotificationService notificationService;
 
     @Override
     public Zone save(Zone zone) {
@@ -68,7 +66,7 @@ public class ZoneServiceImpl implements ZoneService {
         }
         zoneRepository.save(zone);
         LOG.info("change Zone secure state to {}", zone.isSecure());
-        notification.sendInfoToAllUsers(zone);
+        notificationService.sendInfoToAllUsers(zone);
     }
 
     @Override
@@ -112,7 +110,7 @@ public class ZoneServiceImpl implements ZoneService {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                notification.sendAlarmNotification(zone, isSecure);
+                notificationService.sendAlarmNotification(zone, isSecure);
             }
         });
         thread.start();

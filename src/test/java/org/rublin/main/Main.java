@@ -3,6 +3,7 @@ package org.rublin.main;
 import org.rublin.controller.*;
 import org.rublin.service.MediaPlayerService;
 import org.rublin.service.TextToSpeechService;
+import org.rublin.service.WeatherService;
 import org.rublin.util.Resources;
 
 
@@ -103,8 +104,8 @@ public class Main {
 //        System.out.println("Zone Zone1 notification:\nTrigger: <b>Trigger1</b>; Status: <b>BAD</b>".replaceAll("<[^>]*>", ""));
 
         Language language = Language.valueOf("UK");
-        WeatherController weatherController = new WeatherController();
-        String weather = weatherController.getForecast(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
+        WeatherService weatherService = new WeatherService();
+        String weather = weatherService.getForecast(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
         System.out.println(weather);
 
 //        try {
