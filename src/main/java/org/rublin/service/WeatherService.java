@@ -2,6 +2,7 @@ package org.rublin.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -14,8 +15,6 @@ import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.rublin.util.Resources.WEATHER_TOKEN;
-
 /**
  * Weather controller receive JSON from api.wunderground.com
  *
@@ -27,6 +26,10 @@ import static org.rublin.util.Resources.WEATHER_TOKEN;
 @Slf4j
 @Service
 public class WeatherService {
+
+    @Value("${weather.token}")
+    private String token;
+    
     private static final String WEATHER_SERVICE = "http://api.wunderground.com/api/%s/%s/lang:%s/q/%s.json";
     private static final Pattern PATTERN = Pattern.compile("1\\d");
 
@@ -38,7 +41,7 @@ public class WeatherService {
      * @return String forecast
      */
     public String getForecast(String city, String lang) {
-        String url = String.format(WEATHER_SERVICE, WEATHER_TOKEN, "forecast", lang, city);
+        String url = String.format(WEATHER_SERVICE, token, "forecast", lang, city);
         JSONObject forecast = readJsonFromUrl(url).getJSONObject("forecast").getJSONObject("txt_forecast").getJSONArray("forecastday").getJSONObject(0);
 
         /**
@@ -56,7 +59,7 @@ public class WeatherService {
      * @return String condition
      */
     public String getCondition(String city, String lang) {
-        String url = String.format(WEATHER_SERVICE, WEATHER_TOKEN, "conditions", lang, city);
+        String url = String.format(WEATHER_SERVICE, token, "conditions", lang, city);
         JSONObject current = readJsonFromUrl(url).getJSONObject("current_observation");
         String weather = current.getString("weather");
         int temp = current.getInt("temp_c");

@@ -1,45 +1,54 @@
 package org.rublin.controller;
 
-import org.rublin.model.user.User;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.*;
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.*;
+import java.io.File;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
-
-import static org.slf4j.LoggerFactory.getLogger;
-import static org.rublin.util.Resources.*;
 
 /**
  * Created by Sheremet on 21.08.2016.
  */
+@Slf4j
 @Controller
 public class EmailController {
-    private static final Logger LOG = getLogger(EmailController.class);
+    
+    @Value("${mail.smtp}")
+    private String smtp;
+
+    @Value("${mail.port}")
+    private String port;
+
+    @Value("${mail.login}")
+    private String login;
+
+    @Value("${mail.password}")
+    private String password;
+
+    @Value("${mail.from}")
+    private String from;
 
     private  Properties getMailProperties() {
         Properties mailProperties = new Properties();
         mailProperties.put("mail.smtp.auth", "true");
-        mailProperties.put("mail.smtp.socketFactory.port", PORT);
+        mailProperties.put("mail.smtp.socketFactory.port", port);
         mailProperties.put("mail.smtp.socketFactory.class",
                 "javax.net.ssl.SSLSocketFactory");
-        mailProperties.put("mail.smtp.host", SMTP);
-        mailProperties.put("mail.smtp.port", PORT);
-        mailProperties.put("mail.smtp.login", LOGIN);
-        mailProperties.put("mail.smtp.password", PASSWORD);
-        mailProperties.put("mail.smtp.from", FROM);
+        mailProperties.put("mail.smtp.host", smtp);
+        mailProperties.put("mail.smtp.port", port);
+        mailProperties.put("mail.smtp.login", login);
+        mailProperties.put("mail.smtp.password", password);
+        mailProperties.put("mail.smtp.from", from);
         return mailProperties;
     }
 
@@ -47,7 +56,7 @@ public class EmailController {
             Session session = Session.getInstance(getMailProperties(),
                     new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(LOGIN, PASSWORD);
+                            return new PasswordAuthentication(login, password);
                         }
                     });
             try{
@@ -55,7 +64,7 @@ public class EmailController {
                 MimeMessage message = new MimeMessage(session);
 
                 // Set From: header field of the header.
-                message.setFrom(new InternetAddress(FROM));
+                message.setFrom(new InternetAddress(from));
 
                 // Set To: header field of the header.
                 message.setRecipients(Message.RecipientType.TO,
@@ -92,9 +101,9 @@ public class EmailController {
 
                 // Send message
                 Transport.send(message);
-                LOG.info("Mail {} send success", subject);
+                log.info("Mail {} send success", subject);
             }catch (MessagingException e) {
-                LOG.error("Mail {} send error. Exception is: {}", subject, e.getMessage());
+                log.error("Mail {} send error. Exception is: {}", subject, e.getMessage());
             }
     }
 
@@ -102,22 +111,22 @@ public class EmailController {
         Session session = Session.getInstance(getMailProperties(),
                     new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(LOGIN, PASSWORD);
+                            return new PasswordAuthentication(login, password);
                         }
                     });
 
         try {
                 Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(FROM));
+                message.setFrom(new InternetAddress(from));
                 message.setRecipients(Message.RecipientType.TO,
                         InternetAddress.parse(String.join(", ", emails)));
                 message.setSubject(subject);
                 message.setContent(text, "text/html");
 
                 Transport.send(message);
-                LOG.info("Mail {} to {} send success", subject, message.getAllRecipients());
+                log.info("Mail {} to {} send success", subject, message.getAllRecipients());
             } catch (MessagingException e) {
-                LOG.error("Mail {} send error. Exception is: {}", subject, e.getMessage());
+                log.error("Mail {} send error. Exception is: {}", subject, e.getMessage());
                 throw new RuntimeException(e);
             }
         }

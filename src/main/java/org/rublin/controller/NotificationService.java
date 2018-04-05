@@ -5,8 +5,8 @@ import org.rublin.model.Zone;
 import org.rublin.model.user.User;
 import org.rublin.service.*;
 import org.rublin.util.Image;
-import org.rublin.util.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.rublin.util.Resources.*;
 
 /**
  * Send different types of notifications, using other controllers
@@ -54,6 +53,21 @@ public class NotificationService {
     @Autowired
     private WeatherService weatherService;
 
+    @Value("${mail.notification}")
+    private boolean mailNotification;
+
+    @Value("${modem.sms}")
+    private boolean smsNotification;
+
+    @Value("${modem.call_timeout}")
+    private int callTimeout;
+
+    @Value("${weather.city")
+    private String city;
+
+    @Value("${weather.lang")
+    private String lang;
+    
     public void sayTime() {
         LocalTime now = LocalTime.now();
         textToSpeechService.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
@@ -62,9 +76,9 @@ public class NotificationService {
     public void sayWeather() {
         try {
             Thread.sleep(1000);
-            textToSpeechService.say("Доброго ранку." + weatherService.getCondition(WEATHER_CITY, WEATHER_LANG), "uk");
+            textToSpeechService.say("Доброго ранку." + weatherService.getCondition(city, lang), "uk");
             Thread.sleep(20000);
-            textToSpeechService.say(weatherService.getForecast(WEATHER_CITY, WEATHER_LANG), "uk");
+            textToSpeechService.say(weatherService.getForecast(city, lang), "uk");
         } catch (InterruptedException e) {
             log.warn(e.getMessage());
         }
@@ -121,9 +135,9 @@ public class NotificationService {
         String subject = String.format("%s form zone %s", subjectHeader, zone.getShortName());
         sendTelegram(message);
         sendEmail(getEmails(userService.getAll()), subject, mailBody, photos);
-        log.info("Using sms notification is {}", Resources.USE_SMS);
+        log.info("Using sms notification is {}", smsNotification);
 
-        if (Resources.USE_SMS) {
+        if (smsNotification) {
             /**
              * Send call notification if it is night (time between 22 and 06)
              */
@@ -145,7 +159,7 @@ public class NotificationService {
              * Send short call notifications
              * 5000 equals to 5 sec
              */
-            userService.getAll().forEach(user -> sendCall(user.getMobile(), Resources.CALL_TIMEOUT));
+            userService.getAll().forEach(user -> sendCall(user.getMobile(), callTimeout));
         }
     }
 
@@ -167,12 +181,12 @@ public class NotificationService {
     }
 
     private void sendEmail(List<String> emails, String subject, String message, List<File> files) {
-        if (USE_MAIL_NOTIFICATION)
+        if (mailNotification)
             emailController.sendMailWithAttach(subject, message, files, emails);
     }
 
     private void sendEmail(List<String> emails, String subject, String message) {
-        if (USE_MAIL_NOTIFICATION)
+        if (mailNotification)
             emailController.sendMail(subject, message, emails);
     }
 

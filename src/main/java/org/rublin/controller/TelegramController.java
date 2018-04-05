@@ -1,10 +1,10 @@
 package org.rublin.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.rublin.model.Zone;
 import org.rublin.service.*;
 import org.rublin.util.Image;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -21,20 +21,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.rublin.util.Resources.*;
-import static org.slf4j.LoggerFactory.getLogger;
-
 
 /**
  * Created by Sheremet on 28.08.2016.
  */
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class TelegramController extends TelegramLongPollingBot {
-
-    private static final Logger LOG = getLogger(TelegramController.class);
-    private static final String BOT_USERNAME = TELEGRAM_BOT_NAME;
-    private static final String BOT_TOKEN = TELEGRAM_TOKEN;
+    
     private static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
 
@@ -48,13 +43,25 @@ public class TelegramController extends TelegramLongPollingBot {
     @Value("${radio}")
     private String onlineRadio;
 
+    @Value("${telegram.bot.username}")
+    private String username;
+    
+    @Value("${telegram.bot.token}")
+    private String token;
+
+    @Value("${weather.city")
+    private String city;
+
+    @Value("${weather.lang")
+    private String lang;
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
             Message message = update.getMessage();
             if (isAuthorize(message.getFrom())) {
                 chatIds.add(message.getChatId());
-                LOG.info(message.getText().substring(0, 3).toLowerCase());
+                log.info(message.getText().substring(0, 3).toLowerCase());
                 switch (message.getText().substring(0, 3).toLowerCase()) {
                     case "/aa": {
                         Collection<Zone> zones = zoneService.getAll();
@@ -89,7 +96,7 @@ public class TelegramController extends TelegramLongPollingBot {
                                         zone.getName(),
                                         zone.isSecure()));
                             } catch (Exception e) {
-                                LOG.error("Error to change state for zone {} to {}", command[1], command[2]);
+                                log.error("Error to change state for zone {} to {}", command[1], command[2]);
                                 sendTextMessage(message.getChatId().toString(), "Can't find zone with id: " + command[1]);
                             }
                         } else {
@@ -113,13 +120,13 @@ public class TelegramController extends TelegramLongPollingBot {
 
                     }
                     case "/wf": {
-                        String forecast = weatherService.getForecast(WEATHER_CITY, WEATHER_LANG);
+                        String forecast = weatherService.getForecast(city, lang);
                         sendTextMessage(message.getChatId().toString(), forecast);
                         textToSpeechService.say(forecast, "uk");
                         break;
                     }
                     case "/wc": {
-                        String condition = weatherService.getCondition(WEATHER_CITY, WEATHER_LANG);
+                        String condition = weatherService.getCondition(city, lang);
                         sendTextMessage(message.getChatId().toString(), condition);
                         textToSpeechService.say(condition, "uk");
                         break;
@@ -157,12 +164,12 @@ public class TelegramController extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return BOT_USERNAME;
+        return username;
     }
 
     @Override
     public String getBotToken() {
-        return BOT_TOKEN;
+        return token;
     }
 
     @Override
@@ -176,10 +183,10 @@ public class TelegramController extends TelegramLongPollingBot {
         sendMessageRequest.setText(html);
         sendMessageRequest.enableHtml(true);
         try {
-            LOG.info(sendMessageRequest.getText());
+            log.info(sendMessageRequest.getText());
             execute(sendMessageRequest);
         } catch (TelegramApiException e) {
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -188,33 +195,33 @@ public class TelegramController extends TelegramLongPollingBot {
         sendPhotoRequest.setChatId(id);
 //        sendPhotoRequest.setNewPhoto(EmailController.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
         sendPhotoRequest.setNewPhoto(file);
-        LOG.info("Sending photo: {}", sendPhotoRequest.toString());
+        log.info("Sending photo: {}", sendPhotoRequest.toString());
         try {
             sendPhoto(sendPhotoRequest);
         } catch (TelegramApiException e) {
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
     private boolean isAuthorize(User user) {
         String telegramName = user.getUserName();
         int telegramId = user.getId();
-        LOG.debug("Received message from user {} (id: {})", telegramName, telegramId);
+        log.debug("Received message from user {} (id: {})", telegramName, telegramId);
         if (telegramIds.contains(telegramId)) {
             org.rublin.model.user.User foundUser = userService.getByTelegramId(telegramId);
-            LOG.info("Telegram User {} with id {} authorized as {}. Quick authorization", telegramName, telegramId, foundUser.getFirstName());
+            log.info("Telegram User {} with id {} authorized as {}. Quick authorization", telegramName, telegramId, foundUser.getFirstName());
             if (!foundUser.getTelegramName().equals(telegramName)) {
                 foundUser.setTelegramName(telegramName);
-                LOG.info("Telegram name {} updated", telegramName);
+                log.info("Telegram name {} updated", telegramName);
             }
             return true;
         } else {
             List<org.rublin.model.user.User> users = userService.getAll();
             for (org.rublin.model.user.User u : users) {
                 String foundTelegramName = u.getTelegramName();
-//                LOG.debug("Compare name");
+//                log.debug("Compare name");
                 if (foundTelegramName != null && foundTelegramName.equals(telegramName)) {
-                    LOG.info("Telegram User {} with id {} authorized as {}. Long authorization", telegramName, telegramId, u.getFirstName());
+                    log.info("Telegram User {} with id {} authorized as {}. Long authorization", telegramName, telegramId, u.getFirstName());
                     u.setTelegramId(telegramId);
                     telegramIds.add(telegramId);
                     userService.update(u);
@@ -222,7 +229,7 @@ public class TelegramController extends TelegramLongPollingBot {
                 }
             }
         }
-        LOG.info("Telegram User {} with id {} not authorized.", telegramName, telegramId);
+        log.info("Telegram User {} with id {} not authorized.", telegramName, telegramId);
         return false;
     }
 

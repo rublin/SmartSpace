@@ -1,14 +1,13 @@
 package org.rublin.main;
 
-import org.rublin.controller.*;
+import org.rublin.controller.ModemController;
 import org.rublin.service.MediaPlayerService;
 import org.rublin.service.TextToSpeechService;
 import org.rublin.service.WeatherService;
-import org.rublin.util.Resources;
-
 
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Created by Sheremet on 15.06.2016.
@@ -105,7 +104,7 @@ public class Main {
 
         Language language = Language.valueOf("UK");
         WeatherService weatherService = new WeatherService();
-        String weather = weatherService.getForecast(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
+        String weather = weatherService.getForecast("Kyiv", "UA");
         System.out.println(weather);
 
 //        try {
@@ -121,7 +120,7 @@ public class Main {
         textToSpeechService.say(weather, "uk");
 
 //        Thread.sleep(15000);
-//        weather = weatherController.getCondition(Resources.WEATHER_CITY, Resources.WEATHER_LANG);
+
 //        System.out.println(weather);
 //        ttsController.say(weather, "uk");
 //        audio notification
