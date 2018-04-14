@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -158,8 +159,10 @@ public class ModemController {
     /**
      * Start method uses to start communicate with USB modem
      */
-    public void start() {
+    @PostConstruct
+    public void init() {
         try {
+            log.info("Start connection to GSM modem on {} port", smsPort);
             serialPort = new SerialPort(smsPort);
             serialPort.openPort ();
             serialPort.setParams (SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);

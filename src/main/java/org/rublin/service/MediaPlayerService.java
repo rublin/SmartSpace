@@ -2,6 +2,7 @@ package org.rublin.service;
 
 import com.sun.jna.Pointer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.co.caprica.vlcj.component.DirectAudioPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -20,6 +21,9 @@ public class MediaPlayerService {
     private static final int RATE = 44100;
     private static final int CHANNELS = 2;
 
+    @Value("${sound.volume}")
+    private int volume;
+
     private final JavaSoundDirectAudioPlayerComponent player;
 
     public MediaPlayerService() {
@@ -32,9 +36,11 @@ public class MediaPlayerService {
     }
 
     public void play(String mrl) {
+        stop();
         log.info("Starting to play {}", mrl);
         try {
             player.start();
+            player.getMediaPlayer().setVolume(volume);
             player.getMediaPlayer().playMedia(mrl);
         } catch (Exception e) {
             log.error("Playback error: {}", e);
@@ -97,6 +103,7 @@ public class MediaPlayerService {
         @Override
         public void finished(MediaPlayer mediaPlayer) {
             log.info("finished()");
+            stop();
         }
     }
 }

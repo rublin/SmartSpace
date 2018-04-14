@@ -49,10 +49,10 @@ public class TelegramController extends TelegramLongPollingBot {
     @Value("${telegram.bot.token}")
     private String token;
 
-    @Value("${weather.city")
+    @Value("${weather.city}")
     private String city;
 
-    @Value("${weather.lang")
+    @Value("${weather.lang}")
     private String lang;
 
     @Override

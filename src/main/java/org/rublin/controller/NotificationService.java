@@ -7,14 +7,16 @@ import org.rublin.service.*;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationHome;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -33,8 +35,10 @@ import java.util.stream.Collectors;
 //@RequiredArgsConstructor
 public class NotificationService {
 
-    public static final String SECURITY_ALARM = "sound/security_alarm.wav";
-    public static final String OTHER_ALARM = "sound/other_alarm.wav";
+    @Value("${sound.security}")
+    public String securityAlarm = "sound/security_alarm.wav";
+    @Value("${sound.other}")
+    public String otherAlarm = "sound/other_alarm.wav";
 
     @Autowired
     private  EmailController emailController;
@@ -62,10 +66,10 @@ public class NotificationService {
     @Value("${modem.call_timeout}")
     private int callTimeout;
 
-    @Value("${weather.city")
+    @Value("${weather.city}")
     private String city;
 
-    @Value("${weather.lang")
+    @Value("${weather.lang}")
     private String lang;
     
     public void sayTime() {
@@ -168,9 +172,13 @@ public class NotificationService {
     }
 
     public void sendSound(boolean isSecurity) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File security = new File(Objects.requireNonNull(classLoader.getResource(SECURITY_ALARM)).getFile());
-        File other = new File(Objects.requireNonNull(classLoader.getResource(OTHER_ALARM)).getFile());
+        ApplicationHome home = new ApplicationHome(this.getClass());
+        File security = null;
+        File other = null;
+        security = new File(home.getDir(), securityAlarm);
+//                new File(Objects.requireNonNull(classLoader.getResource(securityAlarm)).getFile());
+        other = new File(home.getDir(), otherAlarm);
+//                new File(Objects.requireNonNull(classLoader.getResource(otherAlarm)).getFile());
         if (isSecurity) {
             player.play(security.getPath());
             log.info("Played security sound");
