@@ -9,11 +9,16 @@
     <jmxConfigurator/>
 
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>${SMARTSPACE_ROOT}/log/sspace.log</file>
+        <file>logs/smart-space.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+            <!-- daily rollover -->
+            <fileNamePattern>logs/karbonator.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
 
         <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%date %-5level %logger{0} [%file:%line] %msg%n</pattern>
+            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
 

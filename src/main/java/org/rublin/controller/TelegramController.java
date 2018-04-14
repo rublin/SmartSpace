@@ -144,7 +144,7 @@ public class TelegramController extends TelegramLongPollingBot {
                     case "/sa": {
                         String[] split = message.getText().split("\n");
                         if (split.length > 1)
-                            textToSpeechService.say(split[2], split[1]);
+                            textToSpeechService.say(split[2].trim(), split[1].trim());
                         else if (split.length == 1)
                             textToSpeechService.say(split[1], "uk");
                         break;
