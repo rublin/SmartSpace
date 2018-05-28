@@ -28,10 +28,10 @@ public class Camera {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "login", nullable = false)
+    @Column(name = "login")
     private String login;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Column(name = "url", nullable = false)

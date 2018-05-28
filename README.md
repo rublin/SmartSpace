@@ -30,6 +30,18 @@ SmartSpace is a Java Enterprise Web Application for manage your smart home or ot
 
 PostgerSQL is recommended.
 
+```SQL
+CREATE USER smart WITH PASSWORD 'Hd8...';
+CREATE DATABASE smartspace;
+GRANT ALL PRIVILEGES ON DATABASE smartspace to smart;
+```
+
+Restore database from backup
+
+```cmd
+psql -U smart smartspace < smart.bak
+```
+
 ### Install JRE
 
 ### Install VLC player
