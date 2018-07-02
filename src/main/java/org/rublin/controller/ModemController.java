@@ -1,15 +1,16 @@
 package org.rublin.controller;
 
-import jssc.*;
-import org.slf4j.Logger;
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.rublin.util.Resources.*;
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 /**
@@ -19,9 +20,12 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @see SerialPort
  * @since 1.0
  */
+@Slf4j
+@Component
 public class ModemController {
 
-    private static final Logger LOG = getLogger(ModemController.class);
+    @Value("${modem.port}")
+    private String smsPort;
 
     private  SerialPort serialPort;
     private  final String AT_CALL = "ATD";
@@ -44,11 +48,11 @@ public class ModemController {
         try {
             serialPort.writeBytes((AT_CALL + number + ";\r").getBytes());
 //            System.out.println("call start");
-            LOG.info("Call to {} send", number);
+            log.info("Call to {} send", number);
             waitSerialResponse();
             return serialPort.readString();
         } catch (SerialPortException e) {
-            LOG.error("Unexpected error: {}", e);
+            log.error("Unexpected error: {}", e);
         }
         return null;
     }
@@ -62,20 +66,20 @@ public class ModemController {
      */
     public String call(String number, int timeout) {
         String response = call(number);
-        LOG.info(response);
+        log.info(response);
         if (response != null) {
             try {
                 Thread.sleep(timeout);
             } catch (InterruptedException e) {
-                LOG.error(e.getMessage());
+                log.error(e.getMessage());
             }
-            LOG.info("Try to end call to {}", number);
+            log.info("Try to end call to {}", number);
             try {
                 serialPort.writeBytes(AT_END_CALL.getBytes());
                 waitSerialResponse(CALL_END_TIME);
                 return serialPort.readString();
             } catch (SerialPortException e) {
-                LOG.error("Unexpected error: {}", e);
+                log.error("Unexpected error: {}", e);
             }
         }
         return null;
@@ -105,11 +109,11 @@ public class ModemController {
             serialPort.writeBytes(AT_TEXT_MODE.getBytes());
             serialPort.writeBytes(String.format("%s\"%s\"\r", AT_SMS, number).getBytes());
             serialPort.writeBytes(String.format("%s\032\r", message).getBytes());
-            LOG.info("Send sms to {} success", number);
+            log.info("Send sms to {} success", number);
             waitSerialResponse();
             return serialPort.readString();
         } catch (SerialPortException e) {
-            LOG.error("Unexpected error: {}", e);
+            log.error("Unexpected error: {}", e);
         }
         return null;
     }
@@ -129,14 +133,14 @@ public class ModemController {
                 String receivedLines = serialPort.readString();
                 if (receivedLines.contains("+CMGR")) {
                     String message = toPDU(receivedLines);
-                    LOG.info("SMS message with id {} read success. Message is {}", i, message);
+                    log.info("SMS message with id {} read success. Message is {}", i, message);
                     lines.add(toPDU(receivedLines));
                     deleteSms(i);
                 }
             }
             return lines;
         } catch (SerialPortException e) {
-            LOG.error("Unexpected error: {}", e);
+            log.error("Unexpected error: {}", e);
             return null;
         }
     }
@@ -149,20 +153,22 @@ public class ModemController {
     public void deleteSms(int id) throws SerialPortException {
         serialPort.writeBytes(String.format("AT+CMGD=%d\r", id).getBytes());
         waitSerialResponse();
-        LOG.info("Sms with id {} deleted", id);
+        log.info("Sms with id {} deleted", id);
     }
 
     /**
      * Start method uses to start communicate with USB modem
      */
-    public void start() {
+    @PostConstruct
+    public void init() {
         try {
-            serialPort = new SerialPort(SMS_PORT);
+            log.info("Start connection to GSM modem on {} port", smsPort);
+            serialPort = new SerialPort(smsPort);
             serialPort.openPort ();
             serialPort.setParams (SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.writeBytes("AT\r".getBytes());
         } catch (SerialPortException e) {
-            LOG.error("Unexpected error: {}", e);
+            log.error("Unexpected error: {}", e);
         }
     }
 
@@ -173,7 +179,7 @@ public class ModemController {
         try {
             serialPort.closePort();
         } catch (SerialPortException e) {
-            LOG.error("Unexpected error: {}", e);
+            log.error("Unexpected error: {}", e);
         }
     }
 
@@ -206,7 +212,7 @@ public class ModemController {
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException e) {
-            LOG.error("Unexpected error: {}", e);
+            log.error("Unexpected error: {}", e);
         }
     }
 }

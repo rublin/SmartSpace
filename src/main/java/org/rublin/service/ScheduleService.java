@@ -1,58 +1,51 @@
-package org.rublin.controller;
+package org.rublin.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.rublin.controller.ModemController;
+import org.rublin.controller.NotificationService;
 import org.rublin.model.Zone;
-import org.rublin.service.TriggerService;
-import org.rublin.service.ZoneService;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 /**
- * ???
+ * Scheduled service
  *
  * @author Ruslan Sheremet
  * @see
  * @since 1.0
  */
+
+@Slf4j
 @Component
 @EnableScheduling
-public class ScheduleController {
+@RequiredArgsConstructor
+public class ScheduleService {
 
-    private static final Logger LOG = getLogger(ScheduleController.class);
 
-    @Autowired
-    private  ModemController modemController;
-
-    @Autowired
-    private Notification notification;
-
-    @Autowired
-    private TriggerService triggerService;
-
-    @Autowired
-    private ZoneService zoneService;
+    private final ModemController modemController;
+    private final NotificationService notificationService;
+    private final TriggerService triggerService;
+    private final ZoneService zoneService;
 
     @Scheduled(fixedDelay = 60000)
     public void readSms() {
-        LOG.debug("Scheduler is running");
+        log.debug("Scheduler is running");
         List<String> sms = modemController.readSms();
         if (!sms.isEmpty()) {
-            LOG.info("Read {} messages", sms.size());
+            log.info("Read {} messages", sms.size());
             StringBuffer sb = new StringBuffer();
             sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r<br>"));
-            notification.sendEmailNotification("Sms received", sb.toString());
+            notificationService.sendEmailNotification("Sms received", sb.toString());
         }
     }
 
     @Scheduled(fixedDelay = 60000)
     public void zoneActivityMonitor() {
-        LOG.debug("Zone activity scheduler start");
+        log.debug("Zone activity scheduler start");
         zoneService.activity();
     }
 
@@ -70,9 +63,9 @@ public class ScheduleController {
     private void timeNotification() {
         boolean activeZonePresents = zoneService.getAll().stream()
                 .anyMatch(Zone::isActive);
-        LOG.info("Scheduled time job started. Active zones {}", activeZonePresents);
+        log.info("Scheduled time job started. Active zones {}", activeZonePresents);
         if (activeZonePresents) {
-            notification.sayTime();
+            notificationService.sayTime();
         }
     }
 }

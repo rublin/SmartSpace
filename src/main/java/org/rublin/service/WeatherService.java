@@ -1,8 +1,9 @@
-package org.rublin.controller;
+package org.rublin.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,9 +12,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-
-import static org.rublin.util.Resources.*;
-import static org.slf4j.LoggerFactory.getLogger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Weather controller receive JSON from api.wunderground.com
@@ -22,10 +22,16 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @see JSONObject
  * @since 1.0
  */
-@Controller
-public class WeatherController {
-    private static final Logger LOG = getLogger(WeatherController.class);
+
+@Slf4j
+@Service
+public class WeatherService {
+
+    @Value("${weather.token}")
+    private String token;
+    
     private static final String WEATHER_SERVICE = "http://api.wunderground.com/api/%s/%s/lang:%s/q/%s.json";
+    private static final Pattern PATTERN = Pattern.compile("1\\d");
 
     /**
      * Returns weather forecast for city in lang localization
@@ -35,13 +41,14 @@ public class WeatherController {
      * @return String forecast
      */
     public String getForecast(String city, String lang) {
-        String url = String.format(WEATHER_SERVICE, WEATHER_TOKEN, "forecast", lang, city);
+        String url = String.format(WEATHER_SERVICE, token, "forecast", lang, city);
         JSONObject forecast = readJsonFromUrl(url).getJSONObject("forecast").getJSONObject("txt_forecast").getJSONArray("forecastday").getJSONObject(0);
+
         /**
          * need to replace text using i18n
          */
-        String result = "Прогноз погоди на " + forecast.getString("title") + ". " + forecast.getString("fcttext_metric");
-        LOG.info("Weather forecast {} got successfully", result);
+        String result = "Прогноз погоди на " + forecast.getString("title") + ". " + fixTemperature(forecast.getString("fcttext_metric"));
+        log.info("Weather forecast {} got successfully", result);
         return result;
     }
 
@@ -52,7 +59,7 @@ public class WeatherController {
      * @return String condition
      */
     public String getCondition(String city, String lang) {
-        String url = String.format(WEATHER_SERVICE, WEATHER_TOKEN, "conditions", lang, city);
+        String url = String.format(WEATHER_SERVICE, token, "conditions", lang, city);
         JSONObject current = readJsonFromUrl(url).getJSONObject("current_observation");
         String weather = current.getString("weather");
         int temp = current.getInt("temp_c");
@@ -63,7 +70,7 @@ public class WeatherController {
          * need to replace text using i18n
          */
         String result = String.format("Поточна погода (Київська метеостанція). Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s", fixTemperature(temp), dewpoint, humidity, wind_speed, weather);
-        LOG.info("Current weather {} got successfully", result);
+        log.info("Current weather {} got successfully", result);
         return result;
     }
 
@@ -83,15 +90,28 @@ public class WeatherController {
             }
             return new JSONObject(jsonText.toString());
         } catch (MalformedURLException e) {
-            LOG.error("Result from URL {} is not a JSON", url, e);
+            log.error("Result from URL {} is not a JSON", url, e);
         } catch (IOException e) {
-            LOG.error("Wrong source from URL {}", url, e);
+            log.error("Wrong source from URL {}", url, e);
         }
         return null;
     }
 
+    private String fixTemperature(String origin) {
+        String result = origin;
+        Matcher matcher = PATTERN.matcher(origin);
+        if (matcher.find()) {
+            String number = matcher.group();
+            result = origin.replaceAll(number, fixTemperature(Integer.valueOf(number)).concat(" "));
+        }
+
+        return result;
+    }
+
     private String fixTemperature(int temperature) {
-        if (temperature == 11) {
+        if (temperature == 10) {
+            return "десять";
+        } else if (temperature == 11) {
             return "одинадцять";
         } else if (temperature == 12) {
             return "дванадцять";
@@ -99,6 +119,16 @@ public class WeatherController {
             return "тринадцять";
         } else if (temperature == 14) {
             return "чотирнадцять";
+        } else if (temperature == 15) {
+            return "п'ятнадцять";
+        } else if (temperature == 16) {
+            return "шістнадцять";
+        } else if (temperature == 17) {
+            return "сімнадцять";
+        } else if (temperature == 18) {
+            return "вісімнадцять";
+        } else if (temperature == 19) {
+            return "дев'ятнадцять";
         }
         return String.valueOf(temperature);
     }

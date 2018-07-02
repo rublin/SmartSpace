@@ -3,6 +3,8 @@ package org.rublin.model.event;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 /**

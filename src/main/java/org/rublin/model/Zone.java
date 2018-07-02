@@ -1,6 +1,8 @@
 package org.rublin.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -42,11 +44,13 @@ public class Zone {
     @Column(name = "secure", nullable = false)
     private boolean secure;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany( mappedBy = "zone", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Trigger> triggers;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "zone", cascade = CascadeType.REMOVE)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany( mappedBy = "zone", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Camera> cameras;
 
