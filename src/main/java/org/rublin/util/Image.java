@@ -22,7 +22,7 @@ public class Image {
 
     private static final Logger LOG = getLogger(Image.class);
 
-    public static File getImageFromCamera(Camera camera) {
+    public static File getImageFromCamera(Camera camera, String path) {
         URL url = null;
         URLConnection connection = null;
         String encoding = null;
@@ -31,7 +31,7 @@ public class Image {
             encoding = new BASE64Encoder().encode(passStr.getBytes());
         }
         long timeMillis = System.currentTimeMillis();
-        String filename = timeMillis + ".jpg";
+        String filename = path + timeMillis + ".jpg";
 //        String filename = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy-hh-mm")) + ".jpg";
         try {
             url = new URL(camera.getURL());

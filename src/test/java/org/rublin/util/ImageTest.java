@@ -16,13 +16,13 @@ public class ImageTest {
 
     @Test
     public void hikVisionTest() {
-        File image = Image.getImageFromCamera(hikVisionCamera());
+        File image = Image.getImageFromCamera(hikVisionCamera(), "C:\\tmp\\");
         assertNotNull(image);
     }
 
     @Test
     public void reoLinkTest() {
-        File image = Image.getImageFromCamera(reoLinkCamera());
+        File image = Image.getImageFromCamera(reoLinkCamera(), "C:\\tmp\\");
         assertNotNull(image);
     }
 

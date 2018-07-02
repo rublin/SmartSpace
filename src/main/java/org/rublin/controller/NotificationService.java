@@ -39,6 +39,8 @@ public class NotificationService {
     public String securityAlarm = "sound/security_alarm.wav";
     @Value("${sound.other}")
     public String otherAlarm = "sound/other_alarm.wav";
+    @Value("${tmp.directory}")
+    private String tmpDir;
 
     @Autowired
     private  EmailController emailController;
@@ -216,25 +218,14 @@ public class NotificationService {
 
     private List<File> getPhotos(Zone zone) {
         List<File> photos = zone.getCameras().stream()
-                .map(Image::getImageFromCamera)
+                .map(camera -> Image.getImageFromCamera(camera, tmpDir))
                 .collect(Collectors.toList());
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            log.warn(e.getMessage());
-//        }
-//        photos.addAll(zone.getCameras().stream()
-//        .map(Image::getImageFromCamera)
-//        .collect(Collectors.toList()));
         return photos;
-//        List<File> photos = new ArrayList<>();
-//        zone.getCameras().forEach(camera -> photos.add(new File(Image.getImageFromCamera(camera))));
-//        return photos;
     }
 
     private List<String> getEmails(List<User> users) {
         return users.stream()
-                .map(user -> user.getEmail())
+                .map(User::getEmail)
                 .collect(Collectors.toList());
     }
 }

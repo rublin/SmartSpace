@@ -55,6 +55,9 @@ public class TelegramController extends TelegramLongPollingBot {
     @Value("${weather.lang}")
     private String lang;
 
+    @Value("${tmp.directory}")
+    private String tmpDir;
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
@@ -108,7 +111,9 @@ public class TelegramController extends TelegramLongPollingBot {
                         }
                         break;
                     case "/ca": {
-                        cameraService.getAll().forEach(camera -> sendPhotoMessage(message.getChatId().toString(), Image.getImageFromCamera(camera)));
+                        cameraService.getAll().forEach(
+                                camera -> sendPhotoMessage(message.getChatId().toString(),
+                                        Image.getImageFromCamera(camera, tmpDir)));
                     }
                     break;
                     case "/gs": {
