@@ -2,7 +2,9 @@ package org.rublin.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
+import org.rublin.model.event.Event;
 import org.rublin.service.*;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static java.lang.String.format;
 
 
 /**
@@ -39,6 +43,8 @@ public class TelegramController extends TelegramLongPollingBot {
     private final WeatherService weatherService;
     private final TextToSpeechService textToSpeechService;
     private final MediaPlayerService mediaPlayerService;
+    private final TriggerService triggerService;
+    private final EventService eventService;
 
     @Value("${radio}")
     private String onlineRadio;
@@ -70,7 +76,7 @@ public class TelegramController extends TelegramLongPollingBot {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
                             zoneService.setSecure(zone, true);
-                            sendTextMessage(message.getChatId().toString(), String.format(
+                            sendTextMessage(message.getChatId().toString(), format(
                                     "Zone <b>%s</b> is <b>arming</b> now",
                                     zone.getName()));
                             sendTextMessage(message.getChatId().toString(), zoneService.getInfo(zone));
@@ -81,7 +87,7 @@ public class TelegramController extends TelegramLongPollingBot {
                         Collection<Zone> zones = zoneService.getAll();
                         for (Zone zone : zones) {
                             zoneService.setSecure(zone, false);
-                            sendTextMessage(message.getChatId().toString(), String.format(
+                            sendTextMessage(message.getChatId().toString(), format(
                                     "Zone <b>%s</b> is <b>disarming</b> now",
                                     zone.getName()));
                             sendTextMessage(message.getChatId().toString(), zoneService.getInfo(zone));
@@ -94,7 +100,7 @@ public class TelegramController extends TelegramLongPollingBot {
                             try {
                                 Zone zone = zoneService.get(Integer.parseInt(command[1]));
                                 zoneService.setSecure(zone, command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
-                                sendTextMessage(message.getChatId().toString(), String.format(
+                                sendTextMessage(message.getChatId().toString(), format(
                                         "Zone <b>%s</b> changed security to <b>%s</b>",
                                         zone.getName(),
                                         zone.isSecure()));
@@ -103,7 +109,7 @@ public class TelegramController extends TelegramLongPollingBot {
                                 sendTextMessage(message.getChatId().toString(), "Can't find zone with id: " + command[1]);
                             }
                         } else {
-                            sendTextMessage(message.getChatId().toString(), String.format(
+                            sendTextMessage(message.getChatId().toString(), format(
                                     "Command %s is not support. " +
                                             "Use format like <b>/ss id 1</b> to arming, " +
                                             "and <b>/ss id 0</b> to disarming. Do not forget to change id to current zone id!",
@@ -155,11 +161,53 @@ public class TelegramController extends TelegramLongPollingBot {
                         break;
                     }
 
+                    case "/ts": {
+                        if (message.getText().matches("\\/ts\\s\\d+")) {
+                            String[] split = message.getText().split(" ");
+                            try {
+                                Trigger trigger = triggerService.get(Integer.valueOf(split[1]));
+                                List<Event> events = eventService.get(trigger, 5);
+                                sendTextMessage(message.getChatId().toString(), format("Found last 5 events for %s trigger:", trigger.getName()));
+                                events.forEach(e -> sendTextMessage(message.getChatId().toString(), e));
+                            } catch (Throwable throwable) {
+                                log.info("", throwable);
+                                sendTextMessage(message.getChatId().toString(), throwable.getMessage());
+                            }
+                        } else {
+                            triggerService.getAll().forEach(t -> sendTextMessage(message.getChatId().toString(), t));
+                        }
+                        break;
+                    }
+
+                    case "/tr": {
+                        if (message.getText().matches("\\/tr\\s\\d+\\s[0-1]")) {
+                            String[] split = message.getText().split(" ");
+                            try {
+                                Trigger trigger = triggerService.get(Integer.valueOf(split[1]));
+                                trigger.setActive(Boolean.valueOf(split[2]));
+                                triggerService.save(trigger, trigger.getZone());
+                                String logMessage = format("Set active to %s for trigger %s", trigger.isActive(), trigger.getName());
+                                log.info(logMessage);
+                                sendTextMessage(message.getChatId().toString(), logMessage);
+                            } catch (Throwable throwable) {
+                                log.info("", throwable);
+                                sendTextMessage(message.getChatId().toString(), throwable.getMessage());
+                            }
+                        } else {
+                            sendTextMessage(message.getChatId().toString(), format(
+                                    "Command %s is not support. " +
+                                            "Use format like <b>/tr id 1</b> to activate, " +
+                                            "and <b>/ss id 0</b> to disactivate. Do not forget to change id to current trigger id!",
+                                    message.getText()));
+                        }
+                        break;
+                    }
+
                     default:
-                        sendTextMessage(message.getChatId().toString(), String.format("Your command does not support. Try to use /help"));
+                        sendTextMessage(message.getChatId().toString(), format("Your command does not support. Try to use /help"));
                 }
             } else {
-                sendTextMessage(message.getChatId().toString(), String.format(
+                sendTextMessage(message.getChatId().toString(), format(
                         "Hello <b>%s</b>, how are you today?" +
                                 "<i>You are not authorized to use this bot, sorry.</i>",
                         message.getFrom().getFirstName()));
@@ -180,6 +228,16 @@ public class TelegramController extends TelegramLongPollingBot {
     @Override
     public void onClosing() {
 
+    }
+
+    private void sendTextMessage(String id, Trigger trigger) {
+        String html = format("ID: <b>%d</b>; name: <b>%s</b>; type: <b>%s</b>;", trigger.getId(), trigger.getName(), trigger.getType().name());
+        sendTextMessage(id, html);
+    }
+
+    private void sendTextMessage(String id, Event event) {
+        String html = format("Time: <b>%s</b>; name: <b>%s</b>; state: <b>%s</b>", event.getTime(), event.getTrigger().getName(), event.getState());
+        sendTextMessage(id, html);
     }
 
     private void sendTextMessage(String id, String html) {

@@ -1,5 +1,6 @@
 package org.rublin.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.rublin.controller.NotificationService;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
@@ -13,11 +14,13 @@ import org.rublin.repository.EventRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Sheremet on 16.06.2016.
  */
 @Service
+@Slf4j
 public class EventServiceImpl implements EventService {
     @Autowired
     private EventRepository eventRepository;
@@ -30,46 +33,57 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void save(Trigger trigger, Event event) {
-        Zone zone = trigger.getZone();
-        setTriggerState(event, trigger, zone);
-        if (trigger.isSecure()) {
-            if (zone.isSecure()) {
-                if (trigger.getType() == Type.DIGITAL || trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
-                    alarmEvent(event, trigger, zone);
+        if (trigger.isActive()) {
+            Zone zone = trigger.getZone();
+            setTriggerState(event, trigger, zone);
+            if (trigger.isSecure()) {
+                if (zone.isSecure()) {
+                    if (trigger.getType() == Type.DIGITAL || trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
+                        alarmEvent(event, trigger, zone);
+                    } else {
+                        eventRepository.save(trigger, event);
+                    }
                 } else {
                     eventRepository.save(trigger, event);
                 }
+                if (event.isDigital() && trigger.getName().equals("Move 1 floor 2") && !(boolean) event.getState()) {
+                    LocalDateTime now = LocalDateTime.now();
+                    if (now.getHour() >= 5 &&
+                            now.getHour() < 6 &&
+                            now.getMinute() >= 30 &&
+                            now.getDayOfWeek() != DayOfWeek.SATURDAY &&
+                            now.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                notificationService.sayWeather();
+                            }
+                        }).start();
+                    }
+                }
+            } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
+                alarmEvent(event, trigger, zone);
+            } else if (trigger.getType() == Type.ANALOG && trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
+                alarmEvent(event, trigger, zone);
             } else {
                 eventRepository.save(trigger, event);
             }
-            if (event.isDigital() && trigger.getName().equals("Move 1 floor 2") && !(boolean)event.getState()) {
-                LocalDateTime now = LocalDateTime.now();
-                if (now.getHour() >= 5 &&
-                        now.getHour() < 6 &&
-                        now.getMinute() >= 30 &&
-                        now.getDayOfWeek() != DayOfWeek.SATURDAY &&
-                        now.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            notificationService.sayWeather();
-                        }
-                    }).start();
-                }
-
-            }
-        } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
-            alarmEvent(event, trigger, zone);
-        } else if (trigger.getType() == Type.ANALOG && trigger.getMinThreshold() > (double)event.getState() || trigger.getMaxThreshold() < (double)event.getState()) {
-            alarmEvent(event, trigger, zone);
         } else {
-            eventRepository.save(trigger, event);
+            log.warn("Trigger {} is disabled", trigger.getName());
         }
     }
 
     @Override
     public List<Event> get(Trigger trigger) {
         return eventRepository.get(trigger);
+    }
+
+    @Override
+    public List<Event> get(Trigger trigger, int numberLatestEvents) {
+        List<Event> events = eventRepository.get(trigger);
+        return events.stream()
+                .limit(numberLatestEvents)
+                .collect(Collectors.toList());
     }
 
     @Override

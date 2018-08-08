@@ -1,5 +1,7 @@
 package org.rublin.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
@@ -18,6 +20,8 @@ import java.util.List;
 })
 @Entity
 @Table(name = "triggers")
+@Data
+@NoArgsConstructor
 public class Trigger {
 
     public static final String GET = "Trigger.get";
@@ -53,8 +57,8 @@ public class Trigger {
     @Column(name = "max")
     private Double maxThreshold;
 
-    public Trigger() {
-    }
+    private boolean active;
+
     public Trigger(Integer id) {
         this.id = id;
     }
@@ -149,102 +153,7 @@ public class Trigger {
         this.maxThreshold = maxThreshold;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
     public boolean isNew() {
         return (this.id == null);
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public Zone getZone() {
-        return zone;
-    }
-
-    public void setZone(Zone zone) {
-        this.zone = zone;
-    }
-
-    public boolean isSecure() {
-        return secure;
-    }
-
-    public void setSecure(boolean secure) {
-        this.secure = secure;
-    }
-
-    public boolean isState() {
-        return state;
-    }
-
-    public void setState(boolean state) {
-        this.state = state;
-    }
-
-    public double getMinThreshold() {
-        return minThreshold;
-    }
-
-    public void setMinThreshold(double minThreshold) {
-        this.minThreshold = minThreshold;
-    }
-
-    public double getMaxThreshold() {
-        return maxThreshold;
-    }
-
-    public void setMaxThreshold(double maxThreshold) {
-        this.maxThreshold = maxThreshold;
-    }
-
-    @Override
-    public String toString() {
-        return "Trigger{" +
-                "id= " + getId() +
-                ", name= " + getName() +
-                ", type= " + getType() +
-                ", state= " + state +
-                ", zone= " + zone +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Trigger trigger = (Trigger) o;
-
-        if (id != null ? !id.equals(trigger.id) : trigger.id != null) return false;
-        if (name != null ? !name.equals(trigger.name) : trigger.name != null) return false;
-        return type == trigger.type;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
     }
 }

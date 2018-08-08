@@ -39,11 +39,16 @@ public class JpaEventRepository implements EventRepository {
 
     @Override
     public List<Event> get(Trigger trigger) {
+        return get(trigger, 1000);
+    }
+
+    @Override
+    public List<Event> get(Trigger trigger, int maxRows) {
         List<Event> events;
         if (trigger.getType().equals(Type.DIGITAL)) {
-            events = new ArrayList<>(em.createNamedQuery(DigitEvent.GET, DigitEvent.class).setParameter("trigger_id", trigger.getId()).getResultList());
+            events = new ArrayList<>(em.createNamedQuery(DigitEvent.GET, DigitEvent.class).setParameter("trigger_id", trigger.getId()).setMaxResults(maxRows).getResultList());
         } else {
-            events = new ArrayList<>(em.createNamedQuery(AnalogEvent.GET, AnalogEvent.class).setParameter("trigger_id", trigger.getId()).getResultList());
+            events = new ArrayList<>(em.createNamedQuery(AnalogEvent.GET, AnalogEvent.class).setParameter("trigger_id", trigger.getId()).setMaxResults(maxRows).getResultList());
         }
         return events;
     }

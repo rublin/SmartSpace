@@ -60,13 +60,17 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public void setSecure(Zone zone, boolean security) {
-        zone.setSecure(security);
-        if (!security) {
-            zone.setStatus(ZoneStatus.GREEN);
+        if (zone.isSecure() != security) {
+            zone.setSecure(security);
+            if (!security) {
+                zone.setStatus(ZoneStatus.GREEN);
+            }
+            zoneRepository.save(zone);
+            LOG.info("change Zone secure state to {}", zone.isSecure());
+            notificationService.sendInfoToAllUsers(zone);
+        } else {
+            LOG.info("Zone {} already {}", zone.getName(), security ? "armed" : "disarmed");
         }
-        zoneRepository.save(zone);
-        LOG.info("change Zone secure state to {}", zone.isSecure());
-        notificationService.sendInfoToAllUsers(zone);
     }
 
     @Override

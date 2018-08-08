@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * Created by Sheremet on 21.06.2016.
  */
 @NamedQueries({
-        @NamedQuery(name = DigitEvent.GET, query = "SELECT e FROM DigitEvent e WHERE e.trigger.id=:trigger_id ORDER BY e.time DESC "),
+        @NamedQuery(name = DigitEvent.GET, query = "SELECT e FROM DigitEvent e WHERE e.trigger.id=:trigger_id ORDER BY e.time DESC"),
         @NamedQuery(name = DigitEvent.GET_ALL, query = "SELECT e FROM DigitEvent e WHERE e.type='DIGITAL'"),
         @NamedQuery(name = DigitEvent.GET_ALARMED, query = "SELECT e FROM DigitEvent e WHERE e.type='DIGITAL' AND e.alarm=true" ),
         @NamedQuery(name = DigitEvent.GET_BETWEEN, query = "SELECT e FROM DigitEvent e WHERE e.type='DIGITAL' AND e.time BETWEEN :from AND :to")
