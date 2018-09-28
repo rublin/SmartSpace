@@ -2,6 +2,7 @@ package org.rublin.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.model.ConfigKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class TextToSpeechService {
     private static final String TTS_SERVICE = "https://translate.google.com/translate_tts?ie=UTF-8&q=%s&tl=%s&client=tw-ob";
     private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0";
     private final MediaPlayerService mediaPlayerService;
+    private final SystemConfigService configService;
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -53,7 +55,7 @@ public class TextToSpeechService {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
             fileOutputStream.close();
-            mediaPlayerService.play(file);
+            mediaPlayerService.play(file, Integer.parseInt(configService.get(ConfigKey.TEXT_VOLUME)));
         } catch (IOException e) {
             log.error("Failed to say: {}", e);
         }

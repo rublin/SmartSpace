@@ -8,11 +8,10 @@ import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationHome;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -31,8 +30,7 @@ import java.util.stream.Collectors;
  */
 
 @Slf4j
-@Controller
-//@RequiredArgsConstructor
+@Service
 public class NotificationService {
 
     @Value("${sound.security}")
@@ -182,10 +180,10 @@ public class NotificationService {
         other = new File(home.getDir(), otherAlarm);
 //                new File(Objects.requireNonNull(classLoader.getResource(otherAlarm)).getFile());
         if (isSecurity) {
-            player.play(security.getPath());
+            player.play(security.getPath(), 80);
             log.info("Played security sound");
         } else {
-            player.play(other.getPath());
+            player.play(other.getPath(), 80);
             log.info("Played other sound");
         }
     }
@@ -227,5 +225,14 @@ public class NotificationService {
         return users.stream()
                 .map(User::getEmail)
                 .collect(Collectors.toList());
+    }
+
+    @PostConstruct
+    private void init() throws InterruptedException {
+        sendSound(true);
+        Thread.sleep(1000L);
+        sendSound(false);
+        Thread.sleep(1000L);
+        player.stop();
     }
 }

@@ -1,13 +1,14 @@
 package org.rublin.service;
 
 import com.sun.jna.Pointer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.co.caprica.vlcj.component.DirectAudioPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.directaudio.DirectAudioPlayer;
 
+import javax.annotation.PostConstruct;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine.Info;
@@ -15,29 +16,18 @@ import javax.sound.sampled.SourceDataLine;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MediaPlayerService {
 
     private static final String FORMAT = "S16N";
     private static final int RATE = 44100;
     private static final int CHANNELS = 2;
 
-    @Value("${sound.volume}")
-    private int volume;
+    private JavaSoundDirectAudioPlayerComponent player;
 
-    private final JavaSoundDirectAudioPlayerComponent player;
-
-    public MediaPlayerService() {
-        try {
-            player = new JavaSoundDirectAudioPlayerComponent(FORMAT, RATE, CHANNELS);
-        } catch (Exception e) {
-            log.error("Failed to create bean: {}", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void play(String mrl) {
+    public void play(String mrl, int volume) {
         stop();
-        log.info("Starting to play {}", mrl);
+        log.info("Starting to play {} with volume {}", mrl, volume);
         try {
             player.start();
             player.getMediaPlayer().setVolume(volume);
@@ -53,6 +43,16 @@ public class MediaPlayerService {
     public void stop() {
         log.info("Stop playing");
         player.stop();
+    }
+
+    @PostConstruct
+    private void init() {
+        try {
+            player = new JavaSoundDirectAudioPlayerComponent(FORMAT, RATE, CHANNELS);
+        } catch (Exception e) {
+            log.error("Failed to create bean: {}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**

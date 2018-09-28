@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS cameras;
 DROP TABLE IF EXISTS user_roles CASCADE;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS system_config;
 DROP SEQUENCE IF EXISTS event_seq;
 DROP SEQUENCE IF EXISTS common_seq;
 DROP SEQUENCE IF EXISTS trigger_seq;
@@ -14,6 +15,11 @@ CREATE SEQUENCE zone_seq START 10;
 CREATE SEQUENCE common_seq START 100;
 CREATE SEQUENCE event_seq START 1000;
 
+CREATE TABLE system_config
+(
+  parameter VARCHAR(30) PRIMARY KEY NOT NULL,
+  value     VARCHAR(100) NOT NULL
+);
 
 CREATE TABLE zones
 (
@@ -77,6 +83,7 @@ CREATE TABLE triggers
   state   BOOLEAN NOT NULL,
   min     REAL,
   max     REAL,
+  active  BOOLEAN NOT NULL ,
   FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX triggers_unique_name_idx

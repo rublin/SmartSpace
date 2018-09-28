@@ -1,4 +1,4 @@
-package org.rublin.service;
+package org.rublin.service.impl;
 
 import org.rublin.controller.NotificationService;
 import org.rublin.model.Trigger;
@@ -6,6 +6,8 @@ import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
 import org.rublin.repository.ZoneRepository;
+import org.rublin.service.EventService;
+import org.rublin.service.ZoneService;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.slf4j.Logger;

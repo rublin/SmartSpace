@@ -1,8 +1,9 @@
-package org.rublin.service;
+package org.rublin.service.impl;
 
 import org.rublin.AuthorizedUser;
 import org.rublin.model.user.User;
 import org.rublin.repository.UserRepository;
+import org.rublin.service.UserService;
 import org.rublin.util.UserUtil;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;

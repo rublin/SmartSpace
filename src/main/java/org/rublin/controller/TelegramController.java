@@ -2,13 +2,14 @@ package org.rublin.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.model.ConfigKey;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.event.Event;
 import org.rublin.service.*;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
@@ -30,7 +31,7 @@ import static java.lang.String.format;
  * Created by Sheremet on 28.08.2016.
  */
 @Slf4j
-@Controller
+@Component
 @RequiredArgsConstructor
 public class TelegramController extends TelegramLongPollingBot {
     
@@ -45,9 +46,10 @@ public class TelegramController extends TelegramLongPollingBot {
     private final MediaPlayerService mediaPlayerService;
     private final TriggerService triggerService;
     private final EventService eventService;
+    private final SystemConfigService configService;
 
-    @Value("${radio}")
-    private String onlineRadio;
+//    @Value("${radio}")
+//    private String onlineRadio;
 
     @Value("${telegram.bot.username}")
     private String username;
@@ -143,7 +145,7 @@ public class TelegramController extends TelegramLongPollingBot {
                         break;
                     }
                     case "/pl": {
-                        mediaPlayerService.play(onlineRadio);
+                        mediaPlayerService.play(configService.get(ConfigKey.RADIO), Integer.parseInt(configService.get(ConfigKey.MUSIC_VOLUME)));
                         break;
                     }
 

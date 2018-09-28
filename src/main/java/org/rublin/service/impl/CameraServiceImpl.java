@@ -1,14 +1,14 @@
-package org.rublin.service;
+package org.rublin.service.impl;
 
 import org.rublin.model.Camera;
 import org.rublin.model.Zone;
 import org.rublin.repository.CameraRepository;
+import org.rublin.service.CameraService;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

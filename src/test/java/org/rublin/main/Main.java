@@ -4,6 +4,7 @@ import org.rublin.controller.ModemController;
 import org.rublin.service.MediaPlayerService;
 import org.rublin.service.TextToSpeechService;
 import org.rublin.service.WeatherService;
+import org.rublin.service.impl.SystemConfigServiceImpl;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -116,8 +117,8 @@ public class Main {
 //            e.printStackTrace();
 //        }
 
-        TextToSpeechService textToSpeechService = new TextToSpeechService(new MediaPlayerService());
-        textToSpeechService.say(weather, "uk");
+//        TextToSpeechService textToSpeechService = new TextToSpeechService(new MediaPlayerService(new SystemConfigServiceImpl()));
+//        textToSpeechService.say(weather, "uk");
 
 //        Thread.sleep(15000);
 

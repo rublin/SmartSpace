@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.rublin.controller.ModemController;
 import org.rublin.controller.NotificationService;
+import org.rublin.model.ConfigKey;
 import org.rublin.model.Zone;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -25,11 +29,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-
     private final ModemController modemController;
     private final NotificationService notificationService;
-    private final TriggerService triggerService;
     private final ZoneService zoneService;
+    private final SystemConfigService configService;
+    private final ThreadPoolTaskScheduler taskScheduler;
 
     @Scheduled(fixedDelay = 60000)
     public void readSms() {
@@ -49,23 +53,22 @@ public class ScheduleService {
         zoneService.activity();
     }
 
-    @Scheduled(cron = "0 50 6 * * MON-FRI")
-    public void morningTimeSixFifty() {
-        timeNotification();
+    @PostConstruct
+    private void init() {
+        taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.FIRST_CRON_TIME_NOTIFICATION)));
+        taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.SECOND_CRON_TIME_NOTIFICATION)));
     }
 
-    @Scheduled(cron = "0 55 6 * * MON-FRI")
-//    @Scheduled(cron = "0 18 10 * * MON-FRI")
-    public void morningTimeSixFiftyFive() {
-        timeNotification();
-    }
+    class TimeNotificationTask implements Runnable {
 
-    private void timeNotification() {
-        boolean activeZonePresents = zoneService.getAll().stream()
-                .anyMatch(Zone::isActive);
-        log.info("Scheduled time job started. Active zones {}", activeZonePresents);
-        if (activeZonePresents) {
-            notificationService.sayTime();
+        @Override
+        public void run() {
+            boolean activeZonePresents = zoneService.getAll().stream()
+                    .anyMatch(Zone::isActive);
+            log.info("Scheduled time job started. Active zones {}", activeZonePresents);
+            if (activeZonePresents) {
+                notificationService.sayTime();
+            }
         }
     }
 }

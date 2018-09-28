@@ -1,4 +1,4 @@
-package org.rublin.service;
+package org.rublin.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.rublin.controller.NotificationService;
@@ -7,6 +7,9 @@ import org.rublin.model.Type;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
+import org.rublin.service.EventService;
+import org.rublin.service.TriggerService;
+import org.rublin.service.ZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.rublin.repository.EventRepository;
