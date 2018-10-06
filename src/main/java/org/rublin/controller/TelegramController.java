@@ -154,6 +154,12 @@ public class TelegramController extends TelegramLongPollingBot {
                         break;
                     }
 
+                    case "/sv": {
+                        String[] split = message.getText().split(" ");
+                        mediaPlayerService.setVolume(Integer.valueOf(split[1]), 0);
+                        break;
+                    }
+
                     case "/sa": {
                         String[] split = message.getText().split("\n");
                         if (split.length > 1)

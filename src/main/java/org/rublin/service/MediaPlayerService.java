@@ -25,17 +25,31 @@ public class MediaPlayerService {
 
     private JavaSoundDirectAudioPlayerComponent player;
 
+    public void setVolume(int volume, int delay) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+                log.info("Current volume is {}; trying to set {}", player.getMediaPlayer().getVolume(), volume);
+                player.getMediaPlayer().setVolume(volume);
+                log.info("Current volume is {}", player.getMediaPlayer().getVolume());
+            } catch (InterruptedException e) {
+                log.warn("Failed to set volume", e);
+            }
+        }).start();
+
+    }
+
     public void play(String mrl, int volume) {
         stop();
-        log.info("Starting to play {} with volume {}", mrl, volume);
         try {
             player.start();
-            player.getMediaPlayer().setVolume(volume);
             player.getMediaPlayer().playMedia(mrl);
+            log.info("Starting to play {}", mrl);
+            setVolume(volume, mrl.startsWith("http") ? 2000 : 500);
         } catch (Exception e) {
             log.error("Playback error: {}", e);
         }
-       log.info("Music plays");
+        log.info("Music plays");
         // audioPlayerComponent.release(true); // FIXME right now this causes a fatal JVM crash just before the JVM terminates, I am not sure why (the other direct audio player example does NOT crash)
 
     }

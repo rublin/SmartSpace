@@ -141,7 +141,7 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>3.3</version>
+            <version>3.6.1</version>
         </dependency>
 
         <!-- Serial port (USB Modem) -->
