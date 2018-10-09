@@ -95,12 +95,12 @@ public class ZoneServiceImpl implements ZoneService {
     public void activity() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> lastHourEvents = eventService.getBetween(now.minusHours(1), now);
-        Map<Trigger, List<Event>> eventsByTrigger = lastHourEvents.stream()
-                .collect(groupingBy(Event::getTrigger));
+        Map<Integer, List<Event>> eventsByTrigger = lastHourEvents.stream()
+                .collect(groupingBy(e -> e.getTrigger().getId()));
         for (Zone zone : getAll()) {
             boolean active = zone.getTriggers().stream()
                     .filter(Trigger::isSecure)
-                    .anyMatch(trigger -> Objects.nonNull(eventsByTrigger.get(trigger)));
+                    .anyMatch(trigger -> Objects.nonNull(eventsByTrigger.get(trigger.getId())));
             LOG.debug("Zone {} activity is {}", zone.getName(), active);
             if (zone.isActive() != active) {
                 LOG.info("Zone {} set activity to {}", zone.getName(), active);

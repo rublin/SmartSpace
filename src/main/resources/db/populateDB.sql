@@ -17,8 +17,8 @@ INSERT INTO system_config (parameter, value) VALUES
   ('TEXT_VOLUME', '80'),
   ('MUSIC_VOLUME', '50'),
   ('RADIO', 'http://192.99.147.61:8000'),
-  ('FIRST_CRON_TIME_NOTIFICATION', '0 50 6 * * MON-FRI'),
-  ('SECOND_CRON_TIME_NOTIFICATION', '0 55 6 * * MON-FRI');
+  ('FIRST_CRON_TIME_NOTIFICATION', '0 35 6 * * MON-FRI'),
+  ('SECOND_CRON_TIME_NOTIFICATION', '0 38 6 * * MON-FRI');
 
 -- user
 INSERT INTO users (fname, lname, email, password, telegram_name, mobile)
