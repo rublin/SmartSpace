@@ -11,18 +11,38 @@ import static org.rublin.telegram.TelegramCommand.*;
 
 public class TelegramKeyboardUtil {
     public static ReplyKeyboardMarkup mainKeyboard() {
-        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-        keyboard.setSelective(true);
-        keyboard.setResizeKeyboard(true);
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
 
-        List<KeyboardRow> keyboardRowList = new ArrayList<>();
-        keyboardRowList.add(createKeyboardRow(SECURITY.getCommandName(), CAMERA.getCommandName()));
-        keyboardRowList.add(createKeyboardRow(WEATHER.getCommandName(), MEDIA.getCommandName()));
-        keyboardRowList.add(createKeyboardRow(INFO.getCommandName()));
+        List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(createKeyboardRow(SECURITY.getCommandName(), CAMERA.getCommandName()));
+        keyboard.add(createKeyboardRow(WEATHER.getCommandName(), MEDIA.getCommandName()));
+        keyboard.add(createKeyboardRow(INFO.getCommandName()));
 
-        keyboard.setKeyboard(keyboardRowList);
+        return keyboardMarkup;
+    }
 
-        return keyboard;
+    public static ReplyKeyboardMarkup securityKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(createKeyboardRow(ARMING.getCommandName(), DISARMING.getCommandName()));
+
+        return keyboardMarkup;
+    }
+
+    public static ReplyKeyboardMarkup armingOrDisarmingKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(createKeyboardRow("All"));
+
+        return keyboardMarkup;
+    }
+
+    private static ReplyKeyboardMarkup initKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setSelective(true);
+        keyboardMarkup.setResizeKeyboard(true);
+        keyboardMarkup.setKeyboard(new ArrayList<>());
+        return keyboardMarkup;
     }
 
     private static KeyboardRow createKeyboardRow(String ... commands) {

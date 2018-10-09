@@ -12,12 +12,16 @@ import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
+import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.securityKeyboard;
 
 @Slf4j
 @Service
@@ -32,6 +36,7 @@ public class TelegramServiceImpl implements TelegramService {
     private final TriggerService triggerService;
     private final EventService eventService;
     private final SystemConfigService configService;
+    private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
 
 
     @Value("${weather.city}")
@@ -46,16 +51,45 @@ public class TelegramServiceImpl implements TelegramService {
     @Override
     public TelegramResponseDto process(Message message) {
         log.info(message.getText().substring(0, 3).toLowerCase());
-        String id = message.getChatId().toString();
-        List<String> responseMessages = new ArrayList<>();
-        List<File> responseFiles = new ArrayList<>();
         if (message.getText().startsWith("/")) {
             return doClassicCommand(message);
         } else {
-            log.info("Command {} not found", message.getText());
+            return doKeyboardCommand(message);
+        }
+    }
+
+    private TelegramResponseDto doKeyboardCommand(Message message) {
+        String id = message.getChatId().toString();
+        List<String> responseMessages = new ArrayList<>();
+        List<File> responseFiles = new ArrayList<>();
+        ReplyKeyboardMarkup keyboardMarkup = mainKeyboard();
+        TelegramCommand command = null;
+        TelegramCommand previousCommand = previousCommandMap.get(message.getChatId());
+        try {
+            command = TelegramCommand.valueOf(message.getText().toUpperCase());
+        } catch (Throwable throwable) {
+            log.warn("Command {} not found: ", message.getText(), throwable);
+        }
+        if (Objects.nonNull(command) && Objects.isNull(previousCommand)) {
+            switch (command) {
+                case INFO:
+                    responseMessages.add("Some information");
+                    break;
+                case SECURITY:
+                    zoneService.getAll().forEach(
+                            zone -> responseMessages.add(zoneService.getInfo(zone))
+                    );
+                    keyboardMarkup = securityKeyboard();
+                    previousCommandMap.put(message.getChatId(), command);
+            }
         }
 
-        return createResponse(id, responseMessages, responseFiles);
+        return TelegramResponseDto.builder()
+                .id(message.getChatId().toString())
+                .messages(responseMessages)
+                .files(responseFiles)
+                .keyboard(keyboardMarkup)
+                .build();
     }
 
     private TelegramResponseDto doClassicCommand(Message message) {
@@ -199,14 +233,11 @@ public class TelegramServiceImpl implements TelegramService {
             default:
                 responseMessages.add("Your command does not support. Try to use /help");
         }
-        return createResponse(message.getChatId().toString(), responseMessages, responseFiles);
-    }
-
-    private TelegramResponseDto createResponse(String id, List<String> messages, List<File> files) {
         return TelegramResponseDto.builder()
-                .messages(messages)
-                .files(files)
-                .id(id)
+                .id(message.getChatId().toString())
+                .messages(responseMessages)
+                .files(responseFiles)
+                .keyboard(mainKeyboard())
                 .build();
     }
 }

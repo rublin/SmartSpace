@@ -2,7 +2,11 @@ package org.rublin.telegram;
 
 public enum TelegramCommand {
     INFO("Info"),
+
     SECURITY("Security"),
+    ARMING("Arming"),
+    DISARMING("Disarming"),
+
     CAMERA("Camera"),
     WEATHER("Weather"),
     MEDIA("Media");

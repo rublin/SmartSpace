@@ -13,6 +13,7 @@ import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
@@ -23,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
 
 
 /**
@@ -57,18 +59,18 @@ public class TelegramController extends TelegramLongPollingBot {
                 sendTextMessage(message.getChatId().toString(), format(
                         "Hello <b>%s</b>, how are you today?" +
                                 "<i>You are not authorized to use this bot, sorry.</i>",
-                        message.getFrom().getFirstName()));
+                        message.getFrom().getFirstName()), mainKeyboard());
             }
         }
     }
 
     private void sendResponseMessage(TelegramResponseDto response) {
         if (Objects.nonNull(response.getMessages())) {
-            response.getMessages().forEach(message -> sendTextMessage(response.getId(), message));
+            response.getMessages().forEach(message -> sendTextMessage(response.getId(), message, response.getKeyboard()));
         }
 
         if (Objects.nonNull(response.getFiles())) {
-            response.getFiles().forEach(file -> sendPhotoMessage(response.getId(), file));
+            response.getFiles().forEach(file -> sendPhotoMessage(response.getId(), file, response.getKeyboard()));
         }
     }
 
@@ -87,22 +89,24 @@ public class TelegramController extends TelegramLongPollingBot {
 
     }
 
+    @Deprecated
     private void sendTextMessage(String id, Trigger trigger) {
         String html = format("ID: <b>%d</b>; name: <b>%s</b>; type: <b>%s</b>;", trigger.getId(), trigger.getName(), trigger.getType().name());
-        sendTextMessage(id, html);
+        sendTextMessage(id, html, mainKeyboard());
     }
 
+    @Deprecated
     private void sendTextMessage(String id, Event event) {
         String html = format("Time: <b>%s</b>; name: <b>%s</b>; state: <b>%s</b>", event.getTime(), event.getTrigger().getName(), event.getState());
-        sendTextMessage(id, html);
+        sendTextMessage(id, html, mainKeyboard());
     }
 
-    public void sendTextMessage(String id, String html) {
+    public void sendTextMessage(String id, String html, ReplyKeyboardMarkup keyboard) {
         SendMessage sendMessageRequest = new SendMessage();
         sendMessageRequest.setChatId(id);
         sendMessageRequest.setText(html);
         sendMessageRequest.enableHtml(true);
-        sendMessageRequest.setReplyMarkup(TelegramKeyboardUtil.mainKeyboard());
+        sendMessageRequest.setReplyMarkup(keyboard);
         try {
             log.info(sendMessageRequest.getText());
             execute(sendMessageRequest);
@@ -111,12 +115,12 @@ public class TelegramController extends TelegramLongPollingBot {
         }
     }
 
-    private void sendPhotoMessage(String id, File file) {
+    private void sendPhotoMessage(String id, File file, ReplyKeyboardMarkup keyboard) {
         SendPhoto sendPhotoRequest = new SendPhoto();
         sendPhotoRequest.setChatId(id);
 //        sendPhotoRequest.setNewPhoto(EmailController.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
         sendPhotoRequest.setNewPhoto(file);
-        sendPhotoRequest.setReplyMarkup(TelegramKeyboardUtil.mainKeyboard());
+        sendPhotoRequest.setReplyMarkup(keyboard);
         log.info("Sending photo: {}", sendPhotoRequest.toString());
         try {
             sendPhoto(sendPhotoRequest);
@@ -156,13 +160,13 @@ public class TelegramController extends TelegramLongPollingBot {
     }
 
     public void sendAlarmMessage(String message) {
-        chatIds.forEach(id -> sendTextMessage(id.toString(), message));
+        chatIds.forEach(id -> sendTextMessage(id.toString(), message, mainKeyboard()));
     }
 
     public void sendAlarmMessage(List<File> photos) {
         photos.forEach(photo ->
                 chatIds.forEach(id ->
-                        sendPhotoMessage(id.toString(), photo)
+                        sendPhotoMessage(id.toString(), photo, mainKeyboard())
                 ));
 
     }
