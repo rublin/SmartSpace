@@ -49,6 +49,18 @@ public class TelegramServiceImpl implements TelegramService {
         String id = message.getChatId().toString();
         List<String> responseMessages = new ArrayList<>();
         List<File> responseFiles = new ArrayList<>();
+        if (message.getText().startsWith("/")) {
+            return doClassicCommand(message);
+        } else {
+            log.info("Command {} not found", message.getText());
+        }
+
+        return createResponse(id, responseMessages, responseFiles);
+    }
+
+    private TelegramResponseDto doClassicCommand(Message message) {
+        List<String> responseMessages = new ArrayList<>();
+        List<File> responseFiles = new ArrayList<>();
         switch (message.getText().substring(0, 3).toLowerCase()) {
             case "/aa": {
                 Collection<Zone> zones = zoneService.getAll();
@@ -187,7 +199,7 @@ public class TelegramServiceImpl implements TelegramService {
             default:
                 responseMessages.add("Your command does not support. Try to use /help");
         }
-        return createResponse(id, responseMessages, responseFiles);
+        return createResponse(message.getChatId().toString(), responseMessages, responseFiles);
     }
 
     private TelegramResponseDto createResponse(String id, List<String> messages, List<File> files) {

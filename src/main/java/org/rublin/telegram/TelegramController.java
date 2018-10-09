@@ -102,6 +102,7 @@ public class TelegramController extends TelegramLongPollingBot {
         sendMessageRequest.setChatId(id);
         sendMessageRequest.setText(html);
         sendMessageRequest.enableHtml(true);
+        sendMessageRequest.setReplyMarkup(TelegramKeyboardUtil.mainKeyboard());
         try {
             log.info(sendMessageRequest.getText());
             execute(sendMessageRequest);
@@ -115,6 +116,7 @@ public class TelegramController extends TelegramLongPollingBot {
         sendPhotoRequest.setChatId(id);
 //        sendPhotoRequest.setNewPhoto(EmailController.getImageFromCamera("http://192.168.0.31/Streaming/channels/1/picture"), "CamIn01.jpg");
         sendPhotoRequest.setNewPhoto(file);
+        sendPhotoRequest.setReplyMarkup(TelegramKeyboardUtil.mainKeyboard());
         log.info("Sending photo: {}", sendPhotoRequest.toString());
         try {
             sendPhoto(sendPhotoRequest);
