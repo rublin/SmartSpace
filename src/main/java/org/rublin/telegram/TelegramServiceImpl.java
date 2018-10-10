@@ -2,6 +2,7 @@ package org.rublin.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.model.Camera;
 import org.rublin.model.ConfigKey;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
@@ -20,8 +21,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
-import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
-import static org.rublin.telegram.TelegramKeyboardUtil.securityKeyboard;
+import static java.util.stream.Collectors.toList;
+import static org.rublin.telegram.TelegramKeyboardUtil.*;
 
 @Slf4j
 @Service
@@ -63,14 +64,27 @@ public class TelegramServiceImpl implements TelegramService {
         List<String> responseMessages = new ArrayList<>();
         List<File> responseFiles = new ArrayList<>();
         ReplyKeyboardMarkup keyboardMarkup = mainKeyboard();
-        TelegramCommand command = null;
+        TelegramCommand command = TelegramCommand.fromCommandName(message.getText());
         TelegramCommand previousCommand = previousCommandMap.get(message.getChatId());
-        try {
-            command = TelegramCommand.valueOf(message.getText().toUpperCase());
-        } catch (Throwable throwable) {
-            log.warn("Command {} not found: ", message.getText(), throwable);
+        if (Objects.nonNull(previousCommand)) {
+            switch (previousCommand) {
+                case ARMING:
+                    if (message.getText().equals("All")) {
+                        zoneService.getAll().forEach(
+                                zone -> {
+                                    zoneService.setSecure(zone, true);
+                                    responseMessages.add(format(
+                                            "Zone <b>%s</b> is <b>arming</b> now", zone.getName()));
+                                    responseMessages.add(zoneService.getInfo(zone));
+                                }
+                        );
+                    } else {
+                        log.info("Need to find zone by name {}", message.getText());
+                    }
+            }
         }
-        if (Objects.nonNull(command) && Objects.isNull(previousCommand)) {
+
+        if (Objects.nonNull(command)) {
             switch (command) {
                 case INFO:
                     responseMessages.add("Some information");
@@ -80,10 +94,43 @@ public class TelegramServiceImpl implements TelegramService {
                             zone -> responseMessages.add(zoneService.getInfo(zone))
                     );
                     keyboardMarkup = securityKeyboard();
+                    break;
+                case ARMING:
+                    responseMessages.add("Which zone do you want arming");
+                    keyboardMarkup = armingOrDisarmingKeyboard(
+                            zoneService.getAll().stream()
+                                    .map(Zone::getName)
+                                    .collect(toList()));
+//                    previousCommandMap.put(message.getChatId(), command);
+                    break;
+                case DISARMING:
+                    responseMessages.add("Which zone do you want disarming");
+                    keyboardMarkup = armingOrDisarmingKeyboard(
+                            zoneService.getAll().stream()
+                                    .map(Zone::getName)
+                                    .collect(toList()));
+//                    previousCommandMap.put(message.getChatId(), command);
+                    break;
+                case MEDIA:
+                    keyboardMarkup = mediaKeyboard();
                     previousCommandMap.put(message.getChatId(), command);
+                    break;
+                case WEATHER:
+                    keyboardMarkup = weatherKeyboard();
+                    previousCommandMap.put(message.getChatId(), command);
+                    break;
+                case CAMERA:
+                    keyboardMarkup = cameraKeyboard(
+                            cameraService.getAll().stream()
+                                    .map(Camera::getName)
+                                    .collect(toList()));
+                    previousCommandMap.put(message.getChatId(), command);
+                    break;
             }
         }
-
+        if (responseMessages.isEmpty() && responseFiles.isEmpty()) {
+            responseMessages.add("Select the next step");
+        }
         return TelegramResponseDto.builder()
                 .id(message.getChatId().toString())
                 .messages(responseMessages)
