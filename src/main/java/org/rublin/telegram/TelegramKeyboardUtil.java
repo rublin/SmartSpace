@@ -43,9 +43,26 @@ public class TelegramKeyboardUtil {
     public static ReplyKeyboardMarkup mediaKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(RADIO.getCommandName(), SAY.getCommandName()));
+        keyboard.add(createKeyboardRow(RADIO.getCommandName(), SAY.getCommandName(), STOP.getCommandName()));
         keyboard.add(createKeyboardRow(VOLUME.getCommandName()));
         keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+
+        return keyboardMarkup;
+    }
+
+    public static ReplyKeyboardMarkup sayKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(createKeyboardRow(LANGUAGE_UK.getCommandName(), LANGUAGE_EN.getCommandName(), LANGUAGE_DE.getCommandName()));
+        keyboard.add(createKeyboardRow(LANGUAGE_OTHER.getCommandName()));
+        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+
+        return keyboardMarkup;
+    }
+
+    public static ReplyKeyboardMarkup volumeKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        keyboardMarkup.getKeyboard().add(createKeyboardRow(VOLUME_UP.getCommandName(), VOLUME_DOWN.getCommandName()));
 
         return keyboardMarkup;
     }

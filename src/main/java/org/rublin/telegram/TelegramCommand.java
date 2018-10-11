@@ -25,8 +25,15 @@ public enum TelegramCommand {
 
     MEDIA("Media"),
     RADIO("Radio"),
+    STOP("Stop"),
     SAY("Say"),
-    VOLUME("Volume");
+    LANGUAGE_UK("UK"),
+    LANGUAGE_EN("EN"),
+    LANGUAGE_DE("DE"),
+    LANGUAGE_OTHER("Other"),
+    VOLUME("Volume"),
+    VOLUME_UP("Volume UP"),
+    VOLUME_DOWN("Volume DOWN");
 
     private final String commandName;
 

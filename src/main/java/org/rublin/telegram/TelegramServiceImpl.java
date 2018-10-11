@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.rublin.telegram.TelegramCommand.*;
 import static org.rublin.telegram.TelegramKeyboardUtil.*;
 
 @Slf4j
@@ -51,7 +52,7 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public TelegramResponseDto process(Message message) {
-        log.info(message.getText().substring(0, 3).toLowerCase());
+        log.info(message.getText());
         if (message.getText().startsWith("/")) {
             return doClassicCommand(message);
         } else {
@@ -60,85 +61,195 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     private TelegramResponseDto doKeyboardCommand(Message message) {
-        String id = message.getChatId().toString();
+        Long id = message.getChatId();
         List<String> responseMessages = new ArrayList<>();
         List<File> responseFiles = new ArrayList<>();
         ReplyKeyboardMarkup keyboardMarkup = mainKeyboard();
         TelegramCommand command = TelegramCommand.fromCommandName(message.getText());
-        TelegramCommand previousCommand = previousCommandMap.get(message.getChatId());
-        if (Objects.nonNull(previousCommand)) {
-            switch (previousCommand) {
-                case ARMING:
-                    if (message.getText().equals("All")) {
-                        zoneService.getAll().forEach(
-                                zone -> {
-                                    zoneService.setSecure(zone, true);
-                                    responseMessages.add(format(
-                                            "Zone <b>%s</b> is <b>arming</b> now", zone.getName()));
-                                    responseMessages.add(zoneService.getInfo(zone));
-                                }
-                        );
-                    } else {
-                        log.info("Need to find zone by name {}", message.getText());
-                    }
-            }
-        }
+        TelegramCommand previousCommand = previousCommandMap.get(id);
 
         if (Objects.nonNull(command)) {
             switch (command) {
                 case INFO:
                     responseMessages.add("Some information");
                     break;
+
+                case MAIN:
+                    previousCommandMap.remove(id);
+                    break;
+
                 case SECURITY:
                     zoneService.getAll().forEach(
                             zone -> responseMessages.add(zoneService.getInfo(zone))
                     );
                     keyboardMarkup = securityKeyboard();
                     break;
+
                 case ARMING:
                     responseMessages.add("Which zone do you want arming");
                     keyboardMarkup = armingOrDisarmingKeyboard(
                             zoneService.getAll().stream()
                                     .map(Zone::getName)
                                     .collect(toList()));
-//                    previousCommandMap.put(message.getChatId(), command);
+                    previousCommandMap.put(id, command);
                     break;
+
                 case DISARMING:
                     responseMessages.add("Which zone do you want disarming");
                     keyboardMarkup = armingOrDisarmingKeyboard(
                             zoneService.getAll().stream()
                                     .map(Zone::getName)
                                     .collect(toList()));
-//                    previousCommandMap.put(message.getChatId(), command);
+                    previousCommandMap.put(id, command);
                     break;
+
+                case SECURITY_ALL:
+                    boolean security = ARMING == previousCommand;
+                    zoneService.getAll().forEach(
+                            zone -> {
+                                zoneService.setSecure(zone, security);
+                                responseMessages.add(format(
+                                        "Zone <b>%s</b> is <b>%s</b> now", zone.getName(),
+                                        security ? "arming" : "disarming"));
+                                responseMessages.add(zoneService.getInfo(zone));
+                            }
+                    );
+                    previousCommandMap.remove(id);
+                    break;
+
                 case MEDIA:
                     keyboardMarkup = mediaKeyboard();
-                    previousCommandMap.put(message.getChatId(), command);
+                    previousCommandMap.put(id, command);
                     break;
+
                 case WEATHER:
                     keyboardMarkup = weatherKeyboard();
-                    previousCommandMap.put(message.getChatId(), command);
                     break;
+
+                case FORECAST:
+                    String forecast = weatherService.getForecast(city, lang);
+                    textToSpeechService.say(forecast, "uk");
+                    responseMessages.add(forecast);
+                    break;
+
+                case CONDITION:
+                    String condition = weatherService.getCondition(city, lang);
+                    textToSpeechService.say(condition, "uk");
+                    responseMessages.add(condition);
+                    break;
+
+                case RADIO:
+                    mediaPlayerService.play(configService.get(ConfigKey.RADIO), Integer.parseInt(configService.get(ConfigKey.MUSIC_VOLUME)));
+                    break;
+
+                case STOP:
+                    mediaPlayerService.stop();
+                    break;
+
+                case VOLUME:
+                    responseMessages.add("Changing volume is only possible when the music is playing");
+                    keyboardMarkup = volumeKeyboard();
+                    break;
+
+                case VOLUME_UP:
+                    mediaPlayerService.setVolume(true);
+                    break;
+
+                case VOLUME_DOWN:
+                    mediaPlayerService.setVolume(false);
+                    break;
+
+                case SAY:
+                    responseMessages.add("Select your language");
+                    keyboardMarkup = sayKeyboard();
+                    break;
+
+                case LANGUAGE_UK:
+                    responseMessages.add("Type what you want me to say");
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case LANGUAGE_EN:
+                    responseMessages.add("Type what you want me to say");
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case LANGUAGE_DE:
+                    responseMessages.add("Type what you want me to say");
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case LANGUAGE_OTHER:
+                    responseMessages.add("Type language code and what you want me to say as new line. \nLike this:\n\nEN\nGlory to Ukraine!");
+                    previousCommandMap.put(id, command);
+                    break;
+
                 case CAMERA:
                     keyboardMarkup = cameraKeyboard(
                             cameraService.getAll().stream()
                                     .map(Camera::getName)
                                     .collect(toList()));
-                    previousCommandMap.put(message.getChatId(), command);
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case CAMERA_ALL:
+                    cameraService.getAll().forEach(
+                            camera -> responseFiles.add(Image.getImageFromCamera(camera, tmpDir)));
+                    previousCommandMap.remove(id);
                     break;
             }
         }
+
+        if (Objects.nonNull(previousCommand) && Objects.isNull(command)) {
+            if (previousCommand == ARMING || previousCommand == DISARMING) {
+                boolean security = previousCommand == ARMING;
+                Zone zone = zoneService.getAll().stream()
+                        .filter(z -> z.getName().equalsIgnoreCase(message.getText()))
+                        .findFirst().orElse(null);
+                if (Objects.nonNull(zone)) {
+                    zoneService.setSecure(zone, security);
+                    responseMessages.add(format(
+                            "Zone <b>%s</b> is <b>%s</b> now",
+                            zone.getName(),
+                            security ? "arming" : "disarming"));
+                    responseMessages.add(zoneService.getInfo(zone));
+                } else {
+                    log.warn("Need to find zone by name {}", message.getText());
+                    responseMessages.add(format("Can't find zone with name %s", message.getText()));
+                }
+                previousCommandMap.remove(id);
+            } else if (previousCommand == CAMERA) {
+                Camera camera = cameraService.getAll().stream()
+                        .filter(c -> c.getName().equalsIgnoreCase(message.getText()))
+                        .findFirst().orElse(null);
+                if (Objects.nonNull(camera)) {
+                    responseFiles.add(Image.getImageFromCamera(camera, tmpDir));
+                }
+            } else if (previousCommand == LANGUAGE_DE || previousCommand == LANGUAGE_EN || previousCommand == LANGUAGE_UK) {
+                textToSpeechService.say(message.getText(), previousCommand.getCommandName().toLowerCase());
+                previousCommandMap.remove(id);
+            } else if (previousCommand == LANGUAGE_OTHER) {
+                String[] split = message.getText().split("\n");
+                if (split.length == 2)
+                    textToSpeechService.say(split[1].trim(), split[0].trim().toLowerCase());
+                else
+                    responseMessages.add("I expect only 2 lines");
+                previousCommandMap.remove(id);
+            }
+        }
+
         if (responseMessages.isEmpty() && responseFiles.isEmpty()) {
             responseMessages.add("Select the next step");
         }
         return TelegramResponseDto.builder()
-                .id(message.getChatId().toString())
+                .id(id.toString())
                 .messages(responseMessages)
                 .files(responseFiles)
                 .keyboard(keyboardMarkup)
                 .build();
     }
 
+    @Deprecated
     private TelegramResponseDto doClassicCommand(Message message) {
         List<String> responseMessages = new ArrayList<>();
         List<File> responseFiles = new ArrayList<>();
