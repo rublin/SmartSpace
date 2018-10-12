@@ -7,6 +7,7 @@ import org.rublin.model.ConfigKey;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.event.Event;
+import org.rublin.model.user.User;
 import org.rublin.service.*;
 import org.rublin.to.TelegramResponseDto;
 import org.rublin.util.Image;
@@ -38,7 +39,11 @@ public class TelegramServiceImpl implements TelegramService {
     private final TriggerService triggerService;
     private final EventService eventService;
     private final SystemConfigService configService;
+    private final UserService userService;
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
+    private static Set<Integer> telegramIds = new HashSet<>();
+    private static Set<Long> chatIds = new HashSet<>();
+
 
 
     @Value("${weather.city}")
@@ -53,22 +58,65 @@ public class TelegramServiceImpl implements TelegramService {
     @Override
     public TelegramResponseDto process(Message message) {
         log.info(message.getText());
+        User user = authentication(message);
+        if (Objects.isNull(user)) {
+            return TelegramResponseDto.builder()
+                    .messages(Collections.singletonList("The user is not authenticated"))
+                    .build();
+        }
         if (message.getText().startsWith("/")) {
-            return doClassicCommand(message);
+            return doClassicCommand(message, user);
         } else {
-            return doKeyboardCommand(message);
+            return doKeyboardCommand(message, user);
         }
     }
 
-    private TelegramResponseDto doKeyboardCommand(Message message) {
+    @Override
+    public Set<Long> getChatIds() {
+        return chatIds;
+    }
+
+    private User authentication(Message message) {
+        int telegramId = message.getFrom().getId();
+        log.debug("Received message from user {} (id: {})", message.getFrom().getUserName(), telegramId);
+        if (telegramIds.contains(telegramId)) {
+            User foundUser = userService.getByTelegramId(telegramId);
+            log.info("Telegram User {} with id {} authorized as {}. Quick authorization", message.getFrom().getUserName(), telegramId, foundUser.getFirstName());
+            chatIds.add(message.getChatId());
+            return foundUser;
+        } else {
+            List<User> users = userService.getAll();
+            for (User u : users) {
+                String foundTelegramName = u.getTelegramName();
+//                log.debug("Compare name");
+                if (foundTelegramName != null && foundTelegramName.equals(message.getFrom().getUserName())) {
+                    log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, u.getFirstName());
+                    u.setTelegramId(telegramId);
+                    telegramIds.add(telegramId);
+                    chatIds.add(message.getChatId());
+                    userService.update(u);
+                    return u;
+                }
+            }
+        }
+        log.info("Telegram User {} with id {} not authorized.", message.getFrom().getUserName(), telegramId);
+        return null;
+    }
+
+    private TelegramResponseDto doKeyboardCommand(Message message, User user) {
         Long id = message.getChatId();
         List<String> responseMessages = new ArrayList<>();
         List<File> responseFiles = new ArrayList<>();
-        ReplyKeyboardMarkup keyboardMarkup = mainKeyboard();
+        ReplyKeyboardMarkup keyboardMarkup = mainKeyboard(user);
         TelegramCommand command = TelegramCommand.fromCommandName(message.getText());
         TelegramCommand previousCommand = previousCommandMap.get(id);
 
         if (Objects.nonNull(command)) {
+            if (!authorize(user, command)) {
+                return TelegramResponseDto.builder()
+                        .messages(Collections.singletonList("The user is not authorized to use this command"))
+                        .build();
+            }
             switch (command) {
                 case INFO:
                     responseMessages.add("Some information");
@@ -76,6 +124,10 @@ public class TelegramServiceImpl implements TelegramService {
 
                 case MAIN:
                     previousCommandMap.remove(id);
+                    break;
+
+                case ADMIN:
+                    keyboardMarkup = adminKeyboard();
                     break;
 
                 case SECURITY:
@@ -114,6 +166,19 @@ public class TelegramServiceImpl implements TelegramService {
                                 responseMessages.add(zoneService.getInfo(zone));
                             }
                     );
+                    previousCommandMap.remove(id);
+                    break;
+
+                case EVENTS:
+                    keyboardMarkup = eventsKeyboard(
+                            triggerService.getAll().stream()
+                                    .map(Trigger::getName)
+                                    .collect(toList()));
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case EVENTS_ALL:
+                    triggerService.getAll().forEach(t -> responseMessages.add(t.toString()));
                     previousCommandMap.remove(id);
                     break;
 
@@ -235,6 +300,20 @@ public class TelegramServiceImpl implements TelegramService {
                 else
                     responseMessages.add("I expect only 2 lines");
                 previousCommandMap.remove(id);
+            } else if (previousCommand == EVENTS) {
+                previousCommandMap.remove(id);
+                Optional<Trigger> optionalTrigger = triggerService.getAll().stream()
+                        .filter(t -> t.getName().equalsIgnoreCase(message.getText()))
+                        .findFirst();
+                if (optionalTrigger.isPresent()) {
+                    List<Event> events = eventService.get(optionalTrigger.get(), 5);
+                    events.forEach(e -> responseMessages.add(format("%s - %s: %s",
+                            e.getTime().format(DateTimeFormatter.ISO_DATE_TIME),
+                            e.getTrigger().getName(),
+                            e.getState())));
+                } else {
+                    responseMessages.add(format("Trigger %s not found", message.getText()));
+                }
             }
         }
 
@@ -249,8 +328,15 @@ public class TelegramServiceImpl implements TelegramService {
                 .build();
     }
 
+    private boolean authorize(User user, TelegramCommand command) {
+        if (command.name().startsWith("ADMIN")) {
+            return user.isAdmin();
+        }
+        return true;
+    }
+
     @Deprecated
-    private TelegramResponseDto doClassicCommand(Message message) {
+    private TelegramResponseDto doClassicCommand(Message message, User user) {
         List<String> responseMessages = new ArrayList<>();
         List<File> responseFiles = new ArrayList<>();
         switch (message.getText().substring(0, 3).toLowerCase()) {
@@ -395,7 +481,7 @@ public class TelegramServiceImpl implements TelegramService {
                 .id(message.getChatId().toString())
                 .messages(responseMessages)
                 .files(responseFiles)
-                .keyboard(mainKeyboard())
+                .keyboard(mainKeyboard(user))
                 .build();
     }
 }
