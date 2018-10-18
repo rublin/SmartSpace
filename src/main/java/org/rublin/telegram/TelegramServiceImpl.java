@@ -130,6 +130,27 @@ public class TelegramServiceImpl implements TelegramService {
                     keyboardMarkup = adminKeyboard();
                     break;
 
+                case ADMIN_ZONES:
+                    keyboardMarkup = zonesKeyboard();
+                    zoneService.getAll().forEach(
+                            zone -> responseMessages.add(format("%d; %s; %s", zone.getId(), zone.getName(), zone.getStatus()))
+                    );
+                    break;
+
+                case ADMIN_TRIGGERS:
+                    keyboardMarkup = triggerKeyboard();
+                    triggerService.getAll().forEach(
+                            trigger -> responseMessages.add(format("%d; %s; %s; %s", trigger.getId(), trigger.getName(), trigger.getType().name(), trigger.getZone().getName()))
+                    );
+                    break;
+
+                case ADMIN_CAMERAS:
+                    keyboardMarkup = cameraKeyboard();
+                    cameraService.getAll().forEach(
+                            camera -> responseMessages.add(format("%d; %s; %s; %s", camera.getId(), camera.getName(), camera.getIp(), camera.getZone().getName()))
+                    );
+                    break;
+
                 case SECURITY:
                     zoneService.getAll().forEach(
                             zone -> responseMessages.add(zoneService.getInfo(zone))
@@ -174,12 +195,18 @@ public class TelegramServiceImpl implements TelegramService {
                             triggerService.getAll().stream()
                                     .map(Trigger::getName)
                                     .collect(toList()));
-                    previousCommandMap.put(id, command);
-                    break;
+                    List<String> eventMessages = triggerService.getAll().stream()
+                            .map(t -> eventService.get(t, 5))
+                            .flatMap(List::stream)
+                            .sorted(Comparator.comparing(Event::getTime))
+                            .map(e -> format("%s - %s: %s",
+                                    e.getTime().format(DateTimeFormatter.ISO_DATE_TIME),
+                                    e.getTrigger().getName(),
+                                    e.getState()))
+                            .collect(toList());
+                    responseMessages.addAll(eventMessages);
 
-                case EVENTS_ALL:
-                    triggerService.getAll().forEach(t -> responseMessages.add(t.toString()));
-                    previousCommandMap.remove(id);
+                    previousCommandMap.put(id, command);
                     break;
 
                 case MEDIA:
@@ -225,7 +252,8 @@ public class TelegramServiceImpl implements TelegramService {
                     break;
 
                 case SAY:
-                    responseMessages.add("Select your language");
+                    responseMessages.add("Select your language or just use your default language");
+                    previousCommandMap.put(id, command);
                     keyboardMarkup = sayKeyboard();
                     break;
 
@@ -290,8 +318,12 @@ public class TelegramServiceImpl implements TelegramService {
                 if (Objects.nonNull(camera)) {
                     responseFiles.add(Image.getImageFromCamera(camera, tmpDir));
                 }
+            } else if (previousCommand == SAY) {
+                textToSpeechService.say(message.getText(), "uk");
+                previousCommandMap.remove(id);
             } else if (previousCommand == LANGUAGE_DE || previousCommand == LANGUAGE_EN || previousCommand == LANGUAGE_UK) {
-                textToSpeechService.say(message.getText(), previousCommand.getCommandName().toLowerCase());
+                String languageCode = previousCommand.name().split("_")[1].toLowerCase();
+                textToSpeechService.say(message.getText(), languageCode);
                 previousCommandMap.remove(id);
             } else if (previousCommand == LANGUAGE_OTHER) {
                 String[] split = message.getText().split("\n");

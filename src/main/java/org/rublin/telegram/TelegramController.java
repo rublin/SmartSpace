@@ -72,6 +72,7 @@ public class TelegramController extends TelegramLongPollingBot {
         sendMessageRequest.setText(html);
         sendMessageRequest.enableHtml(true);
         sendMessageRequest.setReplyMarkup(keyboard);
+
         try {
             log.info(sendMessageRequest.getText());
             execute(sendMessageRequest);

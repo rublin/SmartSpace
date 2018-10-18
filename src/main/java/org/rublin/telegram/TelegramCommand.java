@@ -8,12 +8,12 @@ import java.util.Optional;
 
 @Slf4j
 public enum TelegramCommand {
-    INFO("Info"),
+    INFO("\u2139 Info"),
 
     MAIN("\uD83D\uDD19 Return to main page"),
 
-    ADMIN("\u26D4 Admin"),
-    ADMIN_TRIGGERS("Triggers"),
+    ADMIN("\uD83D\uDC68\u200D\uD83D\uDCBB Admin"),
+    ADMIN_TRIGGERS("\uD83C\uDF9A Triggers"),
     ADMIN_TRIGGER_ADD("\u2795 Add trigger"),
     ADMIN_TRIGGER_EDIT("\uD83D\uDD27 Edit trigger"),
     ADMIN_TRIGGER_REMOVE("\u2796 Remove trigger"),
@@ -22,10 +22,11 @@ public enum TelegramCommand {
     ADMIN_ZONE_EDIT("\uD83D\uDD27 Edit zone"),
     ADMIN_ZONE_REMOVE("\u2796 Remove zone"),
     ADMIN_CAMERA_ADD("\u2795 Add camera"),
+    ADMIN_CAMERAS("\uD83D\uDCF9 Cameras"),
     ADMIN_CAMERA_REMOVE("\u2796 Remove camera"),
     ADMIN_CAMERA_EDIT("\uD83D\uDD27 Edit camera"),
 
-    SECURITY("\u26A1 Security"),
+    SECURITY("\uD83D\uDC6E Security"),
     ARMING("\uD83D\uDD12 Arming"),
     DISARMING("\uD83D\uDD13 Disarming"),
     SECURITY_ALL("\u203C All zones"),
@@ -38,15 +39,14 @@ public enum TelegramCommand {
     FORECAST("\u2754 Forecast"),
 
     EVENTS("\uD83D\uDD14 Events"),
-    EVENTS_ALL("\u203C Last 10 events"),
 
     MEDIA("\uD83C\uDFB5 Media"),
     RADIO("\uD83D\uDCFB Radio"),
     STOP("\u25FE Stop"),
     SAY("\uD83C\uDFA4 Say"),
-    LANGUAGE_UK("UK"),
-    LANGUAGE_EN("EN"),
-    LANGUAGE_DE("DE"),
+    LANGUAGE_UK("\uD83C\uDDFA\uD83C\uDDE6"),
+    LANGUAGE_EN("\uD83C\uDDFA\uD83C\uDDF8"),
+    LANGUAGE_DE("\uD83C\uDDE9\uD83C\uDDEA"),
     LANGUAGE_OTHER("Other"),
     VOLUME("\uD83D\uDD0A Volume"),
     VOLUME_UP("\u2B06 Volume UP"),

@@ -15,6 +15,7 @@ public class TelegramKeyboardUtil {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
 
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.remove(0);
         keyboard.add(createKeyboardRow(SECURITY.getCommandName(), CAMERA.getCommandName()));
         keyboard.add(createKeyboardRow(WEATHER.getCommandName(), MEDIA.getCommandName(), EVENTS.getCommandName()));
         if (user.isAdmin())
@@ -27,8 +28,29 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup adminKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(ADMIN_TRIGGERS.getCommandName(), ADMIN_ZONES.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(ADMIN_TRIGGERS.getCommandName(), ADMIN_ZONES.getCommandName(), ADMIN_CAMERAS.getCommandName()));
+
+        return keyboardMarkup;
+    }
+
+    static ReplyKeyboardMarkup zonesKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(createKeyboardRow(ADMIN_ZONE_ADD.getCommandName(), ADMIN_ZONE_EDIT.getCommandName(), ADMIN_ZONE_REMOVE.getCommandName()));
+
+        return keyboardMarkup;
+    }
+
+    static ReplyKeyboardMarkup triggerKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_TRIGGER_ADD.getCommandName(), ADMIN_TRIGGER_EDIT.getCommandName(), ADMIN_TRIGGER_REMOVE.getCommandName()));
+
+        return keyboardMarkup;
+    }
+
+    static ReplyKeyboardMarkup cameraKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_CAMERA_ADD.getCommandName(), ADMIN_CAMERA_EDIT.getCommandName(), ADMIN_TRIGGER_REMOVE.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -36,8 +58,7 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup securityKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(ARMING.getCommandName(), DISARMING.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(ARMING.getCommandName(), DISARMING.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -45,18 +66,15 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup eventsKeyboard(List<String> triggers) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(triggers.toArray(new String[0])));
-        keyboard.add(createKeyboardRow(EVENTS_ALL.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(triggers.toArray(new String[0])));
 
         return keyboardMarkup;
     }
     static ReplyKeyboardMarkup armingOrDisarmingKeyboard(List<String> zones) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(zones.toArray(new String[0])));
-        keyboard.add(createKeyboardRow(SECURITY_ALL.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(zones.toArray(new String[0])));
+        keyboard.add(1, createKeyboardRow(SECURITY_ALL.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -64,9 +82,8 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup mediaKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(RADIO.getCommandName(), SAY.getCommandName(), STOP.getCommandName()));
-        keyboard.add(createKeyboardRow(VOLUME.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(RADIO.getCommandName(), SAY.getCommandName()));
+        keyboard.add(1, createKeyboardRow(VOLUME.getCommandName(), STOP.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -74,16 +91,15 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup sayKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(LANGUAGE_UK.getCommandName(), LANGUAGE_EN.getCommandName(), LANGUAGE_DE.getCommandName()));
-        keyboard.add(createKeyboardRow(LANGUAGE_OTHER.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(LANGUAGE_UK.getCommandName(), LANGUAGE_EN.getCommandName(), LANGUAGE_DE.getCommandName()));
+        keyboard.add(1, createKeyboardRow(LANGUAGE_OTHER.getCommandName()));
 
         return keyboardMarkup;
     }
 
     static ReplyKeyboardMarkup volumeKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
-        keyboardMarkup.getKeyboard().add(createKeyboardRow(VOLUME_UP.getCommandName(), VOLUME_DOWN.getCommandName()));
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(VOLUME_UP.getCommandName(), VOLUME_DOWN.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -91,8 +107,7 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup weatherKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(CONDITION.getCommandName(), FORECAST.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(CONDITION.getCommandName(), FORECAST.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -100,9 +115,8 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup cameraKeyboard(List<String> cameras) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(createKeyboardRow(cameras.toArray(new String[0])));
-        keyboard.add(createKeyboardRow(CAMERA_ALL.getCommandName()));
-        keyboard.add(createKeyboardRow(MAIN.getCommandName()));
+        keyboard.add(0, createKeyboardRow(cameras.toArray(new String[0])));
+        keyboard.add(1, createKeyboardRow(CAMERA_ALL.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -112,6 +126,8 @@ public class TelegramKeyboardUtil {
         keyboardMarkup.setSelective(true);
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(new ArrayList<>());
+        keyboardMarkup.getKeyboard().add(createKeyboardRow(MAIN.getCommandName()));
+
         return keyboardMarkup;
     }
 
