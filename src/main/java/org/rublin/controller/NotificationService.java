@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
 import org.rublin.service.*;
+import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

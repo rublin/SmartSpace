@@ -13,6 +13,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.SourceDataLine;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -23,9 +24,11 @@ public class MediaPlayerService {
     private static final int RATE = 44100;
     private static final int CHANNELS = 2;
 
+    private AtomicInteger systemVolume = new AtomicInteger(50);
     private JavaSoundDirectAudioPlayerComponent player;
 
     public void setVolume(int volume, int delay) {
+        systemVolume = new AtomicInteger(volume);
         new Thread(() -> {
             try {
                 Thread.sleep(delay);
@@ -37,6 +40,12 @@ public class MediaPlayerService {
             }
         }).start();
 
+    }
+
+    public void setVolume(boolean up) {
+        log.info("Current volume is {}", systemVolume.get());
+        systemVolume.set(up ? systemVolume.get() + 10 : systemVolume.get() - 10);
+        player.getMediaPlayer().setVolume(systemVolume.get());
     }
 
     public void play(String mrl, int volume) {

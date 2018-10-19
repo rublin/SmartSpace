@@ -122,6 +122,10 @@ public class User {
         this(id, firstName, lastName, EnumSet.of(role, roles), email, password, mobile, telegramName);
     }
 
+    public boolean isAdmin() {
+        return roles.contains(Role.ROLE_ADMIN);
+    }
+
     public boolean isNew() {
         return (this.id == null);
     }
