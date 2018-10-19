@@ -7,9 +7,6 @@ import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
@@ -21,7 +18,7 @@ import static org.rublin.CameraTestData.*;
  * Created by Ruslan Sheremet (rublin) on 10.09.2016.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-//@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
+//@Sql(scripts = "classpath:db/V2__populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @SpringBootTest
 public class CameraServiceImplTest {
 

@@ -26,7 +26,7 @@ import static org.rublin.ZoneTestData.*;
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
-@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
+@Sql(scripts = "classpath:db/migration/V2__populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class ZoneServiceImplTest {
 
     @Autowired
