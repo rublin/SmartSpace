@@ -6,6 +6,7 @@ import org.rublin.controller.ModemController;
 import org.rublin.controller.NotificationService;
 import org.rublin.model.ConfigKey;
 import org.rublin.model.Zone;
+import org.rublin.service.delayed.DelayQueueService;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -34,6 +35,12 @@ public class ScheduleService {
     private final ZoneService zoneService;
     private final SystemConfigService configService;
     private final ThreadPoolTaskScheduler taskScheduler;
+    private final DelayQueueService queueService;
+
+    @Scheduled(fixedDelay = 10000)
+    public void queueTake() {
+        queueService.take();
+    }
 
     @Scheduled(fixedDelay = 60000)
     public void readSms() {

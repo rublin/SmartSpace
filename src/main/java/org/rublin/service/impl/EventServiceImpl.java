@@ -7,12 +7,12 @@ import org.rublin.model.Type;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
+import org.rublin.repository.EventRepository;
 import org.rublin.service.EventService;
 import org.rublin.service.TriggerService;
 import org.rublin.service.ZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.rublin.repository.EventRepository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -49,21 +49,7 @@ public class EventServiceImpl implements EventService {
                 } else {
                     eventRepository.save(trigger, event);
                 }
-                if (event.isDigital() && trigger.getName().equals("Move 1 floor 2") && !(boolean) event.getState()) {
-                    LocalDateTime now = LocalDateTime.now();
-                    if (now.getHour() >= 5 &&
-                            now.getHour() < 6 &&
-                            now.getMinute() >= 30 &&
-                            now.getDayOfWeek() != DayOfWeek.SATURDAY &&
-                            now.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                notificationService.sayWeather();
-                            }
-                        }).start();
-                    }
-                }
+                processMorningActivity(event);
             } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
                 alarmEvent(event, trigger, zone);
             } else if (trigger.getType() == Type.ANALOG && trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
@@ -104,6 +90,32 @@ public class EventServiceImpl implements EventService {
         return eventRepository.getAlarmed();
     }
 
+    private void processMorningActivity(Event event) {
+        if (event.getTrigger().isMorningDetector() && !(boolean) event.getState()) {
+            LocalDateTime now = LocalDateTime.now();
+            Zone zone = event.getTrigger().getZone();
+
+            if (morningStarts() && !zone.isActive()) {
+                List<Event> events = get(event.getTrigger(), 5).stream()
+                        .filter(e -> e.getTime().getHour() == now.getHour() && !(boolean) e.getState())
+                        .collect(Collectors.toList());
+                notificationService.morningNotifications();
+
+            }
+        }
+    }
+
+    private boolean morningStarts() {
+        LocalDateTime now = LocalDateTime.now();
+        if (DayOfWeek.SUNDAY == now.getDayOfWeek() || DayOfWeek.SATURDAY == now.getDayOfWeek()) {
+            // Weekend
+            return now.getHour() >= 7 && now.getHour() < 9;
+        } else {
+            // Working days
+            return now.getHour() >= 9 && now.getHour() < 10;
+        }
+    }
+
     private void alarmEvent(Event event, Trigger trigger, Zone zone) {
         event.setAlarm(true);
         eventRepository.save(trigger, event);
@@ -111,10 +123,10 @@ public class EventServiceImpl implements EventService {
         zoneService.sendNotification(zone, trigger.isSecure());
     }
 
-    private void setTriggerState (Event event, Trigger trigger, Zone zone) {
+    private void setTriggerState(Event event, Trigger trigger, Zone zone) {
         if (event.isDigital()) {
             trigger.setState((Boolean) event.getState());
-        } else if (trigger.getMinThreshold() > (double)event.getState() || trigger.getMaxThreshold() < (double)event.getState()){
+        } else if (trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
             trigger.setState(false);
         } else {
             trigger.setState(true);

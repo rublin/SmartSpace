@@ -44,14 +44,6 @@ public class TelegramServiceImpl implements TelegramService {
     private static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
 
-
-
-    @Value("${weather.city}")
-    private String city;
-
-    @Value("${weather.lang}")
-    private String lang;
-
     @Value("${tmp.directory}")
     private String tmpDir;
 
@@ -219,13 +211,13 @@ public class TelegramServiceImpl implements TelegramService {
                     break;
 
                 case FORECAST:
-                    String forecast = weatherService.getForecast(city, lang);
+                    String forecast = weatherService.getForecast();
                     textToSpeechService.say(forecast, "uk");
                     responseMessages.add(forecast);
                     break;
 
                 case CONDITION:
-                    String condition = weatherService.getCondition(city, lang);
+                    String condition = weatherService.getCondition();
                     textToSpeechService.say(condition, "uk");
                     responseMessages.add(condition);
                     break;
@@ -426,13 +418,13 @@ public class TelegramServiceImpl implements TelegramService {
 
             }
             case "/wf": {
-                String forecast = weatherService.getForecast(city, lang);
+                String forecast = weatherService.getForecast();
                 textToSpeechService.say(forecast, "uk");
                 responseMessages.add(forecast);
                 break;
             }
             case "/wc": {
-                String condition = weatherService.getCondition(city, lang);
+                String condition = weatherService.getCondition();
                 textToSpeechService.say(condition, "uk");
                 responseMessages.add(condition);
                 break;

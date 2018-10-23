@@ -7,7 +7,6 @@ import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by Sheremet on 15.06.2016.
@@ -58,6 +57,9 @@ public class Trigger {
     private Double maxThreshold;
 
     private boolean active;
+
+    @Column(name = "morning_detector")
+    private boolean morningDetector;
 
     public Trigger(Integer id) {
         this.id = id;

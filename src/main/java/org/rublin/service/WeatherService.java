@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,23 +30,29 @@ public class WeatherService {
 
     @Value("${weather.token}")
     private String token;
-    
+
+    @Value("${weather.city}")
+    private String city;
+
+    @Value("${weather.lang}")
+    private String lang;
+
+    private final String[] helloArray = {"Доброго ранку.", "Привіт!", "Слава Україні!", "Героям слава!"};
+
     private static final String WEATHER_SERVICE = "http://api.wunderground.com/api/%s/%s/lang:%s/q/%s.json";
     private static final Pattern PATTERN = Pattern.compile("1\\d");
 
     /**
      * Returns weather forecast for city in lang localization
      *
-     * @param city
-     * @param lang
      * @return String forecast
      */
-    public String getForecast(String city, String lang) {
+    public String getForecast() {
         String url = String.format(WEATHER_SERVICE, token, "forecast", lang, city);
         JSONObject forecast = readJsonFromUrl(url).getJSONObject("forecast").getJSONObject("txt_forecast").getJSONArray("forecastday").getJSONObject(0);
 
-        /**
-         * need to replace text using i18n
+        /*
+          need to replace text using i18n
          */
         String result = "Прогноз погоди на " + forecast.getString("title") + ". " + fixTemperature(forecast.getString("fcttext_metric"));
         log.info("Weather forecast {} got successfully", result);
@@ -54,11 +61,11 @@ public class WeatherService {
 
     /**
      * Returns current weather for city in lang localization (from some observation station)
-     * @param city
-     * @param lang
+     *
      * @return String condition
      */
-    public String getCondition(String city, String lang) {
+    public String getCondition() {
+        int helloRandomPosition = ThreadLocalRandom.current().nextInt(0, helloArray.length);
         String url = String.format(WEATHER_SERVICE, token, "conditions", lang, city);
         JSONObject current = readJsonFromUrl(url).getJSONObject("current_observation");
         String weather = current.getString("weather");
@@ -66,22 +73,30 @@ public class WeatherService {
         int dewpoint = current.getInt("dewpoint_c");
         int wind_speed = current.getInt("wind_kph");
         String humidity = current.getString("relative_humidity");
-        /**
-         * need to replace text using i18n
+        /*
+          need to replace text using i18n
          */
-        String result = String.format("Поточна погода (Київська метеостанція). Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s", fixTemperature(temp), dewpoint, humidity, wind_speed, weather);
+        String result = String.format("%s Поточна погода (Баришівська метеостанція). " +
+                        "Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s",
+                helloArray[helloRandomPosition],
+                fixTemperature(temp),
+                dewpoint,
+                humidity,
+                wind_speed,
+                weather);
         log.info("Current weather {} got successfully", result);
         return result;
     }
 
     /**
      * Read JSON from URL
+     *
      * @param url
-     * @see JSONObject
      * @return JSONObject
+     * @see JSONObject
      */
     private JSONObject readJsonFromUrl(String url) {
-        try (InputStream stream = new URL(url).openStream()){
+        try (InputStream stream = new URL(url).openStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
             StringBuffer jsonText = new StringBuffer();
             String line;

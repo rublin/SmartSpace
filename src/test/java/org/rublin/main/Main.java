@@ -1,10 +1,7 @@
 package org.rublin.main;
 
 import org.rublin.controller.ModemController;
-import org.rublin.service.MediaPlayerService;
-import org.rublin.service.TextToSpeechService;
 import org.rublin.service.WeatherService;
-import org.rublin.service.impl.SystemConfigServiceImpl;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -105,7 +102,7 @@ public class Main {
 
         Language language = Language.valueOf("UK");
         WeatherService weatherService = new WeatherService();
-        String weather = weatherService.getForecast("Kyiv", "UA");
+        String weather = weatherService.getForecast();
         System.out.println(weather);
 
 //        try {
