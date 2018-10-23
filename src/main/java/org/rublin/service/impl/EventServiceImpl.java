@@ -112,7 +112,7 @@ public class EventServiceImpl implements EventService {
             return now.getHour() >= 7 && now.getHour() < 9;
         } else {
             // Working days
-            return now.getHour() >= 9 && now.getHour() < 10;
+            return now.getHour() == 5 && now.getMinute() >= 30 || now.getHour() > 5 && now.getHour() < 10;
         }
     }
 

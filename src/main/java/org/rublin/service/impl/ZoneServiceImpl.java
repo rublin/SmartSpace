@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -98,10 +99,14 @@ public class ZoneServiceImpl implements ZoneService {
         Map<Integer, List<Event>> eventsByTrigger = lastHourEvents.stream()
                 .collect(groupingBy(e -> e.getTrigger().getId()));
         for (Zone zone : getAll()) {
-            boolean active = zone.getTriggers().stream()
+            List<Event> lastHourEventsByZone = zone.getTriggers().stream()
                     .filter(Trigger::isSecure)
-                    .anyMatch(trigger -> Objects.nonNull(eventsByTrigger.get(trigger.getId())));
-            LOG.debug("Zone {} activity is {}", zone.getName(), active);
+                    .map(trigger -> eventsByTrigger.get(trigger.getId()))
+                    .filter(Objects::nonNull)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+            boolean active = checkZoneActivity(lastHourEvents.size());
+            LOG.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), lastHourEvents.size(), active);
             if (zone.isActive() != active) {
                 LOG.info("Zone {} set activity to {}", zone.getName(), active);
                 zone.setActive(active);
@@ -120,5 +125,16 @@ public class ZoneServiceImpl implements ZoneService {
             }
         });
         thread.start();
+    }
+
+    private boolean checkZoneActivity(int events) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.getHour() < 5) {
+            return events > 5;
+        } else if (now.getHour() == 5 && now.getMinute() < 30) {
+            return events > 5;
+        } else {
+            return events > 1;
+        }
     }
 }
