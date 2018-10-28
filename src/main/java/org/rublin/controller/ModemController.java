@@ -3,6 +3,8 @@ package org.rublin.controller;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.util.sms.Pdu;
+import org.rublin.util.sms.PduParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 
 /**
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class ModemController {
 
+    private static final PduParser PARSER = new PduParser();
     @Value("${modem.port}")
     private String smsPort;
 
@@ -138,11 +143,18 @@ public class ModemController {
                     deleteSms(i);
                 }
             }
-            return lines;
+            return lines.stream()
+                    .map(this::convertPdu)
+                    .collect(toList());
         } catch (SerialPortException e) {
             log.error("Unexpected error: {}", e);
             return null;
         }
+    }
+
+    private String convertPdu(String s) {
+        Pdu pdu = PARSER.parsePdu(s);
+        return pdu.getDecodedText();
     }
 
     /**

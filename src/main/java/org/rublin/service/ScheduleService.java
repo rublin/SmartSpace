@@ -49,7 +49,9 @@ public class ScheduleService {
         if (!sms.isEmpty()) {
             log.info("Read {} messages", sms.size());
             StringBuffer sb = new StringBuffer();
-            sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r<br>"));
+            sms.forEach(s -> sb
+//                    .append("http://www.smspdu.com/?action=ppdu&pdu=")
+                    .append(s).append("\r<br>"));
             notificationService.sendEmailNotification("Sms received", sb.toString());
         }
     }
