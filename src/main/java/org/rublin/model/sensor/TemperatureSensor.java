@@ -23,4 +23,7 @@ public class TemperatureSensor extends AbstractSensor {
 
     @Column(name = "api_key")
     private String thingSpeakApiKey;
+
+    @Column(name = "field_id")
+    private Integer fieldId;
 }
