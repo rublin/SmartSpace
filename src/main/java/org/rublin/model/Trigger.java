@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
+import org.rublin.model.sensor.AbstractSensor;
 
 import javax.persistence.*;
 
@@ -17,28 +18,16 @@ import javax.persistence.*;
         @NamedQuery(name = Trigger.DELETE, query = "DELETE FROM Trigger t WHERE t.id=:id"),
         @NamedQuery(name = Trigger.GET_BY_STATE, query = "SELECT t FROM Trigger t WHERE t.state=:state")
 })
+@Data
 @Entity
 @Table(name = "triggers")
-@Data
 @NoArgsConstructor
-public class Trigger {
+public class Trigger extends AbstractSensor {
 
     public static final String GET = "Trigger.get";
     public static final String GET_ALL_SORTED = "Trigger.getAllSorted";
     public static final String GET_BY_STATE = "Trigger.getByState";
     public static final String DELETE = "Trigger.delete";
-
-    @Id
-    @SequenceGenerator(name = "common_seq", sequenceName = "common_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "common_seq")
-    private Integer id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "zone_id", nullable = false)
-    private Zone zone;
-
-    @Column(name = "name", nullable = false)
-    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
@@ -56,14 +45,9 @@ public class Trigger {
     @Column(name = "max")
     private Double maxThreshold;
 
-    private boolean active;
-
     @Column(name = "morning_detector")
     private boolean morningDetector;
 
-    public Trigger(Integer id) {
-        this.id = id;
-    }
     public Trigger(String name) {
         this.name = name;
         this.type = Type.DIGITAL;
@@ -77,39 +61,6 @@ public class Trigger {
                 new AnalogEvent(this, 0.0) :
                 new DigitEvent(this, Boolean.FALSE);
         //setEvent(event);
-        state = true;
-    }
-
-    public Trigger(int id, String name, Type type) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        state = true;
-    }
-
-    public Trigger(int id, Zone zone, String name, Type type) {
-        this.id = id;
-        this.zone = zone;
-        this.name = name;
-        this.type = type;
-        state = true;
-    }
-
-    public Trigger(String name, Type type, boolean secure) {
-        this.name = name;
-        this.type = type;
-        this.secure = secure;
-        state = true;
-        maxThreshold = 0.0;
-        minThreshold = 0.0;
-    }
-
-    public Trigger(String name, Type type, boolean secure, Double minThreshold, Double maxThreshold) {
-        this.name = name;
-        this.type = type;
-        this.secure = secure;
-        this.minThreshold = minThreshold;
-        this.maxThreshold = maxThreshold;
         state = true;
     }
 
