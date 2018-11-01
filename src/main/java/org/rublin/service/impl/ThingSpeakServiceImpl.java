@@ -7,7 +7,9 @@ import org.rublin.to.ThingSpeakUploadDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,8 +38,9 @@ public class ThingSpeakServiceImpl implements ThingSpeakService {
     }
 
     @Override
-    public void channelSetting(ThingSpeakChannelSettingDto channelSettingRequest) {
-        final String url = format("cannels/%d.json",
+    public ResponseEntity<String> channelSetting(ThingSpeakChannelSettingDto channelSettingRequest) {
+        final String url = format("%schannels/%d.json",
+                baseUrl,
                 channelSettingRequest.getChannelId());
 
         HttpHeaders headers = new HttpHeaders();
@@ -49,7 +52,11 @@ public class ThingSpeakServiceImpl implements ThingSpeakService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.put(url, request, String.class);
-        log.info("Sent settings url: {}", url);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+        log.info("Sent settings for filed {} and name {}; status {}", channelSettingRequest.getFieldId(), channelSettingRequest.getFieldName(),
+                response.getStatusCode());
+        log.debug("Response: {}", response.getBody());
+
+        return response;
     }
 }

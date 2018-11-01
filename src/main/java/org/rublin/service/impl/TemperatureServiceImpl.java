@@ -43,7 +43,6 @@ public class TemperatureServiceImpl implements TemperatureService {
     @Value("${thingspeak.api.channel}")
     private int channelId;
 
-    //ToDo add controller
     @Override
     public TemperatureSensor save(TemperatureSensor sensor) {
         int fieldId = 0;
@@ -59,7 +58,7 @@ public class TemperatureServiceImpl implements TemperatureService {
         if (fieldId > 0) {
             if (Objects.isNull(sensor.getThingSpeakApiKey()) || Objects.isNull(sensor.getThingSpeakChannelId())) {
                 sensor.setThingSpeakApiKey(apiKeyWrite);
-                sensor.setFieldId(fieldId);
+                sensor.setThingSpeakChannelId(channelId);
             }
             sensor.setFieldId(fieldId);
             thingSpeakService.channelSetting(ThingSpeakChannelSettingDto.builder()

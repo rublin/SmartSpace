@@ -7,8 +7,10 @@ import org.rublin.model.ConfigKey;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.event.Event;
+import org.rublin.model.sensor.TemperatureSensor;
 import org.rublin.model.user.User;
 import org.rublin.service.*;
+import org.rublin.service.impl.TemperatureServiceImpl;
 import org.rublin.to.TelegramResponseDto;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.rublin.telegram.TelegramCommand.*;
 import static org.rublin.telegram.TelegramKeyboardUtil.*;
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Slf4j
 @Service
@@ -37,6 +40,7 @@ public class TelegramServiceImpl implements TelegramService {
     private final TextToSpeechService textToSpeechService;
     private final MediaPlayerService mediaPlayerService;
     private final TriggerService triggerService;
+    private final TemperatureServiceImpl temperatureService;
     private final EventService eventService;
     private final SystemConfigService configService;
     private final UserService userService;
@@ -129,7 +133,13 @@ public class TelegramServiceImpl implements TelegramService {
                     );
                     break;
 
-                case ADMIN_TRIGGERS:
+                case ADMIN_TEMPERATURE_SENSOR_ADD:
+                    keyboardMarkup = null;
+                    responseMessages.add("Type sensor parameters in format:\n ZoneId#Name#Min#Max");
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case ADMIN_SENSORS:
                     keyboardMarkup = triggerKeyboard();
                     triggerService.getAll().forEach(
                             trigger -> responseMessages.add(format("%d; %s; %s; %s", trigger.getId(), trigger.getName(), trigger.getType().name(), trigger.getZone().getName()))
@@ -338,6 +348,40 @@ public class TelegramServiceImpl implements TelegramService {
                 } else {
                     responseMessages.add(format("Trigger %s not found", message.getText()));
                 }
+            } else if (previousCommand == ADMIN_TEMPERATURE_SENSOR_ADD) {
+                previousCommandMap.remove(id);
+                String text = message.getText();
+                if (isEmpty(text)) {
+                    responseMessages.add("Message cannot me empty");
+                } else {
+                    String[] split = text.split("#");
+                    if (split.length == 4) {
+                        try {
+                            Integer zoneId = Integer.valueOf(split[0]);
+                            String name = split[1];
+                            double min = Double.parseDouble(split[2]);
+                            double max = Double.parseDouble(split[3]);
+                            Zone zone = new Zone();
+                            zone.setId(zoneId);
+                            TemperatureSensor sensor = new TemperatureSensor();
+                            sensor.setZone(zone);
+                            sensor.setName(name);
+                            sensor.setMinThreshold(min);
+                            sensor.setMaxThreshold(max);
+                            TemperatureSensor save = temperatureService.save(sensor);
+                            responseMessages.add(format("Saved sensor with name %s and id %d",
+                                    save.getName(),
+                                    save.getId()));
+                        } catch (Throwable throwable) {
+                            log.error("Failed to create new sensor", throwable);
+                            responseMessages.add(format("Failed to create new sensor: %s", throwable.getMessage()));
+                        }
+
+                    } else {
+                        responseMessages.add(format("%d is not valid amount of parameters. Please use valid format", split.length));
+                    }
+                }
+
             }
         }
 

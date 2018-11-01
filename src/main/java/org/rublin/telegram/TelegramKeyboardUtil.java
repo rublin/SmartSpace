@@ -8,7 +8,42 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.rublin.telegram.TelegramCommand.*;
+import static org.rublin.telegram.TelegramCommand.ADMIN;
+import static org.rublin.telegram.TelegramCommand.ADMIN_CAMERAS;
+import static org.rublin.telegram.TelegramCommand.ADMIN_CAMERA_ADD;
+import static org.rublin.telegram.TelegramCommand.ADMIN_CAMERA_EDIT;
+import static org.rublin.telegram.TelegramCommand.ADMIN_SENSORS;
+import static org.rublin.telegram.TelegramCommand.ADMIN_SENSOR_ADD;
+import static org.rublin.telegram.TelegramCommand.ADMIN_SENSOR_EDIT;
+import static org.rublin.telegram.TelegramCommand.ADMIN_SENSOR_REMOVE;
+import static org.rublin.telegram.TelegramCommand.ADMIN_TEMPERATURE_SENSOR_ADD;
+import static org.rublin.telegram.TelegramCommand.ADMIN_ZONES;
+import static org.rublin.telegram.TelegramCommand.ADMIN_ZONE_ADD;
+import static org.rublin.telegram.TelegramCommand.ADMIN_ZONE_EDIT;
+import static org.rublin.telegram.TelegramCommand.ADMIN_ZONE_REMOVE;
+import static org.rublin.telegram.TelegramCommand.ARMING;
+import static org.rublin.telegram.TelegramCommand.CAMERA;
+import static org.rublin.telegram.TelegramCommand.CAMERA_ALL;
+import static org.rublin.telegram.TelegramCommand.CONDITION;
+import static org.rublin.telegram.TelegramCommand.DISARMING;
+import static org.rublin.telegram.TelegramCommand.EVENTS;
+import static org.rublin.telegram.TelegramCommand.FORECAST;
+import static org.rublin.telegram.TelegramCommand.INFO;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_DE;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_EN;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_OTHER;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_UK;
+import static org.rublin.telegram.TelegramCommand.MAIN;
+import static org.rublin.telegram.TelegramCommand.MEDIA;
+import static org.rublin.telegram.TelegramCommand.RADIO;
+import static org.rublin.telegram.TelegramCommand.SAY;
+import static org.rublin.telegram.TelegramCommand.SECURITY;
+import static org.rublin.telegram.TelegramCommand.SECURITY_ALL;
+import static org.rublin.telegram.TelegramCommand.STOP;
+import static org.rublin.telegram.TelegramCommand.VOLUME;
+import static org.rublin.telegram.TelegramCommand.VOLUME_DOWN;
+import static org.rublin.telegram.TelegramCommand.VOLUME_UP;
+import static org.rublin.telegram.TelegramCommand.WEATHER;
 
 public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup mainKeyboard(User user) {
@@ -19,8 +54,9 @@ public class TelegramKeyboardUtil {
         keyboard.add(createKeyboardRow(SECURITY.getCommandName(), CAMERA.getCommandName()));
         keyboard.add(createKeyboardRow(WEATHER.getCommandName(), MEDIA.getCommandName(), EVENTS.getCommandName()));
         if (user.isAdmin())
-            keyboard.add(createKeyboardRow(ADMIN.getCommandName()));
-        keyboard.add(createKeyboardRow(INFO.getCommandName()));
+            keyboard.add(createKeyboardRow(ADMIN.getCommandName(), INFO.getCommandName()));
+        else
+            keyboard.add(createKeyboardRow(INFO.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -28,7 +64,8 @@ public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup adminKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(0, createKeyboardRow(ADMIN_TRIGGERS.getCommandName(), ADMIN_ZONES.getCommandName(), ADMIN_CAMERAS.getCommandName()));
+        keyboard.add(0, createKeyboardRow(ADMIN_TEMPERATURE_SENSOR_ADD.getCommandName()));
+        keyboard.add(0, createKeyboardRow(ADMIN_SENSORS.getCommandName(), ADMIN_ZONES.getCommandName(), ADMIN_CAMERAS.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -43,14 +80,14 @@ public class TelegramKeyboardUtil {
 
     static ReplyKeyboardMarkup triggerKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
-        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_TRIGGER_ADD.getCommandName(), ADMIN_TRIGGER_EDIT.getCommandName(), ADMIN_TRIGGER_REMOVE.getCommandName()));
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_SENSOR_ADD.getCommandName(), ADMIN_SENSOR_EDIT.getCommandName(), ADMIN_SENSOR_REMOVE.getCommandName()));
 
         return keyboardMarkup;
     }
 
     static ReplyKeyboardMarkup cameraKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
-        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_CAMERA_ADD.getCommandName(), ADMIN_CAMERA_EDIT.getCommandName(), ADMIN_TRIGGER_REMOVE.getCommandName()));
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_CAMERA_ADD.getCommandName(), ADMIN_CAMERA_EDIT.getCommandName(), ADMIN_SENSOR_REMOVE.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -70,6 +107,7 @@ public class TelegramKeyboardUtil {
 
         return keyboardMarkup;
     }
+
     static ReplyKeyboardMarkup armingOrDisarmingKeyboard(List<String> zones) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
