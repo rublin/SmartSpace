@@ -121,7 +121,7 @@ public class EmailController {
                 message.setRecipients(Message.RecipientType.TO,
                         InternetAddress.parse(String.join(", ", emails)));
                 message.setSubject(subject);
-                message.setContent(text, "text/html");
+                message.setContent(text, "text/html; charset=UTF-8");
 
                 Transport.send(message);
                 log.info("Mail {} to {} send success", subject, message.getAllRecipients());
