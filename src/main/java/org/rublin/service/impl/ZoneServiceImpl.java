@@ -93,18 +93,10 @@ public class ZoneServiceImpl implements ZoneService {
                 zone.isSecure() ? "YES" : "NO");    }
 
     @Override
-    public void activity() {
+    public  void activity() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> lastHourEvents = eventService.getBetween(now.minusHours(1), now);
-        Map<Integer, List<Event>> eventsByTrigger = lastHourEvents.stream()
-                .collect(groupingBy(e -> e.getTrigger().getId()));
         for (Zone zone : getAll()) {
-            List<Event> lastHourEventsByZone = zone.getTriggers().stream()
-                    .filter(Trigger::isSecure)
-                    .map(trigger -> eventsByTrigger.get(trigger.getId()))
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
             boolean active = checkZoneActivity(lastHourEvents.size());
             LOG.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), lastHourEvents.size(), active);
             if (zone.isActive() != active) {
@@ -134,7 +126,7 @@ public class ZoneServiceImpl implements ZoneService {
         } else if (now.getHour() == 5 && now.getMinute() < 30) {
             return events > 5;
         } else {
-            return events > 1;
+            return events >= 1;
         }
     }
 }
