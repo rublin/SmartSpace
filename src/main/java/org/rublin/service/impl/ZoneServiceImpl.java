@@ -125,6 +125,8 @@ public class ZoneServiceImpl implements ZoneService {
             return events > 5;
         } else if (now.getHour() == 5 && now.getMinute() < 30) {
             return events > 5;
+        } else if (now.getHour() >= 7 && now.getHour() < 9) {
+            return events > 5;
         } else {
             return events >= 1;
         }

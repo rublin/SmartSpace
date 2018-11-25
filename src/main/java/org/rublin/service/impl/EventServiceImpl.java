@@ -96,11 +96,7 @@ public class EventServiceImpl implements EventService {
             Zone zone = event.getTrigger().getZone();
 
             if (morningStarts() && !zone.isActive()) {
-                List<Event> events = get(event.getTrigger(), 5).stream()
-                        .filter(e -> e.getTime().getHour() == now.getHour() && !(boolean) e.getState())
-                        .collect(Collectors.toList());
                 notificationService.morningNotifications();
-
             }
         }
     }
