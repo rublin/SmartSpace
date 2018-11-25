@@ -1,7 +1,9 @@
 package org.rublin.web;
 
 import org.rublin.model.Trigger;
+import org.rublin.service.TemperatureService;
 import org.rublin.service.TriggerService;
+import org.rublin.to.AddEventRequest;
 import org.rublin.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.time.LocalDateTime;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.http.util.Asserts.notEmpty;
 
 /**
  * Created by Ruslan Sheremet (rublin) on 15.09.2016.
@@ -22,6 +26,9 @@ public class EventsController extends AbstractEventController {
 
     @Autowired
     private TriggerService triggerService;
+
+    @Autowired
+    private TemperatureService temperatureService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String eventList(Model model) {
@@ -43,6 +50,19 @@ public class EventsController extends AbstractEventController {
         String state = request.getParameter("state");
         Trigger trigger = getTrigger(request.getParameter("triggerId"));
         super.create(state, trigger);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/temperature/add", method = RequestMethod.GET)
+    public String addTemperatureEvent(HttpServletRequest request) {
+        AddEventRequest eventRequest = AddEventRequest.builder()
+                .sensorId(Integer.valueOf(request.getParameter("triggerId")))
+                .value(request.getParameter("state"))
+                .build();
+        checkNotNull(eventRequest.getSensorId(), "Sensor ID couldn't be null");
+        LOG.info("Received temperature event with sensor id {} and value {}", eventRequest.getSensorId(), eventRequest.getValue());
+        notEmpty(eventRequest.getValue(), "Temperature value");
+        temperatureService.addEvent(eventRequest);
         return "OK";
     }
 
