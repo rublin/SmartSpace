@@ -51,7 +51,11 @@ public class EventServiceImpl implements EventService {
                 }
                 processMorningActivity(event);
             } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
-                alarmEvent(event, trigger, zone);
+                if ((boolean) event.getState()) {
+                    eventRepository.save(trigger, event);
+                } else {
+                    alarmEvent(event, trigger, zone);
+                }
             } else if (trigger.getType() == Type.ANALOG && trigger.getMinThreshold() > (double) event.getState() || trigger.getMaxThreshold() < (double) event.getState()) {
                 alarmEvent(event, trigger, zone);
             } else {

@@ -8,42 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.rublin.telegram.TelegramCommand.ADMIN;
-import static org.rublin.telegram.TelegramCommand.ADMIN_CAMERAS;
-import static org.rublin.telegram.TelegramCommand.ADMIN_CAMERA_ADD;
-import static org.rublin.telegram.TelegramCommand.ADMIN_CAMERA_EDIT;
-import static org.rublin.telegram.TelegramCommand.ADMIN_SENSORS;
-import static org.rublin.telegram.TelegramCommand.ADMIN_SENSOR_ADD;
-import static org.rublin.telegram.TelegramCommand.ADMIN_SENSOR_EDIT;
-import static org.rublin.telegram.TelegramCommand.ADMIN_SENSOR_REMOVE;
-import static org.rublin.telegram.TelegramCommand.ADMIN_TEMPERATURE_SENSOR_ADD;
-import static org.rublin.telegram.TelegramCommand.ADMIN_ZONES;
-import static org.rublin.telegram.TelegramCommand.ADMIN_ZONE_ADD;
-import static org.rublin.telegram.TelegramCommand.ADMIN_ZONE_EDIT;
-import static org.rublin.telegram.TelegramCommand.ADMIN_ZONE_REMOVE;
-import static org.rublin.telegram.TelegramCommand.ARMING;
-import static org.rublin.telegram.TelegramCommand.CAMERA;
-import static org.rublin.telegram.TelegramCommand.CAMERA_ALL;
-import static org.rublin.telegram.TelegramCommand.CONDITION;
-import static org.rublin.telegram.TelegramCommand.DISARMING;
-import static org.rublin.telegram.TelegramCommand.EVENTS;
-import static org.rublin.telegram.TelegramCommand.FORECAST;
-import static org.rublin.telegram.TelegramCommand.INFO;
-import static org.rublin.telegram.TelegramCommand.LANGUAGE_DE;
-import static org.rublin.telegram.TelegramCommand.LANGUAGE_EN;
-import static org.rublin.telegram.TelegramCommand.LANGUAGE_OTHER;
-import static org.rublin.telegram.TelegramCommand.LANGUAGE_UK;
-import static org.rublin.telegram.TelegramCommand.MAIN;
-import static org.rublin.telegram.TelegramCommand.MEDIA;
-import static org.rublin.telegram.TelegramCommand.RADIO;
-import static org.rublin.telegram.TelegramCommand.SAY;
-import static org.rublin.telegram.TelegramCommand.SECURITY;
-import static org.rublin.telegram.TelegramCommand.SECURITY_ALL;
-import static org.rublin.telegram.TelegramCommand.STOP;
-import static org.rublin.telegram.TelegramCommand.VOLUME;
-import static org.rublin.telegram.TelegramCommand.VOLUME_DOWN;
-import static org.rublin.telegram.TelegramCommand.VOLUME_UP;
-import static org.rublin.telegram.TelegramCommand.WEATHER;
+import static org.rublin.telegram.TelegramCommand.*;
 
 public class TelegramKeyboardUtil {
     static ReplyKeyboardMarkup mainKeyboard(User user) {
@@ -51,7 +16,7 @@ public class TelegramKeyboardUtil {
 
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
         keyboard.remove(0);
-        keyboard.add(createKeyboardRow(SECURITY.getCommandName(), CAMERA.getCommandName()));
+        keyboard.add(createKeyboardRow(SECURITY.getCommandName(), HEATING.getCommandName(), CAMERA.getCommandName()));
         keyboard.add(createKeyboardRow(WEATHER.getCommandName(), MEDIA.getCommandName(), EVENTS.getCommandName()));
         if (user.isAdmin())
             keyboard.add(createKeyboardRow(ADMIN.getCommandName(), INFO.getCommandName()));
@@ -61,6 +26,12 @@ public class TelegramKeyboardUtil {
         return keyboardMarkup;
     }
 
+    static ReplyKeyboardMarkup heatingKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(HEATING_PUMP_ON.getCommandName(), HEATING_PUMP_OFF.getCommandName()));
+
+        return keyboardMarkup;
+    }
     static ReplyKeyboardMarkup adminKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();

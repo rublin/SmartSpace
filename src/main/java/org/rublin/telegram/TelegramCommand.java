@@ -32,6 +32,9 @@ public enum TelegramCommand {
     DISARMING("\uD83D\uDD13 Disarming"),
     SECURITY_ALL("\u203C All zones"),
 
+    HEATING("\uD83D\uDD25 Heating"),
+    HEATING_PUMP_ON("\u2714 Turn pump on"),
+    HEATING_PUMP_OFF("\u274C Turn pump off"),
     CAMERA("\uD83D\uDCF7 Camera"),
     CAMERA_ALL("\u203C All cameras"),
 

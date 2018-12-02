@@ -44,6 +44,8 @@ public class TelegramServiceImpl implements TelegramService {
     private final EventService eventService;
     private final SystemConfigService configService;
     private final UserService userService;
+    private final HeatingService heatingService;
+
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
     private static Set<Integer> telegramIds = new HashSet<>();
     private static Set<Long> chatIds = new HashSet<>();
@@ -190,6 +192,19 @@ public class TelegramServiceImpl implements TelegramService {
                             }
                     );
                     previousCommandMap.remove(id);
+                    break;
+
+                case HEATING:
+                    responseMessages.add(heatingService.current() ? "Pump is ON" : "Pump is OFF");
+                    keyboardMarkup = heatingKeyboard();
+                    break;
+
+                case HEATING_PUMP_ON:
+                    heatingService.pump(true);
+                    break;
+
+                case HEATING_PUMP_OFF:
+                    heatingService.pump(false);
                     break;
 
                 case EVENTS:
