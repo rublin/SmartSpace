@@ -1,4 +1,4 @@
-package org.rublin.controller;
+package org.rublin.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

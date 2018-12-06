@@ -5,6 +5,9 @@ import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.service.*;
+import org.rublin.service.impl.EventServiceImpl;
+import org.rublin.service.impl.TriggerServiceImpl;
+import org.rublin.service.impl.ZoneServiceImpl;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

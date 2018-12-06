@@ -43,6 +43,11 @@ public class InMemoryEventRepository implements EventRepository {
     }
 
     @Override
+    public List<Event> get(Trigger trigger, int maxRows) {
+        return null;
+    }
+
+    @Override
     public List<Event> getAll() {
         return null;
     }

@@ -1,18 +1,20 @@
 package org.rublin.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.message.NotificationMessage;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
 import org.rublin.service.*;
+import org.rublin.service.delayed.DelayQueueService;
+import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationHome;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -31,8 +33,7 @@ import java.util.stream.Collectors;
  */
 
 @Slf4j
-@Controller
-//@RequiredArgsConstructor
+@Service
 public class NotificationService {
 
     @Value("${sound.security}")
@@ -58,6 +59,8 @@ public class NotificationService {
     private TextToSpeechService textToSpeechService;
     @Autowired
     private WeatherService weatherService;
+    @Autowired
+    private DelayQueueService delayQueueService;
 
     @Value("${mail.notification}")
     private boolean mailNotification;
@@ -68,27 +71,21 @@ public class NotificationService {
     @Value("${modem.call_timeout}")
     private int callTimeout;
 
-    @Value("${weather.city}")
-    private String city;
-
-    @Value("${weather.lang}")
-    private String lang;
-    
     public void sayTime() {
         LocalTime now = LocalTime.now();
         textToSpeechService.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
     }
 
-    public void sayWeather() {
-        try {
-            Thread.sleep(1000);
-            textToSpeechService.say("Доброго ранку." + weatherService.getCondition(city, lang), "uk");
-            Thread.sleep(20000);
-            textToSpeechService.say(weatherService.getForecast(city, lang), "uk");
-        } catch (InterruptedException e) {
-            log.warn(e.getMessage());
-        }
 
+    public void morningNotifications() {
+        String condition = textToSpeechService.prepareFile(weatherService.getCondition(), "uk");
+        String forecast = textToSpeechService.prepareFile(weatherService.getForecast(), "uk");
+        delayQueueService.put(new NotificationMessage(condition, 0));
+        delayQueueService.put(new NotificationMessage(condition, 120));
+        delayQueueService.put(new NotificationMessage(condition, 600));
+        delayQueueService.put(new NotificationMessage(forecast, 20));
+        delayQueueService.put(new NotificationMessage(forecast, 140));
+        delayQueueService.put(new NotificationMessage(forecast, 620));
     }
 
     public void sendEmailNotification(String subject, String message) {
@@ -182,10 +179,10 @@ public class NotificationService {
         other = new File(home.getDir(), otherAlarm);
 //                new File(Objects.requireNonNull(classLoader.getResource(otherAlarm)).getFile());
         if (isSecurity) {
-            player.play(security.getPath());
+            player.play(security.getPath(), 80);
             log.info("Played security sound");
         } else {
-            player.play(other.getPath());
+            player.play(other.getPath(), 80);
             log.info("Played other sound");
         }
     }
@@ -227,5 +224,14 @@ public class NotificationService {
         return users.stream()
                 .map(User::getEmail)
                 .collect(Collectors.toList());
+    }
+
+    @PostConstruct
+    private void init() throws InterruptedException {
+        sendSound(true);
+        Thread.sleep(1000L);
+        sendSound(false);
+        Thread.sleep(1000L);
+        player.stop();
     }
 }

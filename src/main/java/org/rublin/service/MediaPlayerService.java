@@ -1,51 +1,64 @@
 package org.rublin.service;
 
 import com.sun.jna.Pointer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.co.caprica.vlcj.component.DirectAudioPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.directaudio.DirectAudioPlayer;
 
+import javax.annotation.PostConstruct;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.SourceDataLine;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MediaPlayerService {
 
     private static final String FORMAT = "S16N";
     private static final int RATE = 44100;
     private static final int CHANNELS = 2;
 
-    @Value("${sound.volume}")
-    private int volume;
+    private AtomicInteger systemVolume = new AtomicInteger(50);
+    private JavaSoundDirectAudioPlayerComponent player;
 
-    private final JavaSoundDirectAudioPlayerComponent player;
+    public void setVolume(int volume, int delay) {
+        systemVolume = new AtomicInteger(volume);
+        new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+                log.info("Current volume is {}; trying to set {}", player.getMediaPlayer().getVolume(), volume);
+                player.getMediaPlayer().setVolume(volume);
+                log.info("Current volume is {}", player.getMediaPlayer().getVolume());
+            } catch (InterruptedException e) {
+                log.warn("Failed to set volume", e);
+            }
+        }).start();
 
-    public MediaPlayerService() {
-        try {
-            player = new JavaSoundDirectAudioPlayerComponent(FORMAT, RATE, CHANNELS);
-        } catch (Exception e) {
-            log.error("Failed to create bean: {}", e);
-            throw new RuntimeException(e);
-        }
     }
 
-    public void play(String mrl) {
+    public void setVolume(boolean up) {
+        log.info("Current volume is {}", systemVolume.get());
+        systemVolume.set(up ? systemVolume.get() + 10 : systemVolume.get() - 10);
+        player.getMediaPlayer().setVolume(systemVolume.get());
+    }
+
+    public void play(String mrl, int volume) {
         stop();
-        log.info("Starting to play {}", mrl);
         try {
             player.start();
-            player.getMediaPlayer().setVolume(volume);
             player.getMediaPlayer().playMedia(mrl);
+            log.info("Starting to play {}", mrl);
+            setVolume(volume, mrl.startsWith("http") ? 2000 : 500);
         } catch (Exception e) {
             log.error("Playback error: {}", e);
         }
-       log.info("Music plays");
+        log.info("Music plays");
         // audioPlayerComponent.release(true); // FIXME right now this causes a fatal JVM crash just before the JVM terminates, I am not sure why (the other direct audio player example does NOT crash)
 
     }
@@ -53,6 +66,16 @@ public class MediaPlayerService {
     public void stop() {
         log.info("Stop playing");
         player.stop();
+    }
+
+    @PostConstruct
+    private void init() {
+        try {
+            player = new JavaSoundDirectAudioPlayerComponent(FORMAT, RATE, CHANNELS);
+        } catch (Exception e) {
+            log.error("Failed to create bean: {}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**

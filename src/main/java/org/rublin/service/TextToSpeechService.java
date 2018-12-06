@@ -2,6 +2,7 @@ package org.rublin.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.model.ConfigKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class TextToSpeechService {
     private static final String TTS_SERVICE = "https://translate.google.com/translate_tts?ie=UTF-8&q=%s&tl=%s&client=tw-ob";
     private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0";
     private final MediaPlayerService mediaPlayerService;
+    private final SystemConfigService configService;
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -39,13 +41,28 @@ public class TextToSpeechService {
     /**
      * Say text using Google translate API
      *
-     * @param text
-     * @param language
+     * @param text what to say
+     * @param language language code ("uk" for Ukrainian)
+     * @return path to file or null if IO exception happens
      */
-    public void say(String text, String language) {
+    public String say(String text, String language) {
+        String file = prepareFile(text, language);
+        mediaPlayerService.play(file, Integer.parseInt(configService.get(ConfigKey.TEXT_VOLUME)));
+        return file;
+    }
+
+    /**
+     * Create mp3 file with voice using Google translate API
+     *
+     * @param text what to say
+     * @param language language code ("uk" for Ukrainian)
+     * @return path to file or null if IO exception happens
+     */
+    public String prepareFile(String text, String language) {
         String url = null;
+        String file = null;
         try {
-            String file = tmpDir.concat(generateRandomFilename("mp3"));
+            file = tmpDir.concat(generateRandomFilename("mp3"));
             url = String.format(TTS_SERVICE, URLEncoder.encode(text, "UTF-8"), language);
             URLConnection urlConnection = new URL(url).openConnection();
             urlConnection.setRequestProperty("User-Agent", USER_AGENT);
@@ -53,10 +70,12 @@ public class TextToSpeechService {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
             fileOutputStream.close();
-            mediaPlayerService.play(file);
+            channel.close();
+            log.info("File {} prepared with text {}", file, text.length() > 20 ? text.substring(0, 20) : text);
         } catch (IOException e) {
             log.error("Failed to say: {}", e);
         }
+        return file;
     }
 
     private String generateRandomFilename(String end) {

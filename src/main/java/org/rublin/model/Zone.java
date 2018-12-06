@@ -1,6 +1,7 @@
 package org.rublin.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -16,6 +17,7 @@ import java.util.List;
         @NamedQuery(name = Zone.GET_All_SORTED, query = "SELECT z FROM Zone z ORDER BY z.name"),
         @NamedQuery(name = Zone.DELETE, query = "DELETE FROM Zone z WHERE z.id=:id")
 })
+@Data
 @Entity
 @Table(name = "zones")
 public class Zone {
@@ -99,76 +101,9 @@ public class Zone {
         this.secure = false;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ZoneStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ZoneStatus status) {
-        this.status = status;
-    }
-
-    public boolean isSecure() {
-        return secure;
-    }
-
-    public void setSecure(boolean secure) {
-        this.secure = secure;
-    }
-    public List<Trigger> getTriggers() {
-        return triggers;
-    }
-
-    public void setTriggers(List<Trigger> triggers) {
-        this.triggers = triggers;
-    }
-
-    public void addTrigger(Trigger trigger) {
-        this.triggers.add(trigger);
-    }
-
     @JsonIgnore
     public boolean isNew() {
         return id==null;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
-    public List<Camera> getCameras() {
-        return cameras;
-    }
-
-    public void setCameras(List<Camera> cameras) {
-        this.cameras = cameras;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.List;
 public interface EventService {
     void save (Trigger trigger, Event event);
     List<Event> get(Trigger trigger);
+    List<Event> get(Trigger trigger, int numberLatestEvents);
     List<Event> getAll();
     List<Event> getBetween(LocalDateTime from, LocalDateTime to);
     List<Event> getAlarmed();

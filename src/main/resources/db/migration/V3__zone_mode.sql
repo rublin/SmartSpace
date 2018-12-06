@@ -1,0 +1,2 @@
+-- create table zone_mode
+-- alter table zones

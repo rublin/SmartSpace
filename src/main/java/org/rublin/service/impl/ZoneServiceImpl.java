@@ -1,4 +1,4 @@
-package org.rublin.service;
+package org.rublin.service.impl;
 
 import org.rublin.controller.NotificationService;
 import org.rublin.model.Trigger;
@@ -6,6 +6,8 @@ import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
 import org.rublin.repository.ZoneRepository;
+import org.rublin.service.EventService;
+import org.rublin.service.ZoneService;
 import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -60,13 +63,17 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public void setSecure(Zone zone, boolean security) {
-        zone.setSecure(security);
-        if (!security) {
-            zone.setStatus(ZoneStatus.GREEN);
+        if (zone.isSecure() != security) {
+            zone.setSecure(security);
+            if (!security) {
+                zone.setStatus(ZoneStatus.GREEN);
+            }
+            zoneRepository.save(zone);
+            LOG.info("change Zone secure state to {}", zone.isSecure());
+            notificationService.sendInfoToAllUsers(zone);
+        } else {
+            LOG.info("Zone {} already {}", zone.getName(), security ? "armed" : "disarmed");
         }
-        zoneRepository.save(zone);
-        LOG.info("change Zone secure state to {}", zone.isSecure());
-        notificationService.sendInfoToAllUsers(zone);
     }
 
     @Override
@@ -86,16 +93,12 @@ public class ZoneServiceImpl implements ZoneService {
                 zone.isSecure() ? "YES" : "NO");    }
 
     @Override
-    public void activity() {
+    public  void activity() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> lastHourEvents = eventService.getBetween(now.minusHours(1), now);
-        Map<Trigger, List<Event>> eventsByTrigger = lastHourEvents.stream()
-                .collect(groupingBy(Event::getTrigger));
         for (Zone zone : getAll()) {
-            boolean active = zone.getTriggers().stream()
-                    .filter(Trigger::isSecure)
-                    .anyMatch(trigger -> Objects.nonNull(eventsByTrigger.get(trigger)));
-            LOG.debug("Zone {} activity is {}", zone.getName(), active);
+            boolean active = checkZoneActivity(lastHourEvents.size());
+            LOG.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), lastHourEvents.size(), active);
             if (zone.isActive() != active) {
                 LOG.info("Zone {} set activity to {}", zone.getName(), active);
                 zone.setActive(active);
@@ -114,5 +117,18 @@ public class ZoneServiceImpl implements ZoneService {
             }
         });
         thread.start();
+    }
+
+    private boolean checkZoneActivity(int events) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.getHour() < 5) {
+            return events > 5;
+        } else if (now.getHour() == 5 && now.getMinute() < 30) {
+            return events > 5;
+        } else if (now.getHour() >= 7 && now.getHour() < 9) {
+            return events > 5;
+        } else {
+            return events >= 1;
+        }
     }
 }

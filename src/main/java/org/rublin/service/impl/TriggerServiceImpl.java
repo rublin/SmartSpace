@@ -1,14 +1,14 @@
-package org.rublin.service;
+package org.rublin.service.impl;
 
-import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
-import org.rublin.model.event.Event;
+import org.rublin.model.Zone;
+import org.rublin.repository.TriggerRepository;
+import org.rublin.service.TriggerService;
 import org.rublin.util.exception.ExceptionUtil;
+import org.rublin.util.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.rublin.repository.TriggerRepository;
-import org.rublin.util.exception.NotFoundException;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,9 +25,6 @@ public class TriggerServiceImpl implements TriggerService {
 
     @Autowired
     private TriggerRepository repository;
-
-    @Autowired
-    private EventService eventService;
 
     @Override
     public Trigger save(Trigger trigger, Zone obj) {
