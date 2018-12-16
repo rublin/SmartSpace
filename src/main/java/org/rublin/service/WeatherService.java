@@ -76,7 +76,7 @@ public class WeatherService {
         /*
           need to replace text using i18n
          */
-        String result = String.format("%s Поточна погода (Баришівська метеостанція). " +
+        String result = String.format("%s Поточна погода (Київська метеостанція). " +
                         "Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s",
                 helloArray[helloRandomPosition],
                 fixTemperature(temp),

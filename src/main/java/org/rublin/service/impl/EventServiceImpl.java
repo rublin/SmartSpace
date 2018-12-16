@@ -96,9 +96,7 @@ public class EventServiceImpl implements EventService {
 
     private void processMorningActivity(Event event) {
         if (event.getTrigger().isMorningDetector() && !(boolean) event.getState()) {
-            LocalDateTime now = LocalDateTime.now();
             Zone zone = event.getTrigger().getZone();
-
             if (morningStarts() && !zone.isActive()) {
                 notificationService.morningNotifications();
             }

@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.rublin.telegram.TelegramCommand.*;
 import static org.rublin.telegram.TelegramKeyboardUtil.*;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -47,8 +48,6 @@ public class TelegramServiceImpl implements TelegramService {
     private final HeatingService heatingService;
 
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
-    private static Set<Integer> telegramIds = new HashSet<>();
-    private static Set<Long> chatIds = new HashSet<>();
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -71,34 +70,49 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public Set<Long> getChatIds() {
-        return chatIds;
+        Set<Long> collect = userService.getAll().stream()
+                .map(User::getTelegramChatId)
+                .filter(Objects::nonNull)
+                .collect(toSet());
+        return collect;
     }
 
     private User authentication(Message message) {
         int telegramId = message.getFrom().getId();
         log.debug("Received message from user {} (id: {})", message.getFrom().getUserName(), telegramId);
-        if (telegramIds.contains(telegramId)) {
-            User foundUser = userService.getByTelegramId(telegramId);
-            log.info("Telegram User {} with id {} authorized as {}. Quick authorization", message.getFrom().getUserName(), telegramId, foundUser.getFirstName());
-            chatIds.add(message.getChatId());
-            return foundUser;
+        List<User> userList = userService.getAll();
+        Optional<User> optionalUser = userList.stream()
+                .filter(user -> user.getTelegramId().equals(telegramId))
+                .findFirst();
+        if (optionalUser.isPresent()) {
+            log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, optionalUser.get().getFirstName());
+            checkTelegramChatId(optionalUser.get(), message);
+
+            return optionalUser.get();
         } else {
-            List<User> users = userService.getAll();
-            for (User u : users) {
-                String foundTelegramName = u.getTelegramName();
-//                log.debug("Compare name");
-                if (foundTelegramName != null && foundTelegramName.equals(message.getFrom().getUserName())) {
-                    log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, u.getFirstName());
-                    u.setTelegramId(telegramId);
-                    telegramIds.add(telegramId);
-                    chatIds.add(message.getChatId());
-                    userService.update(u);
-                    return u;
-                }
+            optionalUser = userList.stream()
+                    .filter(user -> message.getFrom().equals(user.getTelegramName()))
+                    .findFirst();
+            if (optionalUser.isPresent()) {
+                log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, optionalUser.get().getFirstName());
+                checkTelegramId(optionalUser.get(), message);
+
+                return optionalUser.get();
             }
         }
-        log.info("Telegram User {} with id {} not authorized.", message.getFrom().getUserName(), telegramId);
+
+        log.warn("Telegram User {} with id {} not authorized.", message.getFrom().getUserName(), telegramId);
         return null;
+    }
+
+    private void checkTelegramId(User user, Message message) {
+        user.setTelegramId(message.getFrom().getId());
+        checkTelegramChatId(user, message);
+    }
+
+    private void checkTelegramChatId(User user, Message message) {
+        user.setTelegramChatId(message.getChatId());
+        userService.save(user);
     }
 
     private TelegramResponseDto doKeyboardCommand(Message message, User user) {
