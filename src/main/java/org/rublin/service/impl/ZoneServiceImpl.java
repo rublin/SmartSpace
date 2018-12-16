@@ -110,12 +110,7 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public void sendNotification(Zone zone, boolean isSecure) {
         LOG.info("Notification sending");
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                notificationService.sendAlarmNotification(zone, isSecure);
-            }
-        });
+        Thread thread = new Thread(() -> notificationService.sendAlarmNotification(zone, isSecure));
         thread.start();
     }
 
@@ -124,8 +119,6 @@ public class ZoneServiceImpl implements ZoneService {
         if (now.getHour() < 5) {
             return events > 5;
         } else if (now.getHour() == 5 && now.getMinute() < 30) {
-            return events > 5;
-        } else if (now.getHour() >= 7 && now.getHour() < 9) {
             return events > 5;
         } else {
             return events >= 1;

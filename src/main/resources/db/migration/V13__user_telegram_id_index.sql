@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX users_telegram_id_uindex ON public.users (telegram_id);

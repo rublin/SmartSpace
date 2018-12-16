@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.rublin.telegram.TelegramCommand.*;
 import static org.rublin.telegram.TelegramKeyboardUtil.*;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -47,8 +48,6 @@ public class TelegramServiceImpl implements TelegramService {
     private final HeatingService heatingService;
 
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
-    private static Set<Integer> telegramIds = new HashSet<>();
-    private static Set<Long> chatIds = new HashSet<>();
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -70,35 +69,33 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @Override
-    public Set<Long> getChatIds() {
-        return chatIds;
+    public Set<Integer> getChatIds() {
+        Set<Integer> collect = userService.getAll().stream()
+                .map(User::getTelegramId)
+                .filter(Objects::nonNull)
+                .collect(toSet());
+        return collect;
     }
 
     private User authentication(Message message) {
         int telegramId = message.getFrom().getId();
         log.debug("Received message from user {} (id: {})", message.getFrom().getUserName(), telegramId);
-        if (telegramIds.contains(telegramId)) {
-            User foundUser = userService.getByTelegramId(telegramId);
-            log.info("Telegram User {} with id {} authorized as {}. Quick authorization", message.getFrom().getUserName(), telegramId, foundUser.getFirstName());
-            chatIds.add(message.getChatId());
-            return foundUser;
-        } else {
-            List<User> users = userService.getAll();
-            for (User u : users) {
-                String foundTelegramName = u.getTelegramName();
-//                log.debug("Compare name");
-                if (foundTelegramName != null && foundTelegramName.equals(message.getFrom().getUserName())) {
-                    log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, u.getFirstName());
-                    u.setTelegramId(telegramId);
-                    telegramIds.add(telegramId);
-                    chatIds.add(message.getChatId());
-                    userService.update(u);
-                    return u;
-                }
-            }
+        User user = null;
+        try {
+            user = userService.getByTelegramId(telegramId);
+            log.info("Found user by id {}", telegramId);
+        } catch (Throwable throwable) {
+            log.warn("Could not find user by id {}", telegramId);
+            user = userService.getByTelegramName(message.getFrom().getUserName());
+            log.info("Found user by name {}", user.getTelegramName());
+            checkTelegramId(user, telegramId);
         }
-        log.info("Telegram User {} with id {} not authorized.", message.getFrom().getUserName(), telegramId);
-        return null;
+        return user;
+    }
+
+    private void checkTelegramId(User user, int id) {
+        user.setTelegramId(id);
+        userService.save(user);
     }
 
     private TelegramResponseDto doKeyboardCommand(Message message, User user) {
