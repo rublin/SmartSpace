@@ -69,9 +69,9 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @Override
-    public Set<Long> getChatIds() {
-        Set<Long> collect = userService.getAll().stream()
-                .map(User::getTelegramChatId)
+    public Set<Integer> getChatIds() {
+        Set<Integer> collect = userService.getAll().stream()
+                .map(User::getTelegramId)
                 .filter(Objects::nonNull)
                 .collect(toSet());
         return collect;
@@ -80,38 +80,21 @@ public class TelegramServiceImpl implements TelegramService {
     private User authentication(Message message) {
         int telegramId = message.getFrom().getId();
         log.debug("Received message from user {} (id: {})", message.getFrom().getUserName(), telegramId);
-        List<User> userList = userService.getAll();
-        Optional<User> optionalUser = userList.stream()
-                .filter(user -> user.getTelegramId().equals(telegramId))
-                .findFirst();
-        if (optionalUser.isPresent()) {
-            log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, optionalUser.get().getFirstName());
-            checkTelegramChatId(optionalUser.get(), message);
-
-            return optionalUser.get();
-        } else {
-            optionalUser = userList.stream()
-                    .filter(user -> message.getFrom().equals(user.getTelegramName()))
-                    .findFirst();
-            if (optionalUser.isPresent()) {
-                log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, optionalUser.get().getFirstName());
-                checkTelegramId(optionalUser.get(), message);
-
-                return optionalUser.get();
-            }
+        User user = null;
+        try {
+            user = userService.getByTelegramId(telegramId);
+            log.info("Found user by id {}", telegramId);
+        } catch (Throwable throwable) {
+            log.warn("Could not find user by id {}", telegramId);
+            user = userService.getByTelegramName(message.getFrom().getUserName());
+            log.info("Found user by name {}", user.getTelegramName());
+            checkTelegramId(user, telegramId);
         }
-
-        log.warn("Telegram User {} with id {} not authorized.", message.getFrom().getUserName(), telegramId);
-        return null;
+        return user;
     }
 
-    private void checkTelegramId(User user, Message message) {
-        user.setTelegramId(message.getFrom().getId());
-        checkTelegramChatId(user, message);
-    }
-
-    private void checkTelegramChatId(User user, Message message) {
-        user.setTelegramChatId(message.getChatId());
+    private void checkTelegramId(User user, int id) {
+        user.setTelegramId(id);
         userService.save(user);
     }
 

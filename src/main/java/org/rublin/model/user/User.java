@@ -13,28 +13,10 @@ import java.util.Set;
 /**
  * Created by Sheremet on 04.09.2016.
  */
-@NamedQueries({
-        @NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE u.id=:id"),
-        @NamedQuery(name = User.BY_EMAIL, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email=:email"),
-        @NamedQuery(name = User.BY_TELEGRAMID, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.telegramId=:telegramId"),
-        @NamedQuery(name = User.BY_TELEGRAMNAME, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.telegramName=:telegramName"),
-        @NamedQuery(name = User.BY_MOBILE, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.mobile=:mobile"),
-        @NamedQuery(name = User.ALL_SORTED, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles ORDER BY u.email"),
-})
 @Data
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
 public class User {
-
-    public static final String GRAPH_WITH_ROLES = "User.withRoles";
-    public static final String GRAPH_WITH_ROLES_AND_MEALS = "User.withRolesAndMeals";
-
-    public static final String DELETE = "User.delete";
-    public static final String ALL_SORTED = "User.getAllSorted";
-    public static final String BY_EMAIL = "User.getByEmail";
-    public static final String BY_TELEGRAMID = "User.getByTelegramId";
-    public static final String BY_TELEGRAMNAME = "User.getByTelegramName";
-    public static final String BY_MOBILE = "User.getByMobile";
 
     @Id
     @SequenceGenerator(name = "common_seq", sequenceName = "common_seq", allocationSize = 1)
@@ -64,9 +46,6 @@ public class User {
 
     @Column(name = "telegram_name")
     private String telegramName;
-
-    @Column(name = "telegram_chat_id")
-    private Long telegramChatId;
 
     @Column(name = "mobile")
     private String mobile;
