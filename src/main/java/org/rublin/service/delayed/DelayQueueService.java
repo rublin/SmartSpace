@@ -2,7 +2,6 @@ package org.rublin.service.delayed;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.rublin.controller.NotificationService;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.ConfigKey;
 import org.rublin.service.MediaPlayerService;
@@ -18,7 +17,6 @@ import java.util.concurrent.DelayQueue;
 @RequiredArgsConstructor
 public class DelayQueueService {
     private final BlockingQueue<NotificationMessage> queue = new DelayQueue<>();
-    private final NotificationService notificationService;
     private final MediaPlayerService mediaPlayerService;
     private final SystemConfigService configService;
     private final TextToSpeechService textToSpeechService;

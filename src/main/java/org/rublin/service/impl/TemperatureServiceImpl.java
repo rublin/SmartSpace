@@ -74,7 +74,7 @@ public class TemperatureServiceImpl implements TemperatureService {
 
     @Override
     public TemperatureSensor get(int id) {
-        return temperatureRepository.findOne(id);
+        return temperatureRepository.findById(id).get();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class TemperatureServiceImpl implements TemperatureService {
 
     @Override
     public void addEvent(AddEventRequest eventRequest) {
-        TemperatureSensor sensor = temperatureRepository.findOne(eventRequest.getSensorId());
+        TemperatureSensor sensor = temperatureRepository.findById(eventRequest.getSensorId()).get();
         checkNotNull(sensor, "Sensor couldn't be null");
         TemperatureEvent event = TemperatureEvent.builder()
                 .sensor(sensor)
