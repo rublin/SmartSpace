@@ -33,37 +33,37 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     }
 
     @Override
-    public void delete(int id) throws NotFoundException {
-        repository.delete(id);
+    public void delete(int id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public User get(int id) throws NotFoundException {
-        return ExceptionUtil.checkNotFoundWithId(repository.findOne(id), id);
+    public User get(int id) {
+        return repository.findById(id).get();
     }
 
     @Override
-    public User getByEmail(String email) throws NotFoundException {
+    public User getByEmail(String email) {
         Objects.requireNonNull(email, "Email must not be empty");
-        return ExceptionUtil.checkNotFound(repository.findByEmail(email), "email=" + email);
+        return repository.findByEmail(email);
     }
 
     @Override
-    public User getByTelegramId(int telegramId) throws NotFoundException {
+    public User getByTelegramId(int telegramId) {
         Objects.requireNonNull(telegramId, "TelegramId must not be empty");
-        return ExceptionUtil.checkNotFound(repository.findByTelegramId(telegramId), "telegramId=" + telegramId);
+        return repository.findByTelegramId(telegramId);
     }
 
     @Override
-    public User getByTelegramName(String name) throws NotFoundException {
+    public User getByTelegramName(String name) {
         Objects.requireNonNull(name, "TelegramName must not be empty");
-        return ExceptionUtil.checkNotFound(repository.findByTelegramName(name), "telegramName=" + name);
+        return repository.findByTelegramName(name);
     }
 
     @Override
-    public User getByMobile(String mobile) throws NotFoundException {
+    public User getByMobile(String mobile) {
         Objects.requireNonNull(mobile, "Mobile number must not be empty");
-        return ExceptionUtil.checkNotFound(repository.findByMobile(mobile), "mobile=" + mobile);
+        return repository.findByMobile(mobile);
     }
 
     @Override

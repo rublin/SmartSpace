@@ -10,7 +10,7 @@ import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

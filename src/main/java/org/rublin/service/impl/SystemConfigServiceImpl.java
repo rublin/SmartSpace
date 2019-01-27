@@ -8,6 +8,8 @@ import org.rublin.repository.SystemConfigRepositoryJpa;
 import org.rublin.service.SystemConfigService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,8 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     public String get(ConfigKey key) {
         log.info("Looking for system config with {} key", key.name());
-        return configRepository.exists(key) ? configRepository.findOne(key).getValue() : null;
+        Optional<SystemConfig> optionalSystemConfig = configRepository.findById(key);
+        return optionalSystemConfig.map(SystemConfig::getValue).orElse(null);
     }
 
     @Override

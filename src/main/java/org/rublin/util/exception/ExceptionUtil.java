@@ -3,6 +3,7 @@ package org.rublin.util.exception;
 /**
  * Created by Sheremet on 01.07.2016.
  */
+@Deprecated
 public class ExceptionUtil {
     public static void checkNotFoundWithId(boolean found, int id) {
         checkNotFound(found, "id=" + id);
