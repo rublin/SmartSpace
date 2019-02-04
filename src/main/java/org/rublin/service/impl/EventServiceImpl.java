@@ -99,6 +99,9 @@ public class EventServiceImpl implements EventService {
             Zone zone = event.getTrigger().getZone();
             if (morningStarts() && !zone.isActive()) {
                 notificationService.morningNotifications();
+                zoneService.getAll().stream()
+                        .filter(Zone::isSecure)
+                        .forEach(z -> zoneService.setSecure(z, false));
             }
         }
     }

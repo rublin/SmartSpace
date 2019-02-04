@@ -4,7 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
-import org.rublin.service.*;
+import org.rublin.service.MediaPlayerService;
+import org.rublin.service.TextToSpeechService;
+import org.rublin.service.TriggerService;
+import org.rublin.service.UserService;
+import org.rublin.service.WeatherService;
 import org.rublin.service.delayed.DelayQueueService;
 import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
@@ -75,7 +79,6 @@ public class NotificationService {
         LocalTime now = LocalTime.now();
         textToSpeechService.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
     }
-
 
     public void morningNotifications() {
         String condition = textToSpeechService.prepareFile(weatherService.getCondition(), "uk");

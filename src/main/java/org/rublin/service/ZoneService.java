@@ -26,6 +26,5 @@ public interface ZoneService {
 
     void activity();
 
-
     void sendNotification(Zone zone, boolean isSecure);
 }
