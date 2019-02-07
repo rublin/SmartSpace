@@ -259,10 +259,12 @@ public class TelegramServiceImpl implements TelegramService {
 
                 case VOLUME_UP:
                     mediaPlayerService.setVolume(true);
+                    keyboardMarkup = volumeKeyboard();
                     break;
 
                 case VOLUME_DOWN:
                     mediaPlayerService.setVolume(false);
+                    keyboardMarkup = volumeKeyboard();
                     break;
 
                 case SAY:

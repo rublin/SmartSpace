@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,10 +119,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private void alarmEvent(Event event, Trigger trigger, Zone zone) {
-        event.setAlarm(true);
-        eventRepository.save(trigger, event);
-        zoneService.setStatus(zone, ZoneStatus.RED);
-        zoneService.sendNotification(zone, trigger.isSecure());
+        LocalDateTime changed = zone.getSecurityChanged();
+        // Event is after 2 minutes, because arduino delayed movement events (no moving) for 1 minute
+        if (ChronoUnit.MINUTES.between(changed, LocalDateTime.now()) > 2) {
+            event.setAlarm(true);
+            eventRepository.save(trigger, event);
+            zoneService.setStatus(zone, ZoneStatus.RED);
+            zoneService.sendNotification(zone, trigger.isSecure());
+        }
     }
 
     private void setTriggerState(Event event, Trigger trigger, Zone zone) {
