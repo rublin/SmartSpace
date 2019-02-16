@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 @Configuration
@@ -19,6 +20,11 @@ public class Main {
         threadPoolTaskScheduler.setPoolSize(5);
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         return threadPoolTaskScheduler;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     static {

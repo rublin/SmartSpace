@@ -1,9 +1,12 @@
 package org.rublin.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.rublin.to.weather.WeatherForecastResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,9 +15,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 /**
  * Weather controller receive JSON from api.wunderground.com
@@ -26,6 +33,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WeatherService {
 
     @Value("${weather.token}")
@@ -36,6 +44,8 @@ public class WeatherService {
 
     @Value("${weather.lang}")
     private String lang;
+
+    private final RestTemplate restTemplate;
 
     private final String[] helloArray = {"Доброго ранку.", "Привіт!", "Слава Україні!", "Героям слава!"};
 
@@ -48,13 +58,12 @@ public class WeatherService {
      * @return String forecast
      */
     public String getForecast() {
-        String url = String.format(WEATHER_SERVICE, token, "forecast", lang, city);
-        JSONObject forecast = readJsonFromUrl(url).getJSONObject("forecast").getJSONObject("txt_forecast").getJSONArray("forecastday").getJSONObject(0);
-
-        /*
-          need to replace text using i18n
-         */
-        String result = "Прогноз погоди на " + forecast.getString("title") + ". " + fixTemperature(forecast.getString("fcttext_metric"));
+        String url = format(WEATHER_SERVICE, token, "forecast", lang, city);
+        WeatherForecastResponseDto forecast = restTemplate.getForObject(url, WeatherForecastResponseDto.class);
+        String result = forecast.forecastDays().stream()
+                .limit(2)
+                .map(this::convertForecastResult)
+                .collect(Collectors.joining("\n"));
         log.info("Weather forecast {} got successfully", result);
         return result;
     }
@@ -66,7 +75,7 @@ public class WeatherService {
      */
     public String getCondition() {
         int helloRandomPosition = ThreadLocalRandom.current().nextInt(0, helloArray.length);
-        String url = String.format(WEATHER_SERVICE, token, "conditions", lang, city);
+        String url = format(WEATHER_SERVICE, token, "conditions", lang, city);
         JSONObject current = readJsonFromUrl(url).getJSONObject("current_observation");
         String weather = current.getString("weather");
         int temp = current.getInt("temp_c");
@@ -76,7 +85,7 @@ public class WeatherService {
         /*
           need to replace text using i18n
          */
-        String result = String.format("%s Поточна погода (Київська метеостанція). " +
+        String result = format("%s Поточна погода (Київська метеостанція). " +
                         "Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s",
                 helloArray[helloRandomPosition],
                 fixTemperature(temp),
@@ -86,6 +95,12 @@ public class WeatherService {
                 weather);
         log.info("Current weather {} got successfully", result);
         return result;
+    }
+
+    private String convertForecastResult(WeatherForecastResponseDto.ForecastDay forecastDay) {
+        return format("%s. %s", forecastDay.getTitle(), Objects.nonNull(forecastDay.getFcttext_metric())
+                ? forecastDay.getFcttext_metric()
+                : forecastDay.getFcttext());
     }
 
     /**
