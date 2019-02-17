@@ -2,6 +2,7 @@ package org.rublin.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.message.NotificationMessage;
 import org.rublin.model.Camera;
 import org.rublin.model.ConfigKey;
 import org.rublin.model.Trigger;
@@ -10,6 +11,7 @@ import org.rublin.model.event.Event;
 import org.rublin.model.sensor.TemperatureSensor;
 import org.rublin.model.user.User;
 import org.rublin.service.*;
+import org.rublin.service.delayed.DelayQueueService;
 import org.rublin.service.impl.TemperatureServiceImpl;
 import org.rublin.to.TelegramResponseDto;
 import org.rublin.util.Image;
@@ -46,6 +48,8 @@ public class TelegramServiceImpl implements TelegramService {
     private final SystemConfigService configService;
     private final UserService userService;
     private final HeatingService heatingService;
+    private final DelayQueueService delayQueueService;
+
 
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
 
@@ -233,9 +237,11 @@ public class TelegramServiceImpl implements TelegramService {
                     break;
 
                 case FORECAST:
-                    String forecast = weatherService.getForecast();
-                    textToSpeechService.say(forecast, "uk");
-                    responseMessages.add(forecast);
+                    List<String> forecast = weatherService.getForecast();
+                    for (int i = 0; i < forecast.size(); i++) {
+                        delayQueueService.put(new NotificationMessage(textToSpeechService.prepareFile(forecast.get(i), "uk"), i * 15));
+                        responseMessages.add(forecast.get(i));
+                    }
                     break;
 
                 case CONDITION:
@@ -474,9 +480,10 @@ public class TelegramServiceImpl implements TelegramService {
 
             }
             case "/wf": {
-                String forecast = weatherService.getForecast();
-                textToSpeechService.say(forecast, "uk");
-                responseMessages.add(forecast);
+                weatherService.getForecast().forEach(f -> {
+                    textToSpeechService.say(f, "uk");
+                    responseMessages.add(f);
+                });
                 break;
             }
             case "/wc": {

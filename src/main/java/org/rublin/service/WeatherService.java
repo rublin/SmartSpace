@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.rublin.to.weather.WeatherForecastResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -15,13 +16,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Objects;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Weather controller receive JSON from api.wunderground.com
@@ -57,14 +58,14 @@ public class WeatherService {
      *
      * @return String forecast
      */
-    public String getForecast() {
+    public List<String> getForecast() {
         String url = format(WEATHER_SERVICE, token, "forecast", lang, city);
         WeatherForecastResponseDto forecast = restTemplate.getForObject(url, WeatherForecastResponseDto.class);
-        String result = forecast.forecastDays().stream()
+        List<String> result = forecast.forecastDays().stream()
                 .limit(2)
                 .map(this::convertForecastResult)
-                .collect(Collectors.joining("\n"));
-        log.info("Weather forecast {} got successfully", result);
+                .collect(toList());
+        log.info("Weather forecast {} got successfully", result.get(0));
         return result;
     }
 
@@ -98,9 +99,30 @@ public class WeatherService {
     }
 
     private String convertForecastResult(WeatherForecastResponseDto.ForecastDay forecastDay) {
-        return format("%s. %s", forecastDay.getTitle(), Objects.nonNull(forecastDay.getFcttext_metric())
-                ? forecastDay.getFcttext_metric()
-                : forecastDay.getFcttext());
+        return format("%s. %s", forecastDay.getTitle(), StringUtils.isEmpty(forecastDay.getFcttext_metric())
+                ? convertFahrenheitToCelsius(forecastDay.getFcttext())
+                : forecastDay.getFcttext_metric());
+    }
+
+    /**
+     * Replace fahrenheit to celsius in string like this:
+     * Хмарно та вітряно. Максимум 51градуси Фаренгейта. Вітер Пн-Зх від 20 до 30 миль за годину.
+     *
+     * @param fahrenheitForecast
+     * @return
+     */
+    String convertFahrenheitToCelsius(String fahrenheitForecast) {
+        Pattern pattern = Pattern.compile("(\\d+)градуси Фаренгейта");
+        Matcher matcher = pattern.matcher(fahrenheitForecast);
+        if (matcher.find()) {
+            String fahrenheit = matcher.group(1);
+            int celsius = (Integer.parseInt(fahrenheit) - 32) * 5 / 9;
+            String result = fahrenheitForecast
+                    .replace(fahrenheit, String.valueOf(celsius))
+                    .replace("градуси Фаренгейта", "градуси цельсія");
+            return result;
+        }
+        return fahrenheitForecast;
     }
 
     /**
