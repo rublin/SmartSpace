@@ -4,11 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
-import org.rublin.service.MediaPlayerService;
-import org.rublin.service.TextToSpeechService;
-import org.rublin.service.TriggerService;
-import org.rublin.service.UserService;
-import org.rublin.service.WeatherService;
+import org.rublin.service.*;
 import org.rublin.service.delayed.DelayQueueService;
 import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
@@ -23,7 +19,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 
 /**
@@ -82,13 +79,19 @@ public class NotificationService {
 
     public void morningNotifications() {
         String condition = textToSpeechService.prepareFile(weatherService.getCondition(), "uk");
-        String forecast = textToSpeechService.prepareFile(weatherService.getForecast(), "uk");
+        List<String> forecasts = weatherService.getForecast().stream()
+                .map(f -> textToSpeechService.prepareFile(f, "uk"))
+                .collect(toList());
+
         delayQueueService.put(new NotificationMessage(condition, 0));
         delayQueueService.put(new NotificationMessage(condition, 120));
         delayQueueService.put(new NotificationMessage(condition, 600));
-        delayQueueService.put(new NotificationMessage(forecast, 20));
-        delayQueueService.put(new NotificationMessage(forecast, 140));
-        delayQueueService.put(new NotificationMessage(forecast, 620));
+        delayQueueService.put(new NotificationMessage(forecasts.get(0), 20));
+        delayQueueService.put(new NotificationMessage(forecasts.get(1), 40));
+        delayQueueService.put(new NotificationMessage(forecasts.get(0), 140));
+        delayQueueService.put(new NotificationMessage(forecasts.get(1), 160));
+        delayQueueService.put(new NotificationMessage(forecasts.get(0), 620));
+        delayQueueService.put(new NotificationMessage(forecasts.get(1), 640));
     }
 
     public void sendEmailNotification(String subject, String message) {
@@ -219,14 +222,14 @@ public class NotificationService {
     private List<File> getPhotos(Zone zone) {
         List<File> photos = zone.getCameras().stream()
                 .map(camera -> Image.getImageFromCamera(camera, tmpDir))
-                .collect(Collectors.toList());
+                .collect(toList());
         return photos;
     }
 
     private List<String> getEmails(List<User> users) {
         return users.stream()
                 .map(User::getEmail)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @PostConstruct
