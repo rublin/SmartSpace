@@ -196,16 +196,16 @@ public class TelegramServiceImpl implements TelegramService {
                     break;
 
                 case HEATING:
-                    responseMessages.add(heatingService.current() ? "Pump is ON" : "Pump is OFF");
+                    responseMessages.add(heatingService.current().isGlobalStatus() ? "Pump is ON" : "Pump is OFF");
                     keyboardMarkup = heatingKeyboard();
                     break;
 
                 case HEATING_PUMP_ON:
-                    heatingService.pump(true);
+                    responseMessages.add(heatingService.pump(true));
                     break;
 
                 case HEATING_PUMP_OFF:
-                    heatingService.pump(false);
+                    responseMessages.add(heatingService.pump(false));
                     break;
 
                 case EVENTS:

@@ -5,21 +5,17 @@
 
 #define ONE_WIRE_BUS 12 //D6
 
-const char* ssid = ""; //your WiFi Name
-const char* password = "";  //Your Wifi Password
+const char* ssid = "???"; //your WiFi Name
+const char* password = "???";  //Your Wifi Password
 int relayPin = 14; // D5
 int waterPin = 16; // D0
 WiFiServer server(80);
-const char* backEnd = "http://192.168.0.??:8080";
+const char* backEnd = "http://192.168.0.???:8080";
 bool globalOn = false;
-bool currentState = false;
-const int workMax = 60000;
-const int waitMax = 300000;
-int millOn = 0;
-int millOff = 0;
 
-String getTemperature = "/smartSpace/events/temperature/add?triggerId=%d&state=%s";
-String event="/smartSpace/events/add?triggerId=%d&state=%s";
+const String getTemperature = "/smartSpace/events/temperature/add?triggerId=%d&state=%s";
+const String event = "/smartSpace/events/add?triggerId=%d&state=%s";
+//const String json = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\r\n   \"globalStatus\": \%s,\r\n   \"tempUp\": \%s,\r\n   \"tempDown\": \%s\r\n}\r\n\r\n";
 
 const int boilerWaterId = 120;
 const int tempUpId = 117;
@@ -51,7 +47,7 @@ void setup() {
   Serial.println(ssid);
 
   WiFi.begin(ssid, password);
-  IPAddress ip(192, 168, 0, 50);
+  IPAddress ip(192, 168, 0, ???);
   IPAddress gateway(192, 168, 0, 254);
   IPAddress subnet(255, 255, 255, 0);
   WiFi.config(ip, gateway, subnet);
@@ -76,7 +72,6 @@ void setup() {
 
 void loop() {
   delay(500);
-  calculateTime();
   checkTemperature();
   checkWater();
 
@@ -91,6 +86,7 @@ void loop() {
   while (!client.available()) {
     Serial.println("!!!!!!!!!!!!");
     delay(1);
+    return;
   }
 
   // Read the first line of the request
@@ -101,6 +97,8 @@ void loop() {
   // Match the request
 
   int value = LOW;
+
+
   if (request.indexOf("/relay=ON") != -1)  {
     turnOn();
     globalOn = true;
@@ -110,34 +108,23 @@ void loop() {
     globalOn = false;
   }
 
-  // Set ledPin according to the request
-  //digitalWrite(ledPin, value);
-
   // Return the response
   client.println("HTTP/1.1 200 OK");
-  client.println("Content-Type: text/html");
+  client.println("Content-Type: application/json");
   client.println(""); //  do not forget this one
-  client.println("<!DOCTYPE HTML>");
-  client.println("<html>");
-
-  client.print("Relay is now: ");
-
-  if (currentState) {
-    client.print("On");
-    client.println("<br><br>");
-    client.println("<a href=\"/relay=OFF\"\"><button>Turn Off </button></a><br />");
-  } else {
-    client.print("Off");
-    client.println("<br><br>");
-    client.println("<a href=\"/relay=ON\"\"><button>Turn On </button></a>");
-  }
-  client.println("</html>");
+  client.println("{");
+  client.print("  \"globalStatus\": ");
+  client.println(relayStatus() + ",");
+  client.print("  \"tempUp\": ");
+  client.println(String(tempUp) + ",");
+  client.print("  \"tempDown\": ");
+  client.println(String(tempDown));
+  client.println("}");
 
   delay(1);
   Serial.println("Client disonnected");
   Serial.println("");
 }
-
 void checkWater() {
   int digital = digitalRead(waterPin);
   if (digital != boilerWaterState) {
@@ -153,6 +140,7 @@ void checkWater() {
     sendUpdate();
   }
 }
+
 void checkTemperature() {
   sensors.requestTemperatures();
   float currentUp = sensors.getTempCByIndex(0);
@@ -161,45 +149,28 @@ void checkTemperature() {
     tempUp = currentUp;
     sprintf(buf, getTemperature.c_str(), tempUpId, String(tempUp, 1).c_str());
     sendUpdate();
-    //  Serial.print("Temperature for the device 1 (index 0) is: ");
-    //  Serial.println(sensors.getTempCByIndex(0));
+      Serial.print("Temperature for the device 1 (index 0) is: ");
+      Serial.println(sensors.getTempCByIndex(0));
   }
   if (abs(currentDown - tempDown) > 0.5) {
     tempDown = currentDown;
     sprintf(buf, getTemperature.c_str(), tempDownId, String(tempDown, 1).c_str());
     sendUpdate();
-    //  Serial.print("Temperature for the device 2 (index 1) is: ");
-    //  Serial.println(sensors.getTempCByIndex(1));
+      Serial.print("Temperature for the device 2 (index 1) is: ");
+      Serial.println(sensors.getTempCByIndex(1));
   }
 }
 
 void turnOn() {
   Serial.println("Need to turn it off");
   digitalWrite(relayPin, LOW);
-  millOn = 0;
-  currentState = true;
 }
+
 void turnOff() {
   Serial.println("Need to turn it on");
   digitalWrite(relayPin, HIGH);
-  millOff = 0;
-  currentState = false;
 }
-void calculateTime() {
-  if (globalOn) {
-    if (currentState) {
-      millOn += 500;
-      if (millOn >= workMax) {
-        turnOff();
-      }
-    } else {
-      millOff += 500;
-      if (millOff >= waitMax) {
-        turnOn();
-      }
-    }
-  }
-}
+
 void sendUpdate() {
   String request = backEnd + String(buf);
   Serial.println(request);
@@ -213,3 +184,6 @@ void sendUpdate() {
   http.end();
 }
 
+String relayStatus() {
+  return globalOn ? "true" : "false";
+}
