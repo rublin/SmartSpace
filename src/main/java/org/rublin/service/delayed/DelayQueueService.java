@@ -2,8 +2,10 @@ package org.rublin.service.delayed;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.events.OnHeatingEvent;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.ConfigKey;
+import org.rublin.service.HeatingService;
 import org.rublin.service.MediaPlayerService;
 import org.rublin.service.SystemConfigService;
 import org.rublin.service.TextToSpeechService;
@@ -17,9 +19,11 @@ import java.util.concurrent.DelayQueue;
 @RequiredArgsConstructor
 public class DelayQueueService {
     private final BlockingQueue<NotificationMessage> queue = new DelayQueue<>();
+    private final BlockingQueue<OnHeatingEvent> heatingQueue = new DelayQueue<>();
     private final MediaPlayerService mediaPlayerService;
     private final SystemConfigService configService;
     private final TextToSpeechService textToSpeechService;
+    private final HeatingService heatingService;
 
 
     public void put(NotificationMessage message) {
@@ -28,6 +32,18 @@ public class DelayQueueService {
         } catch (InterruptedException e) {
             log.warn("Failed to put a message: {}", e.getMessage());
         }
+    }
+
+    public void put(OnHeatingEvent event) {
+        try {
+            heatingQueue.put(event);
+        } catch (InterruptedException e) {
+            log.warn("Failed to put a heating event: {}", e.getMessage());
+        }
+    }
+
+    public void clearHeating() {
+        heatingQueue.clear();
     }
 
     public void take() {
@@ -41,6 +57,16 @@ public class DelayQueueService {
             }
         } catch (InterruptedException e) {
             log.warn("Failed to take a message: {}", e.getMessage());
+        }
+    }
+
+    public void takeHeating() {
+        try {
+            OnHeatingEvent heatingEvent = heatingQueue.take();
+            log.info("Took heating event {} with delay {}", heatingEvent.isPumpStatus(), heatingEvent.getStartTime() );
+            heatingService.pump(heatingEvent.isPumpStatus());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
