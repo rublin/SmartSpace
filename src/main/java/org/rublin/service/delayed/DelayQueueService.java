@@ -35,6 +35,7 @@ public class DelayQueueService {
     }
 
     public void put(OnHeatingEvent event) {
+        heatingQueue.clear();
         try {
             heatingQueue.put(event);
         } catch (InterruptedException e) {

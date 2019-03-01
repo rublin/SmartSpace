@@ -205,7 +205,8 @@ public class TelegramServiceImpl implements TelegramService {
                     break;
 
                 case HEATING_PUMP_OFF:
-                    responseMessages.add(heatingService.pump(false));
+                    heatingService.stopHeating();
+                    responseMessages.add(heatingService.current().status());
                     break;
 
                 case EVENTS:

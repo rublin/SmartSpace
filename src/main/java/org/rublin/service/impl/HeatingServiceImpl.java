@@ -50,7 +50,7 @@ public class HeatingServiceImpl implements HeatingService {
             log.info("Send relay {}. Response is {}", state, result);
             int delay = enable ? stopDelayMinutes * 60 : startDelayMinutes * 60;
             eventPublisher.publishEvent(new OnHeatingEvent(delay, !enable));
-            return String.valueOf(result.isGlobalStatus());
+            return result.status();
         } else {
             log.debug("Relay is already {}", state);
         }
@@ -59,6 +59,7 @@ public class HeatingServiceImpl implements HeatingService {
 
     @Override
     public void stopHeating() {
+        pump(false);
         eventPublisher.publishEvent(new OnHeatingStopEvent(""));
     }
 
