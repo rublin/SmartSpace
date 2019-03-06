@@ -1,9 +1,13 @@
 package org.rublin.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.rublin.to.weather.WeatherForecastResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,9 +16,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Weather controller receive JSON from api.wunderground.com
@@ -26,6 +34,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WeatherService {
 
     @Value("${weather.token}")
@@ -37,6 +46,8 @@ public class WeatherService {
     @Value("${weather.lang}")
     private String lang;
 
+    private final RestTemplate restTemplate;
+
     private final String[] helloArray = {"Доброго ранку.", "Привіт!", "Слава Україні!", "Героям слава!"};
 
     private static final String WEATHER_SERVICE = "http://api.wunderground.com/api/%s/%s/lang:%s/q/%s.json";
@@ -47,15 +58,14 @@ public class WeatherService {
      *
      * @return String forecast
      */
-    public String getForecast() {
-        String url = String.format(WEATHER_SERVICE, token, "forecast", lang, city);
-        JSONObject forecast = readJsonFromUrl(url).getJSONObject("forecast").getJSONObject("txt_forecast").getJSONArray("forecastday").getJSONObject(0);
-
-        /*
-          need to replace text using i18n
-         */
-        String result = "Прогноз погоди на " + forecast.getString("title") + ". " + fixTemperature(forecast.getString("fcttext_metric"));
-        log.info("Weather forecast {} got successfully", result);
+    public List<String> getForecast() {
+        String url = format(WEATHER_SERVICE, token, "forecast", lang, city);
+        WeatherForecastResponseDto forecast = restTemplate.getForObject(url, WeatherForecastResponseDto.class);
+        List<String> result = forecast.forecastDays().stream()
+                .limit(2)
+                .map(this::convertForecastResult)
+                .collect(toList());
+        log.info("Weather forecast {} got successfully", result.get(0));
         return result;
     }
 
@@ -66,7 +76,7 @@ public class WeatherService {
      */
     public String getCondition() {
         int helloRandomPosition = ThreadLocalRandom.current().nextInt(0, helloArray.length);
-        String url = String.format(WEATHER_SERVICE, token, "conditions", lang, city);
+        String url = format(WEATHER_SERVICE, token, "conditions", lang, city);
         JSONObject current = readJsonFromUrl(url).getJSONObject("current_observation");
         String weather = current.getString("weather");
         int temp = current.getInt("temp_c");
@@ -76,7 +86,7 @@ public class WeatherService {
         /*
           need to replace text using i18n
          */
-        String result = String.format("%s Поточна погода (Київська метеостанція). " +
+        String result = format("%s Поточна погода (Київська метеостанція). " +
                         "Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s",
                 helloArray[helloRandomPosition],
                 fixTemperature(temp),
@@ -86,6 +96,33 @@ public class WeatherService {
                 weather);
         log.info("Current weather {} got successfully", result);
         return result;
+    }
+
+    private String convertForecastResult(WeatherForecastResponseDto.ForecastDay forecastDay) {
+        return format("%s. %s", forecastDay.getTitle(), StringUtils.isEmpty(forecastDay.getFcttext_metric())
+                ? convertFahrenheitToCelsius(forecastDay.getFcttext())
+                : forecastDay.getFcttext_metric());
+    }
+
+    /**
+     * Replace fahrenheit to celsius in string like this:
+     * Хмарно та вітряно. Максимум 51градуси Фаренгейта. Вітер Пн-Зх від 20 до 30 миль за годину.
+     *
+     * @param fahrenheitForecast
+     * @return
+     */
+    String convertFahrenheitToCelsius(String fahrenheitForecast) {
+        Pattern pattern = Pattern.compile("(\\d+)градуси Фаренгейта");
+        Matcher matcher = pattern.matcher(fahrenheitForecast);
+        if (matcher.find()) {
+            String fahrenheit = matcher.group(1);
+            int celsius = (Integer.parseInt(fahrenheit) - 32) * 5 / 9;
+            String result = fahrenheitForecast
+                    .replace(fahrenheit, String.valueOf(celsius))
+                    .replace("градуси Фаренгейта", "градуси цельсія");
+            return result;
+        }
+        return fahrenheitForecast;
     }
 
     /**

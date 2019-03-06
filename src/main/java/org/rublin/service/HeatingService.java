@@ -1,7 +1,11 @@
 package org.rublin.service;
 
-public interface HeatingService {
-    void pump(boolean enable);
+import org.rublin.to.HeatingResponseDto;
 
-    boolean current();
+public interface HeatingService {
+    String pump(boolean enable);
+
+    void stopHeating();
+
+    HeatingResponseDto current();
 }

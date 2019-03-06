@@ -84,23 +84,27 @@ public class TemperatureServiceImpl implements TemperatureService {
 
     @Override
     public void addEvent(AddEventRequest eventRequest) {
-        TemperatureSensor sensor = temperatureRepository.findById(eventRequest.getSensorId()).get();
-        checkNotNull(sensor, "Sensor couldn't be null");
-        TemperatureEvent event = TemperatureEvent.builder()
-                .sensor(sensor)
-                .temperature(new BigDecimal(eventRequest.getValue()))
-                .time(LocalDateTime.now())
-                .build();
-        String apiKey = sensor.getThingSpeakApiKey();
-        Integer channelId = sensor.getThingSpeakChannelId();
-        if (Objects.nonNull(channelId) && isNotEmpty(apiKey)) {
-            thingSpeakService.upload(ThingSpeakUploadDto.builder()
-                    .apiKey(sensor.getThingSpeakApiKey())
-                    .fieldId(sensor.getFieldId())
-                    .value(eventRequest.getValue())
-                    .build());
+        if (new BigDecimal(eventRequest.getValue()).compareTo(BigDecimal.ZERO) > 0) {
+            TemperatureSensor sensor = temperatureRepository.findById(eventRequest.getSensorId()).get();
+            checkNotNull(sensor, "Sensor couldn't be null");
+            TemperatureEvent event = TemperatureEvent.builder()
+                    .sensor(sensor)
+                    .temperature(new BigDecimal(eventRequest.getValue()))
+                    .time(LocalDateTime.now())
+                    .build();
+            String apiKey = sensor.getThingSpeakApiKey();
+            Integer channelId = sensor.getThingSpeakChannelId();
+            if (Objects.nonNull(channelId) && isNotEmpty(apiKey)) {
+                thingSpeakService.upload(ThingSpeakUploadDto.builder()
+                        .apiKey(sensor.getThingSpeakApiKey())
+                        .fieldId(sensor.getFieldId())
+                        .value(eventRequest.getValue())
+                        .build());
+            }
+            TemperatureEvent saved = eventRepository.save(event);
+            log.info("Saved temperature {}C for sensor {} with id {}", saved.getTemperature(), sensor.getName(), saved.getId());
+        } else {
+            log.error("Hope the temperature {}C is mistake", eventRequest.getValue());
         }
-        TemperatureEvent saved = eventRepository.save(event);
-        log.info("Saved temperature {}C for sensor {} with id {}", saved.getTemperature(), sensor.getName(), saved.getId());
     }
 }

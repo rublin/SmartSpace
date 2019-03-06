@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -42,9 +43,11 @@ public class Zone {
     @Column(name = "status", nullable = false)
     private ZoneStatus status;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "secure", nullable = false)
     private boolean secure;
+
+    @Column(name = "security_changed")
+    private LocalDateTime securityChanged;
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany( mappedBy = "zone", cascade = CascadeType.REMOVE)

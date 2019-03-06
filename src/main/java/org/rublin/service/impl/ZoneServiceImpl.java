@@ -1,7 +1,6 @@
 package org.rublin.service.impl;
 
 import org.rublin.controller.NotificationService;
-import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
@@ -17,11 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -65,6 +60,7 @@ public class ZoneServiceImpl implements ZoneService {
     public void setSecure(Zone zone, boolean security) {
         if (zone.isSecure() != security) {
             zone.setSecure(security);
+            zone.setSecurityChanged(LocalDateTime.now());
             if (!security) {
                 zone.setStatus(ZoneStatus.GREEN);
             }

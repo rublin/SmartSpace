@@ -42,6 +42,11 @@ public class ScheduleService {
         queueService.take();
     }
 
+    @Scheduled(fixedDelay = 10000)
+    public void queueHeatingTake() {
+        queueService.takeHeating();
+    }
+
     @Scheduled(fixedDelay = 60000)
     public void readSms() {
         log.debug("Scheduler is running");
