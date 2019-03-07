@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -52,6 +56,7 @@ public class WeatherService {
     public List<String> getForecast() {
         WeatherResponseDto forecast = getWeather();
         List<String> result = forecast.getDaily().getData().stream()
+                .filter(f -> f.getTime() > LocalDate.now().toEpochDay())
                 .limit(2)
                 .map(this::convertForecastResult)
                 .collect(toList());
@@ -68,7 +73,7 @@ public class WeatherService {
         int helloRandomPosition = ThreadLocalRandom.current().nextInt(0, helloArray.length);
         WeatherResponseDto weather = getWeather();
         String result = format("%s Поточна погода. " +
-                        "Температура %s градусів цельсія. Відносна вологість %d. Швидкість вітру %d км/год. %s",
+                        "Температура %s градусів цельсія. Відносна вологість %d відсотків. Швидкість вітру %d км/год. %s",
                 helloArray[helloRandomPosition],
                 fixTemperature(Math.round(weather.getCurrently().getTemperature())),
                 Math.round(weather.getCurrently().getHumidity() * 100),
@@ -84,11 +89,34 @@ public class WeatherService {
     }
 
     private String convertForecastResult(WeatherForecastDetails details) {
-        return format("%s Температура від %d до %d. Швидкість вітру %d.",
+        return format("Прогноз погоди на %s. %s Температура від %d до %d градусів цельсія. Швидкість вітру %d км/год.",
+                getDay(details.getTime()),
                 details.getSummary(),
                 Math.round(details.getTemperatureLow()),
                 Math.round(details.getTemperatureHigh()),
                 Math.round(details.getWindSpeed()));
+    }
+
+    private String getDay(long time) {
+        DayOfWeek dayOfWeek = Instant.ofEpochSecond(time).atZone(ZoneId.systemDefault()).getDayOfWeek();
+        switch (dayOfWeek) {
+            case SUNDAY:
+                return "Неділя";
+            case MONDAY:
+                return "Понеділок";
+            case TUESDAY:
+                return "Вівторок";
+            case WEDNESDAY:
+                return "Середа";
+            case THURSDAY:
+                return "Четвер";
+            case FRIDAY:
+                return "П'ятниця";
+            case SATURDAY:
+                return "Субота";
+            default:
+                return "Нехай щастить";
+        }
     }
 
     private String fixTemperature(int temperature) {
