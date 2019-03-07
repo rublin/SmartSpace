@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WeatherForecastResponseDto {
 
