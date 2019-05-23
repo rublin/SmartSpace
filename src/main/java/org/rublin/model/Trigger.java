@@ -16,7 +16,8 @@ import javax.persistence.*;
         @NamedQuery(name = Trigger.GET, query = "SELECT t FROM Trigger t WHERE t.id=:id"),
         @NamedQuery(name = Trigger.GET_ALL_SORTED, query = "SELECT t FROM Trigger t ORDER BY t.name"),
         @NamedQuery(name = Trigger.DELETE, query = "DELETE FROM Trigger t WHERE t.id=:id"),
-        @NamedQuery(name = Trigger.GET_BY_STATE, query = "SELECT t FROM Trigger t WHERE t.state=:state")
+        @NamedQuery(name = Trigger.GET_BY_STATE, query = "SELECT t FROM Trigger t WHERE t.state=:state"),
+        @NamedQuery(name = Trigger.DELETE_BY_ZONE, query = "delete from Trigger where zone in :zone")
 })
 @Data
 @Entity
@@ -28,6 +29,7 @@ public class Trigger extends AbstractSensor {
     public static final String GET_ALL_SORTED = "Trigger.getAllSorted";
     public static final String GET_BY_STATE = "Trigger.getByState";
     public static final String DELETE = "Trigger.delete";
+    public static final String DELETE_BY_ZONE = "Trigger.delete.all.by.zone";
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
