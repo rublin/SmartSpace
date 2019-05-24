@@ -1,13 +1,27 @@
 package org.rublin.model.user;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -15,6 +29,8 @@ import java.util.Set;
  */
 @Data
 @Entity
+@NoArgsConstructor
+@ToString(of = {"firstName", "lastName", "email"})
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
 public class User {
 
@@ -63,8 +79,6 @@ public class User {
     @Column(name = "registered", columnDefinition = "timestamp default now()")
     private Date registered = new Date();
 
-    public User() {}
-
     public User(String firstName, String lastName, Set<Role> roles, String email, String password, String mobile, String telegramName) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -99,30 +113,11 @@ public class User {
         this.enabled = true;
     }
 
-    public User(Integer id, String firstName, String lastName, String email, String password, String mobile, String telegramName, Role role, Role... roles) {
-        this(id, firstName, lastName, EnumSet.of(role, roles), email, password, mobile, telegramName);
-    }
-
     public boolean isAdmin() {
         return roles.contains(Role.ROLE_ADMIN);
     }
 
     public boolean isNew() {
         return (this.id == null);
-    }
-
-    @Override
-    public String toString() {
-        return "User (" +
-                "id=" + id +
-                ", name=" + firstName +
-                ", surname=" + lastName +
-                ", email=" + email +
-                ", roles=" + roles +
-                ", telegram id=" + telegramId +
-                ", telegram name=" + telegramName +
-                ", mobile=" + mobile +
-                ", enabled=" + enabled +
-                ')';
     }
 }

@@ -88,26 +88,6 @@ public class Trigger extends AbstractSensor {
         minThreshold = 0.0;
     }
 
-    public Trigger(String name, Zone zone, Type type, boolean secure) {
-        this.zone = zone;
-        this.name = name;
-        this.type = type;
-        this.secure = secure;
-        this.state = true;
-        maxThreshold = 0.0;
-        minThreshold = 0.0;
-    }
-
-    public Trigger(String name, Zone zone, Type type, boolean secure, Double minThreshold, Double maxThreshold) {
-        this.zone = zone;
-        this.name = name;
-        this.type = type;
-        this.secure = secure;
-        this.state = true;
-        this.minThreshold = minThreshold;
-        this.maxThreshold = maxThreshold;
-    }
-
     public boolean isNew() {
         return (this.id == null);
     }

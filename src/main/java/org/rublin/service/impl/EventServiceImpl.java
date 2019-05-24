@@ -119,6 +119,18 @@ public class EventServiceImpl implements EventService {
     }
 
     private void alarmEvent(Event event, Trigger trigger, Zone zone) {
+        LocalDateTime now = LocalDateTime.now();
+        long securedZones = zoneService.getAll().stream()
+                .filter(Zone::isSecure)
+                .count();
+        List<Event> last5MinEvents = getBetween(now.minusMinutes(5), now);
+        boolean morningDetectorZoneActive = last5MinEvents.stream()
+                .anyMatch(e -> e.getTrigger().isMorningDetector());
+
+        if (zone.isNightSecurity() && securedZones == 1 && morningDetectorZoneActive) {
+            zone.setSecure(false);
+            return;
+        }
         LocalDateTime changed = zone.getSecurityChanged();
         // Event is after 2 minutes, because arduino delayed movement events (no moving) for 1 minute
         if (ChronoUnit.MINUTES.between(changed, LocalDateTime.now()) > 2) {

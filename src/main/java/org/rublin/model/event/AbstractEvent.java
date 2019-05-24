@@ -1,14 +1,13 @@
 package org.rublin.model.event;
 
+import lombok.NoArgsConstructor;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Created by Sheremet on 22.06.2016.
- */
+@NoArgsConstructor
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class AbstractEvent<T> implements Event<T>{
@@ -31,8 +30,6 @@ public abstract class AbstractEvent<T> implements Event<T>{
 
     @Column(name = "alarm")
     protected boolean alarm;
-
-    public AbstractEvent() {}
 
     public AbstractEvent(Trigger trigger) {
         time = LocalDateTime.now();

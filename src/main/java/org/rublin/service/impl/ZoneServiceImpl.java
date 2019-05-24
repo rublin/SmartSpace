@@ -1,34 +1,33 @@
 package org.rublin.service.impl;
 
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.rublin.controller.NotificationService;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
-import org.rublin.repository.ZoneRepository;
+import org.rublin.repository.ZoneRepositoryJpa;
 import org.rublin.service.EventService;
 import org.rublin.service.ZoneService;
-import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Sheremet on 11.07.2016.
  */
+@Slf4j
 @Service
 public class ZoneServiceImpl implements ZoneService {
-
-    private static final Logger LOG = getLogger(ZoneServiceImpl.class);
-
+    
     @Autowired
-    private ZoneRepository zoneRepository;
+    private ZoneRepositoryJpa zoneRepository;
 
     @Autowired
     private EventService eventService;
@@ -36,24 +35,30 @@ public class ZoneServiceImpl implements ZoneService {
     @Autowired
     private NotificationService notificationService;
 
+    @Value("${zone.activity.threshold.minutes}")
+    private Integer threshold;
+
+    @Value("${zone.night.period}")
+    private String[] nightPeriod;
+
     @Override
     public Zone save(Zone zone) {
         return zoneRepository.save(zone);
     }
 
     @Override
-    public void delete(int id) throws NotFoundException {
-        ExceptionUtil.checkNotFoundWithId(zoneRepository.delete(id), id);
+    public void delete(int id) {
+        zoneRepository.deleteById(id);
     }
 
     @Override
     public Zone get(int id) throws NotFoundException {
-        return ExceptionUtil.checkNotFoundWithId(zoneRepository.get(id), id);
+        return zoneRepository.findById(id).orElseThrow(() -> new NotFoundException("Zone with id=" + id + " not found"));
     }
 
     @Override
     public Collection<Zone> getAll() {
-        return zoneRepository.getAll();
+        return Lists.newArrayList(zoneRepository.findAll());
     }
 
     @Override
@@ -65,10 +70,10 @@ public class ZoneServiceImpl implements ZoneService {
                 zone.setStatus(ZoneStatus.GREEN);
             }
             zoneRepository.save(zone);
-            LOG.info("change Zone secure state to {}", zone.isSecure());
-            notificationService.sendInfoToAllUsers(zone);
+            log.info("change Zone secure state to {}", zone.isSecure());
+            notificationService.notifyAdmin(zone + " security state is changed to " + security);
         } else {
-            LOG.info("Zone {} already {}", zone.getName(), security ? "armed" : "disarmed");
+            log.info("Zone {} already {}", zone.getName(), security ? "armed" : "disarmed");
         }
     }
 
@@ -80,37 +85,39 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public String getInfo(Zone zone) {
-        return String.format(
-                "id: <b>%d</b>, name: <b>%s</b>, status: <b>%s</b>, secure: <b>%s</b>",
-                zone.getId(),
-                zone.getName(),
-                zone.getStatus().toString(),
-                zone.isSecure() ? "YES" : "NO");    }
-
-    @Override
     public  void activity() {
         LocalDateTime now = LocalDateTime.now();
-        List<Event> lastHourEvents = eventService.getBetween(now.minusHours(1), now);
+        List<Event> lastEvents = eventService.getBetween(now.minusMinutes(threshold), now);
         for (Zone zone : getAll()) {
-            boolean active = checkZoneActivity(lastHourEvents.size());
-            LOG.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), lastHourEvents.size(), active);
+            long amountOfEventByZone = lastEvents.stream()
+                    .filter(event -> event.getTrigger().getZone().equals(zone))
+                    .count();
+            boolean active = checkZoneActivity((int) amountOfEventByZone);
+            log.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), amountOfEventByZone, active);
             if (zone.isActive() != active) {
-                LOG.info("Zone {} set activity to {}", zone.getName(), active);
+                log.info("Zone {} set activity to {}", zone.getName(), active);
                 zone.setActive(active);
                 zoneRepository.save(zone);
+
+                if (zone.isNightSecurity() &&
+                        !zone.isSecure() &&
+                        (now.toLocalTime().isAfter(LocalTime.parse(nightPeriod[0])) || now.toLocalTime().isBefore(LocalTime.parse(nightPeriod[1])))) {
+                    log.info("It's time to automatically enable secure for zone {}", zone);
+                    setSecure(zone, true);
+                    notificationService.notifyAdmin(zone + " automatically armed");
+                }
             }
         }
     }
 
     @Override
     public void sendNotification(Zone zone, boolean isSecure) {
-        LOG.info("Notification sending");
+        log.info("Notification sending");
         Thread thread = new Thread(() -> notificationService.sendAlarmNotification(zone, isSecure));
         thread.start();
     }
 
-    private boolean checkZoneActivity(int events) {
+    protected boolean checkZoneActivity(int events) {
         LocalDateTime now = LocalDateTime.now();
         if (now.getHour() < 5) {
             return events > 5;

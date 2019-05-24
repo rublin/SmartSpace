@@ -11,7 +11,7 @@ import java.util.List;
 import static org.rublin.telegram.TelegramCommand.*;
 
 public class TelegramKeyboardUtil {
-    static ReplyKeyboardMarkup mainKeyboard(User user) {
+    public static ReplyKeyboardMarkup mainKeyboard(User user) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
 
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();

@@ -158,7 +158,7 @@ public class TelegramServiceImpl implements TelegramService {
 
                 case SECURITY:
                     zoneService.getAll().forEach(
-                            zone -> responseMessages.add(zoneService.getInfo(zone))
+                            zone -> responseMessages.add(zone.getInfo())
                     );
                     keyboardMarkup = securityKeyboard();
                     break;
@@ -189,7 +189,7 @@ public class TelegramServiceImpl implements TelegramService {
                                 responseMessages.add(format(
                                         "Zone <b>%s</b> is <b>%s</b> now", zone.getName(),
                                         security ? "arming" : "disarming"));
-                                responseMessages.add(zoneService.getInfo(zone));
+                                responseMessages.add(zone.getInfo());
                             }
                     );
                     previousCommandMap.remove(id);
@@ -328,7 +328,7 @@ public class TelegramServiceImpl implements TelegramService {
                             "Zone <b>%s</b> is <b>%s</b> now",
                             zone.getName(),
                             security ? "arming" : "disarming"));
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 } else {
                     log.warn("Need to find zone by name {}", message.getText());
                     responseMessages.add(format("Can't find zone with name %s", message.getText()));
@@ -435,7 +435,7 @@ public class TelegramServiceImpl implements TelegramService {
                     zoneService.setSecure(zone, true);
                     responseMessages.add(format(
                             "Zone <b>%s</b> is <b>arming</b> now", zone.getName()));
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 }
                 break;
             }
@@ -444,7 +444,7 @@ public class TelegramServiceImpl implements TelegramService {
                 for (Zone zone : zones) {
                     zoneService.setSecure(zone, false);
                     responseMessages.add(format("Zone <b>%s</b> is <b>disarming</b> now", zone.getName()));
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 }
                 break;
             }
@@ -456,7 +456,7 @@ public class TelegramServiceImpl implements TelegramService {
                         zoneService.setSecure(zone, command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
                         responseMessages.add(format("Zone <b>%s</b> changed security to <b>%s</b>", zone.getName(),
                                 zone.isSecure()));
-                        responseMessages.add(zoneService.getInfo(zone));
+                        responseMessages.add(zone.getInfo());
                     } catch (Exception e) {
                         log.error("Error to change state for zone {} to {}", command[1], command[2]);
                         responseMessages.add("Can't find zone with id: " + command[1]);
@@ -477,7 +477,7 @@ public class TelegramServiceImpl implements TelegramService {
             case "/gs": {
                 Collection<Zone> zones = zoneService.getAll();
                 for (Zone zone : zones) {
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 }
                 break;
 

@@ -1,5 +1,6 @@
 package org.rublin.model.event;
 
+import lombok.NoArgsConstructor;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
         @NamedQuery(name = DigitEvent.GET_BETWEEN, query = "SELECT e FROM DigitEvent e WHERE e.type='DIGITAL' AND e.time BETWEEN :from AND :to")
 })
 @Entity
+@NoArgsConstructor
 @Table(name = "events")
 public class DigitEvent extends AbstractEvent<Boolean> {
 
@@ -27,19 +29,11 @@ public class DigitEvent extends AbstractEvent<Boolean> {
     @Column(name = "digital_state")
     private Boolean state;
 
-
     public DigitEvent(Trigger trigger, Boolean state) {
         super(trigger);
         this.state = state;
         super.setType(Type.DIGITAL);
         time = LocalDateTime.now();
-    }
-
-    public DigitEvent(Trigger trigger, boolean state, LocalDateTime time) {
-        super(trigger);
-        this.state = state;
-        super.setType(Type.DIGITAL);
-        super.setTime(time);
     }
 
     public DigitEvent(int id, Trigger trigger, boolean state, LocalDateTime time) {
@@ -48,10 +42,6 @@ public class DigitEvent extends AbstractEvent<Boolean> {
         super.setType(Type.DIGITAL);
         super.setTime(time);
         super.setId(id);
-    }
-    public DigitEvent() {
-        super.setType(Type.DIGITAL);
-
     }
 
     @Override
