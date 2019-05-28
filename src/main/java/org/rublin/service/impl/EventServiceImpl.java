@@ -14,7 +14,6 @@ import org.rublin.service.ZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -50,7 +49,6 @@ public class EventServiceImpl implements EventService {
                 } else {
                     eventRepository.save(trigger, event);
                 }
-                processMorningActivity(event);
             } else if (trigger.getType() == Type.DIGITAL && !trigger.isSecure()) {
                 if ((boolean) event.getState()) {
                     eventRepository.save(trigger, event);
@@ -93,29 +91,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getAlarmed() {
         return eventRepository.getAlarmed();
-    }
-
-    private void processMorningActivity(Event event) {
-        if (event.getTrigger().isMorningDetector() && !(boolean) event.getState()) {
-            Zone zone = event.getTrigger().getZone();
-            if (morningStarts() && !zone.isActive()) {
-                notificationService.morningNotifications();
-                zoneService.getAll().stream()
-                        .filter(Zone::isSecure)
-                        .forEach(z -> zoneService.setSecure(z, false));
-            }
-        }
-    }
-
-    private boolean morningStarts() {
-        LocalDateTime now = LocalDateTime.now();
-        if (DayOfWeek.SUNDAY == now.getDayOfWeek() || DayOfWeek.SATURDAY == now.getDayOfWeek()) {
-            // Weekend
-            return now.getHour() >= 7 && now.getHour() < 9;
-        } else {
-            // Working days
-            return now.getHour() == 5 && now.getMinute() >= 30 || now.getHour() > 5 && now.getHour() < 10;
-        }
     }
 
     private void alarmEvent(Event event, Trigger trigger, Zone zone) {

@@ -14,14 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Created by Sheremet on 11.07.2016.
- */
+import static java.time.LocalTime.now;
+
 @Slf4j
 @Service
 public class ZoneServiceImpl implements ZoneService {
@@ -40,6 +40,12 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Value("${zone.night.period}")
     private String[] nightPeriod;
+
+    @Value("${zone.morning.workdays}")
+    private String workdaysMorning;
+
+    @Value("${zone.morning.weekends}")
+    private String weekendsMorning;
 
     @Override
     public Zone save(Zone zone) {
@@ -85,12 +91,13 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public  void activity() {
+    public synchronized void activity() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> lastEvents = eventService.getBetween(now.minusMinutes(threshold), now);
         for (Zone zone : getAll()) {
             long amountOfEventByZone = lastEvents.stream()
                     .filter(event -> event.getTrigger().getZone().equals(zone))
+                    .filter(event -> event.getTrigger().isSecure())
                     .count();
             boolean active = checkZoneActivity((int) amountOfEventByZone);
             log.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), amountOfEventByZone, active);
@@ -101,10 +108,17 @@ public class ZoneServiceImpl implements ZoneService {
 
                 if (zone.isNightSecurity() &&
                         !zone.isSecure() &&
-                        (now.toLocalTime().isAfter(LocalTime.parse(nightPeriod[0])) || now.toLocalTime().isBefore(LocalTime.parse(nightPeriod[1])))) {
+                        nightTime(now())) {
                     log.info("It's time to automatically enable secure for zone {}", zone);
                     setSecure(zone, true);
                     notificationService.notifyAdmin(zone + " automatically armed");
+                }
+
+                if (active && zone.isMorningDetector() && morningStarts(LocalDateTime.now())) {
+                    notificationService.morningNotifications();
+                    getAll().stream()
+                            .filter(Zone::isSecure)
+                            .forEach(z -> setSecure(z, false));
                 }
             }
         }
@@ -117,14 +131,27 @@ public class ZoneServiceImpl implements ZoneService {
         thread.start();
     }
 
-    protected boolean checkZoneActivity(int events) {
-        LocalDateTime now = LocalDateTime.now();
-        if (now.getHour() < 5) {
+    boolean checkZoneActivity(int events) {
+        if (nightTime(now())) {
             return events > 5;
-        } else if (now.getHour() == 5 && now.getMinute() < 30) {
-            return events > 5;
-        } else {
-            return events >= 1;
         }
+        return events >= 1;
+    }
+
+    boolean morningStarts(LocalDateTime now) {
+        LocalTime workdaysMorningStart = LocalTime.parse(workdaysMorning);
+        LocalTime weekdaysMorningStart = LocalTime.parse(weekendsMorning);
+
+        if (DayOfWeek.SUNDAY == now.getDayOfWeek() || DayOfWeek.SATURDAY == now.getDayOfWeek()) {
+            // Weekend
+            return now.toLocalTime().isAfter(weekdaysMorningStart) && now.toLocalTime().isBefore(weekdaysMorningStart.plusHours(2));
+        } else {
+            // Working days
+            return now.toLocalTime().isAfter(workdaysMorningStart) && now.toLocalTime().isBefore(workdaysMorningStart.plusHours(2));
+        }
+    }
+
+    boolean nightTime(LocalTime now) {
+        return now.isAfter(LocalTime.parse(nightPeriod[0])) || now.isBefore(LocalTime.parse(nightPeriod[1]));
     }
 }

@@ -2,6 +2,7 @@ package org.rublin.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.LazyCollection;
@@ -17,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
 @Table(name = "zones")
 @NoArgsConstructor
 @ToString(of = {"name", "status", "secure", "active"})
+@EqualsAndHashCode(of = "name")
 public class Zone {
 
     @Id
@@ -32,6 +35,7 @@ public class Zone {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "zone_seq")
     private Integer id;
 
+    @NotBlank
     private String name;
 
     private String shortName;
@@ -56,6 +60,8 @@ public class Zone {
     private boolean active;
 
     private boolean nightSecurity;
+
+    private boolean morningDetector;
 
     public Zone(int id, String name, String shortName, ZoneStatus status, boolean secure) {
         this.id = id;
