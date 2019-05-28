@@ -20,7 +20,7 @@ import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
 
-import static java.time.LocalTime.now;
+import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
@@ -38,14 +38,11 @@ public class ZoneServiceImpl implements ZoneService {
     @Value("${zone.activity.threshold.minutes}")
     private Integer threshold;
 
-    @Value("${zone.night.period}")
-    private String[] nightPeriod;
+    @Value("${zone.night.period.workdays}")
+    private String[] nightPeriodWorkdays;
 
-    @Value("${zone.morning.workdays}")
-    private String workdaysMorning;
-
-    @Value("${zone.morning.weekends}")
-    private String weekendsMorning;
+    @Value("${zone.night.period.weekends}")
+    private String[] nightPeriodWeekends;
 
     @Override
     public Zone save(Zone zone) {
@@ -71,7 +68,7 @@ public class ZoneServiceImpl implements ZoneService {
     public void setSecure(Zone zone, boolean security) {
         if (zone.isSecure() != security) {
             zone.setSecure(security);
-            zone.setSecurityChanged(LocalDateTime.now());
+            zone.setSecurityChanged(now());
             if (!security) {
                 zone.setStatus(ZoneStatus.GREEN);
             }
@@ -92,7 +89,7 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public synchronized void activity() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = now();
         List<Event> lastEvents = eventService.getBetween(now.minusMinutes(threshold), now);
         for (Zone zone : getAll()) {
             long amountOfEventByZone = lastEvents.stream()
@@ -114,7 +111,7 @@ public class ZoneServiceImpl implements ZoneService {
                     notificationService.notifyAdmin(zone + " automatically armed");
                 }
 
-                if (active && zone.isMorningDetector() && morningStarts(LocalDateTime.now())) {
+                if (active && zone.isMorningDetector() && morningStarts(now())) {
                     notificationService.morningNotifications();
                     getAll().stream()
                             .filter(Zone::isSecure)
@@ -139,19 +136,26 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     boolean morningStarts(LocalDateTime now) {
-        LocalTime workdaysMorningStart = LocalTime.parse(workdaysMorning);
-        LocalTime weekdaysMorningStart = LocalTime.parse(weekendsMorning);
+        LocalTime workdaysMorningStart = LocalTime.parse(nightPeriodWorkdays[1]);
+        LocalTime weekdaysMorningStart = LocalTime.parse(nightPeriodWeekends[1]);
 
-        if (DayOfWeek.SUNDAY == now.getDayOfWeek() || DayOfWeek.SATURDAY == now.getDayOfWeek()) {
-            // Weekend
+        if (isWeekend(now)) {
             return now.toLocalTime().isAfter(weekdaysMorningStart) && now.toLocalTime().isBefore(weekdaysMorningStart.plusHours(2));
         } else {
-            // Working days
             return now.toLocalTime().isAfter(workdaysMorningStart) && now.toLocalTime().isBefore(workdaysMorningStart.plusHours(2));
         }
     }
 
-    boolean nightTime(LocalTime now) {
-        return now.isAfter(LocalTime.parse(nightPeriod[0])) || now.isBefore(LocalTime.parse(nightPeriod[1]));
+    boolean nightTime(LocalDateTime now) {
+        if (isWeekend(now)) {
+            return now.toLocalTime().isAfter(LocalTime.parse(nightPeriodWeekends[0])) || now.toLocalTime().isBefore(LocalTime.parse(nightPeriodWeekends[1]));
+        } else {
+            return now.toLocalTime().isAfter(LocalTime.parse(nightPeriodWorkdays[0])) || now.toLocalTime().isBefore(LocalTime.parse(nightPeriodWorkdays[1]));
+        }
+
+    }
+
+    boolean isWeekend(LocalDateTime now) {
+        return DayOfWeek.SUNDAY == now.getDayOfWeek() || DayOfWeek.SATURDAY == now.getDayOfWeek();
     }
 }

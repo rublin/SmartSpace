@@ -44,9 +44,8 @@ public class ZoneServiceImplTest {
     @Before
     public void init() {
         ReflectionTestUtils.setField(zoneService, "threshold", 30);
-        ReflectionTestUtils.setField(zoneService, "workdaysMorning", "05:30");
-        ReflectionTestUtils.setField(zoneService, "weekendsMorning", "07:00");
-        ReflectionTestUtils.setField(zoneService, "nightPeriod", new String[]{"22:00", "05:00"});
+        ReflectionTestUtils.setField(zoneService, "nightPeriodWorkdays", new String[]{"22:00", "05:00"});
+        ReflectionTestUtils.setField(zoneService, "nightPeriodWeekends", new String[]{"22:00", "07:00"});
     }
 
     @Test
@@ -66,27 +65,37 @@ public class ZoneServiceImplTest {
 
     @Test
     public void nightTimeTest() {
-        assertTrue(zoneService.nightTime(LocalTime.of(23, 0)));
-        assertTrue(zoneService.nightTime(LocalTime.of(22, 1)));
-        assertTrue(zoneService.nightTime(LocalTime.of(4, 59)));
-        assertFalse(zoneService.nightTime(LocalTime.of(22, 0)));
-        assertFalse(zoneService.nightTime(LocalTime.of(5, 0)));
-        assertFalse(zoneService.nightTime(LocalTime.of(7, 0)));
-        assertFalse(zoneService.nightTime(LocalTime.of(9, 0)));
-        assertFalse(zoneService.nightTime(LocalTime.of(21, 0)));
+        assertTrue(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(23, 0))));
+        assertTrue(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(22, 1))));
+        assertTrue(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(4, 59))));
+        assertFalse(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(22, 0))));
+        assertFalse(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(5, 0))));
+        assertFalse(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(7, 0))));
+        assertFalse(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(9, 0))));
+        assertFalse(zoneService.nightTime(LocalDateTime.of(FRIDAY_6_00_MORNING.toLocalDate(), LocalTime.of(21, 0))));
     }
 
     @Test
     public void morningStartsTest() {
         //Work day
         assertTrue(zoneService.morningStarts(FRIDAY_6_00_MORNING));
-        assertFalse(zoneService.morningStarts(FRIDAY_6_00_MORNING.minusHours(1)));
-        assertTrue(zoneService.morningStarts(FRIDAY_6_00_MORNING.plusHours(1)));
+        assertFalse(zoneService.morningStarts(FRIDAY_6_00_MORNING.minusHours(1).minusMinutes(1)));
         assertFalse(zoneService.morningStarts(FRIDAY_6_00_MORNING.plusHours(2)));
 
         //Weekend day
         assertFalse(zoneService.morningStarts(FRIDAY_6_00_MORNING.plusDays(1)));
         assertFalse(zoneService.morningStarts(FRIDAY_6_00_MORNING.plusDays(1).plusHours(3)));
         assertTrue(zoneService.morningStarts(FRIDAY_6_00_MORNING.plusDays(1).plusHours(1)));
+    }
+
+    @Test
+    public void isWeekendTest() {
+        assertFalse(zoneService.isWeekend(FRIDAY_6_00_MORNING));
+        assertTrue(zoneService.isWeekend(FRIDAY_6_00_MORNING.plusDays(1)));
+        assertTrue(zoneService.isWeekend(FRIDAY_6_00_MORNING.plusDays(2)));
+        assertFalse(zoneService.isWeekend(FRIDAY_6_00_MORNING.plusDays(3)));
+        assertFalse(zoneService.isWeekend(FRIDAY_6_00_MORNING.plusDays(4)));
+        assertFalse(zoneService.isWeekend(FRIDAY_6_00_MORNING.plusDays(5)));
+        assertFalse(zoneService.isWeekend(FRIDAY_6_00_MORNING.plusDays(6)));
     }
 }
