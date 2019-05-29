@@ -2,7 +2,6 @@ package org.rublin.repository.jpa;
 
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
-import org.rublin.model.event.AbstractEvent;
 import org.rublin.model.event.AnalogEvent;
 import org.rublin.model.event.DigitEvent;
 import org.rublin.model.event.Event;
@@ -29,12 +28,9 @@ public class JpaEventRepository implements EventRepository {
 
     @Override
     @Transactional
-    public void save(Trigger trigger, Event event) {
+    public void save(Event event) {
         //Trigger ref = em.getReference(Trigger.class, int tr)
-        if (event.isNew()) {
-            event.setTrigger(trigger);
-            em.persist(event);
-        }
+        em.merge(event);
     }
 
     @Override
