@@ -3,29 +3,24 @@ package org.rublin.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.rublin.to.weather.WeatherForecastResponseDto;
+import org.rublin.to.weather.WeatherForecastDetails;
+import org.rublin.to.weather.WeatherResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Weather controller receive JSON from api.wunderground.com
+ * Weather controller receive JSON from darksky.net
  *
  * @author Ruslan Sheremet
  * @see JSONObject
@@ -37,11 +32,14 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class WeatherService {
 
+    @Value("${weather.url}")
+    private String url;
+
     @Value("${weather.token}")
     private String token;
 
-    @Value("${weather.city}")
-    private String city;
+    @Value("${weather.coordinates}")
+    private String coordinates;
 
     @Value("${weather.lang}")
     private String lang;
@@ -50,18 +48,15 @@ public class WeatherService {
 
     private final String[] helloArray = {"Доброго ранку.", "Привіт!", "Слава Україні!", "Героям слава!"};
 
-    private static final String WEATHER_SERVICE = "http://api.wunderground.com/api/%s/%s/lang:%s/q/%s.json";
-    private static final Pattern PATTERN = Pattern.compile("1\\d");
-
     /**
      * Returns weather forecast for city in lang localization
      *
      * @return String forecast
      */
     public List<String> getForecast() {
-        String url = format(WEATHER_SERVICE, token, "forecast", lang, city);
-        WeatherForecastResponseDto forecast = restTemplate.getForObject(url, WeatherForecastResponseDto.class);
-        List<String> result = forecast.forecastDays().stream()
+        WeatherResponseDto forecast = getWeather();
+        List<String> result = forecast.getDaily().getData().stream()
+                .filter(f -> f.getTime() > LocalDate.now().toEpochDay())
                 .limit(2)
                 .map(this::convertForecastResult)
                 .collect(toList());
@@ -76,88 +71,52 @@ public class WeatherService {
      */
     public String getCondition() {
         int helloRandomPosition = ThreadLocalRandom.current().nextInt(0, helloArray.length);
-        String url = format(WEATHER_SERVICE, token, "conditions", lang, city);
-        JSONObject current = readJsonFromUrl(url).getJSONObject("current_observation");
-        String weather = current.getString("weather");
-        int temp = current.getInt("temp_c");
-        int dewpoint = current.getInt("dewpoint_c");
-        int wind_speed = current.getInt("wind_kph");
-        String humidity = current.getString("relative_humidity");
-        /*
-          need to replace text using i18n
-         */
-        String result = format("%s Поточна погода (Київська метеостанція). " +
-                        "Температура %s градусів цельсія. Точка роси %d. Відносна вологість %s. Швидкість вітру %d км/год. %s",
+        WeatherResponseDto weather = getWeather();
+        String result = format("%s Поточна погода. " +
+                        "Температура %s градусів цельсія. Відносна вологість %d відсотків. Швидкість вітру %d км/год. %s",
                 helloArray[helloRandomPosition],
-                fixTemperature(temp),
-                dewpoint,
-                humidity,
-                wind_speed,
-                weather);
+                fixTemperature(Math.round(weather.getCurrently().getTemperature())),
+                Math.round(weather.getCurrently().getHumidity() * 100),
+                Math.round(weather.getCurrently().getWindSpeed()),
+                weather.getCurrently().getSummary());
         log.info("Current weather {} got successfully", result);
         return result;
     }
 
-    private String convertForecastResult(WeatherForecastResponseDto.ForecastDay forecastDay) {
-        return format("%s. %s", forecastDay.getTitle(), StringUtils.isEmpty(forecastDay.getFcttext_metric())
-                ? convertFahrenheitToCelsius(forecastDay.getFcttext())
-                : forecastDay.getFcttext_metric());
+    private WeatherResponseDto getWeather() {
+        String urlRequest = format(url, token, coordinates, lang);
+        return restTemplate.getForObject(urlRequest, WeatherResponseDto.class);
     }
 
-    /**
-     * Replace fahrenheit to celsius in string like this:
-     * Хмарно та вітряно. Максимум 51градуси Фаренгейта. Вітер Пн-Зх від 20 до 30 миль за годину.
-     *
-     * @param fahrenheitForecast
-     * @return
-     */
-    String convertFahrenheitToCelsius(String fahrenheitForecast) {
-        Pattern pattern = Pattern.compile("(\\d+)градуси Фаренгейта");
-        Matcher matcher = pattern.matcher(fahrenheitForecast);
-        if (matcher.find()) {
-            String fahrenheit = matcher.group(1);
-            int celsius = (Integer.parseInt(fahrenheit) - 32) * 5 / 9;
-            String result = fahrenheitForecast
-                    .replace(fahrenheit, String.valueOf(celsius))
-                    .replace("градуси Фаренгейта", "градуси цельсія");
-            return result;
-        }
-        return fahrenheitForecast;
+    private String convertForecastResult(WeatherForecastDetails details) {
+        return format("Прогноз погоди на %s. %s Температура від %d до %d градусів цельсія. Швидкість вітру %d км/год.",
+                getDay(details.getTime()),
+                details.getSummary(),
+                Math.round(details.getTemperatureLow()),
+                Math.round(details.getTemperatureHigh()),
+                Math.round(details.getWindSpeed()));
     }
 
-    /**
-     * Read JSON from URL
-     *
-     * @param url
-     * @return JSONObject
-     * @see JSONObject
-     */
-    private JSONObject readJsonFromUrl(String url) {
-        try (InputStream stream = new URL(url).openStream()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
-            StringBuffer jsonText = new StringBuffer();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonText.append(line);
-            }
-            return new JSONObject(jsonText.toString());
-        } catch (MalformedURLException e) {
-            log.error("Result from URL {} is not a JSON", url, e);
-        } catch (IOException e) {
-            log.error("Wrong source from URL {}", url, e);
+    private String getDay(long time) {
+        DayOfWeek dayOfWeek = Instant.ofEpochSecond(time).atZone(ZoneId.systemDefault()).getDayOfWeek();
+        switch (dayOfWeek) {
+            case SUNDAY:
+                return "Неділя";
+            case MONDAY:
+                return "Понеділок";
+            case TUESDAY:
+                return "Вівторок";
+            case WEDNESDAY:
+                return "Середа";
+            case THURSDAY:
+                return "Четвер";
+            case FRIDAY:
+                return "П'ятниця";
+            case SATURDAY:
+                return "Субота";
+            default:
+                return "Нехай щастить";
         }
-        return null;
-    }
-
-    private String fixTemperature(String origin) {
-        String result = origin;
-        Matcher matcher = PATTERN.matcher(origin);
-        if (matcher.find()) {
-            String number = matcher.group();
-            result = origin.replaceAll(number, fixTemperature(Integer.valueOf(number)).concat(" "));
-        }
-
-        return result;
     }
 
     private String fixTemperature(int temperature) {

@@ -22,8 +22,6 @@ public interface ZoneService {
 
     Zone setStatus(Zone zone, ZoneStatus status);
 
-    String getInfo(Zone zone);
-
     void activity();
 
     void sendNotification(Zone zone, boolean isSecure);

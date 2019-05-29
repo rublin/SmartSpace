@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
 
 
 /**
@@ -75,6 +76,12 @@ public class NotificationService {
     public void sayTime() {
         LocalTime now = LocalTime.now();
         textToSpeechService.say(String.format("Увага! Поточний час %d годин %d хвилин", now.getHour(), now.getMinute()), "uk");
+    }
+
+    public void notifyAdmin(String message) {
+        userService.getAdmins().forEach(user -> {
+            telegramController.sendTextMessage(String.valueOf(user.getTelegramId()), message, mainKeyboard(user));
+        });
     }
 
     public void morningNotifications() {

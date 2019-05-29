@@ -2,12 +2,11 @@ package org.rublin.service.impl;
 
 import com.google.common.collect.Lists;
 import org.rublin.AuthorizedUser;
+import org.rublin.model.user.Role;
 import org.rublin.model.user.User;
 import org.rublin.repository.UserRepositoryJpa;
 import org.rublin.service.UserService;
 import org.rublin.util.UserUtil;
-import org.rublin.util.exception.ExceptionUtil;
-import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -69,6 +68,11 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Override
     public List<User> getAll() {
         return Lists.newArrayList(repository.findAll());
+    }
+
+    @Override
+    public List<User> getAdmins() {
+        return repository.findByRoles(Role.ROLE_ADMIN);
     }
 
     @Override

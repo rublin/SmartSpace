@@ -67,6 +67,15 @@ public class ScheduleService {
         zoneService.activity();
     }
 
+    @Scheduled(cron = "${zone.night.cron}")
+    public void nightZoneSecure() {
+        log.info("Cron job to secure night zone started...");
+        zoneService.getAll().stream()
+                .filter(Zone::isNightSecurity)
+                .filter(zone -> !zone.isActive() && !zone.isSecure())
+                .forEach(zone -> zoneService.setSecure(zone, true));
+    }
+
     @PostConstruct
     private void init() {
         taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.FIRST_CRON_TIME_NOTIFICATION)));

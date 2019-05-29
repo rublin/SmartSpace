@@ -1,6 +1,5 @@
 package org.rublin.service;
 
-import lombok.ToString;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +10,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WeatherServiceTest {
@@ -21,9 +22,10 @@ public class WeatherServiceTest {
 
     @Before
     public void init() {
-        ReflectionTestUtils.setField(weatherService, "token", "8d92d805fa64388c");
-        ReflectionTestUtils.setField(weatherService, "city", "Kyiv");
-        ReflectionTestUtils.setField(weatherService, "lang", "UA");
+        ReflectionTestUtils.setField(weatherService, "token", "c3bac5d504802...");
+        ReflectionTestUtils.setField(weatherService, "coordinates", "50.378763,31.322262");
+        ReflectionTestUtils.setField(weatherService, "url", "https://api.darksky.net/forecast/%s/%s?lang=%s&units=si");
+        ReflectionTestUtils.setField(weatherService, "lang", "uk");
     }
 
     @Test
@@ -39,11 +41,5 @@ public class WeatherServiceTest {
         String condition = weatherService.getCondition();
         assertNotNull(condition);
         assertTrue(condition.length() > 40);
-    }
-
-    @Test
-    public void fahrenheitConverter() {
-        String result = weatherService.convertFahrenheitToCelsius("Хмарно та вітряно. Максимум 51градуси Фаренгейта. Вітер Пн-Зх від 20 до 30 миль за годину.");
-        assertEquals("Хмарно та вітряно. Максимум 10градуси цельсія. Вітер Пн-Зх від 20 до 30 миль за годину.", result);
     }
 }
