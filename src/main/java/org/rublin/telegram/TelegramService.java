@@ -8,5 +8,5 @@ import java.util.Set;
 public interface TelegramService {
     TelegramResponseDto process(Message message);
 
-    Set<Long> getChatIds();
+    Set<Integer> getChatIds();
 }

@@ -11,24 +11,32 @@ import java.util.List;
 import static org.rublin.telegram.TelegramCommand.*;
 
 public class TelegramKeyboardUtil {
-    static ReplyKeyboardMarkup mainKeyboard(User user) {
+    public static ReplyKeyboardMarkup mainKeyboard(User user) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
 
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
         keyboard.remove(0);
-        keyboard.add(createKeyboardRow(SECURITY.getCommandName(), CAMERA.getCommandName()));
+        keyboard.add(createKeyboardRow(SECURITY.getCommandName(), HEATING.getCommandName(), CAMERA.getCommandName()));
         keyboard.add(createKeyboardRow(WEATHER.getCommandName(), MEDIA.getCommandName(), EVENTS.getCommandName()));
         if (user.isAdmin())
-            keyboard.add(createKeyboardRow(ADMIN.getCommandName()));
-        keyboard.add(createKeyboardRow(INFO.getCommandName()));
+            keyboard.add(createKeyboardRow(ADMIN.getCommandName(), INFO.getCommandName()));
+        else
+            keyboard.add(createKeyboardRow(INFO.getCommandName()));
 
         return keyboardMarkup;
     }
 
+    static ReplyKeyboardMarkup heatingKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(HEATING_PUMP_ON.getCommandName(), HEATING_PUMP_OFF.getCommandName()));
+
+        return keyboardMarkup;
+    }
     static ReplyKeyboardMarkup adminKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(0, createKeyboardRow(ADMIN_TRIGGERS.getCommandName(), ADMIN_ZONES.getCommandName(), ADMIN_CAMERAS.getCommandName()));
+        keyboard.add(0, createKeyboardRow(ADMIN_TEMPERATURE_SENSOR_ADD.getCommandName()));
+        keyboard.add(0, createKeyboardRow(ADMIN_SENSORS.getCommandName(), ADMIN_ZONES.getCommandName(), ADMIN_CAMERAS.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -43,14 +51,14 @@ public class TelegramKeyboardUtil {
 
     static ReplyKeyboardMarkup triggerKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
-        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_TRIGGER_ADD.getCommandName(), ADMIN_TRIGGER_EDIT.getCommandName(), ADMIN_TRIGGER_REMOVE.getCommandName()));
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_SENSOR_ADD.getCommandName(), ADMIN_SENSOR_EDIT.getCommandName(), ADMIN_SENSOR_REMOVE.getCommandName()));
 
         return keyboardMarkup;
     }
 
     static ReplyKeyboardMarkup cameraKeyboard() {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
-        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_CAMERA_ADD.getCommandName(), ADMIN_CAMERA_EDIT.getCommandName(), ADMIN_TRIGGER_REMOVE.getCommandName()));
+        keyboardMarkup.getKeyboard().add(0, createKeyboardRow(ADMIN_CAMERA_ADD.getCommandName(), ADMIN_CAMERA_EDIT.getCommandName(), ADMIN_SENSOR_REMOVE.getCommandName()));
 
         return keyboardMarkup;
     }
@@ -70,6 +78,7 @@ public class TelegramKeyboardUtil {
 
         return keyboardMarkup;
     }
+
     static ReplyKeyboardMarkup armingOrDisarmingKeyboard(List<String> zones) {
         ReplyKeyboardMarkup keyboardMarkup = initKeyboard();
         List<KeyboardRow> keyboard = keyboardMarkup.getKeyboard();

@@ -2,12 +2,12 @@ package org.rublin.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.rublin.model.user.User;
-import org.rublin.repository.UserRepository;
+import org.rublin.repository.UserRepositoryJpa;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,7 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityBeanConfig extends GlobalAuthenticationConfigurerAdapter {
 
-    private UserRepository userRepository;
+    private UserRepositoryJpa userRepository;
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
@@ -31,7 +31,7 @@ public class SecurityBeanConfig extends GlobalAuthenticationConfigurerAdapter {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-                User user = userRepository.getByEmail(s);
+                User user = userRepository.findByEmail(s);
                 if (user != null) {
                     return new org.springframework.security.core.userdetails.User(user.getEmail(),
                             user.getPassword(),

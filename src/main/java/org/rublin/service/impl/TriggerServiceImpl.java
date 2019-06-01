@@ -37,6 +37,11 @@ public class TriggerServiceImpl implements TriggerService {
     }
 
     @Override
+    public void delete(List<Zone> zoneList) throws NotFoundException {
+        repository.deleteAllByZone(zoneList);
+    }
+
+    @Override
     public Trigger get(int id) throws NotFoundException {
         return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
     }

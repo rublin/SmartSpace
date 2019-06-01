@@ -2,13 +2,17 @@ package org.rublin.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.message.NotificationMessage;
 import org.rublin.model.Camera;
 import org.rublin.model.ConfigKey;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.event.Event;
+import org.rublin.model.sensor.TemperatureSensor;
 import org.rublin.model.user.User;
 import org.rublin.service.*;
+import org.rublin.service.delayed.DelayQueueService;
+import org.rublin.service.impl.TemperatureServiceImpl;
 import org.rublin.to.TelegramResponseDto;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.rublin.telegram.TelegramCommand.*;
 import static org.rublin.telegram.TelegramKeyboardUtil.*;
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Slf4j
 @Service
@@ -37,12 +43,15 @@ public class TelegramServiceImpl implements TelegramService {
     private final TextToSpeechService textToSpeechService;
     private final MediaPlayerService mediaPlayerService;
     private final TriggerService triggerService;
+    private final TemperatureServiceImpl temperatureService;
     private final EventService eventService;
     private final SystemConfigService configService;
     private final UserService userService;
+    private final HeatingService heatingService;
+    private final DelayQueueService delayQueueService;
+
+
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
-    private static Set<Integer> telegramIds = new HashSet<>();
-    private static Set<Long> chatIds = new HashSet<>();
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -64,35 +73,33 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @Override
-    public Set<Long> getChatIds() {
-        return chatIds;
+    public Set<Integer> getChatIds() {
+        Set<Integer> collect = userService.getAll().stream()
+                .map(User::getTelegramId)
+                .filter(Objects::nonNull)
+                .collect(toSet());
+        return collect;
     }
 
     private User authentication(Message message) {
         int telegramId = message.getFrom().getId();
         log.debug("Received message from user {} (id: {})", message.getFrom().getUserName(), telegramId);
-        if (telegramIds.contains(telegramId)) {
-            User foundUser = userService.getByTelegramId(telegramId);
-            log.info("Telegram User {} with id {} authorized as {}. Quick authorization", message.getFrom().getUserName(), telegramId, foundUser.getFirstName());
-            chatIds.add(message.getChatId());
-            return foundUser;
-        } else {
-            List<User> users = userService.getAll();
-            for (User u : users) {
-                String foundTelegramName = u.getTelegramName();
-//                log.debug("Compare name");
-                if (foundTelegramName != null && foundTelegramName.equals(message.getFrom().getUserName())) {
-                    log.info("Telegram User {} with id {} authorized as {}. Long authorization", message.getFrom().getUserName(), telegramId, u.getFirstName());
-                    u.setTelegramId(telegramId);
-                    telegramIds.add(telegramId);
-                    chatIds.add(message.getChatId());
-                    userService.update(u);
-                    return u;
-                }
-            }
+        User user = null;
+        try {
+            user = userService.getByTelegramId(telegramId);
+            log.info("Found user by id {}", telegramId);
+        } catch (Throwable throwable) {
+            log.warn("Could not find user by id {}", telegramId);
+            user = userService.getByTelegramName(message.getFrom().getUserName());
+            log.info("Found user by name {}", user.getTelegramName());
+            checkTelegramId(user, telegramId);
         }
-        log.info("Telegram User {} with id {} not authorized.", message.getFrom().getUserName(), telegramId);
-        return null;
+        return user;
+    }
+
+    private void checkTelegramId(User user, int id) {
+        user.setTelegramId(id);
+        userService.save(user);
     }
 
     private TelegramResponseDto doKeyboardCommand(Message message, User user) {
@@ -129,7 +136,13 @@ public class TelegramServiceImpl implements TelegramService {
                     );
                     break;
 
-                case ADMIN_TRIGGERS:
+                case ADMIN_TEMPERATURE_SENSOR_ADD:
+                    keyboardMarkup = null;
+                    responseMessages.add("Type sensor parameters in format:\n ZoneId#Name#Min#Max");
+                    previousCommandMap.put(id, command);
+                    break;
+
+                case ADMIN_SENSORS:
                     keyboardMarkup = triggerKeyboard();
                     triggerService.getAll().forEach(
                             trigger -> responseMessages.add(format("%d; %s; %s; %s", trigger.getId(), trigger.getName(), trigger.getType().name(), trigger.getZone().getName()))
@@ -145,7 +158,7 @@ public class TelegramServiceImpl implements TelegramService {
 
                 case SECURITY:
                     zoneService.getAll().forEach(
-                            zone -> responseMessages.add(zoneService.getInfo(zone))
+                            zone -> responseMessages.add(zone.getInfo())
                     );
                     keyboardMarkup = securityKeyboard();
                     break;
@@ -176,10 +189,24 @@ public class TelegramServiceImpl implements TelegramService {
                                 responseMessages.add(format(
                                         "Zone <b>%s</b> is <b>%s</b> now", zone.getName(),
                                         security ? "arming" : "disarming"));
-                                responseMessages.add(zoneService.getInfo(zone));
+                                responseMessages.add(zone.getInfo());
                             }
                     );
                     previousCommandMap.remove(id);
+                    break;
+
+                case HEATING:
+                    responseMessages.add(heatingService.current().isGlobalStatus() ? "Pump is ON" : "Pump is OFF");
+                    keyboardMarkup = heatingKeyboard();
+                    break;
+
+                case HEATING_PUMP_ON:
+                    responseMessages.add(heatingService.pump(true));
+                    break;
+
+                case HEATING_PUMP_OFF:
+                    heatingService.stopHeating();
+                    responseMessages.add(heatingService.current().status());
                     break;
 
                 case EVENTS:
@@ -211,9 +238,11 @@ public class TelegramServiceImpl implements TelegramService {
                     break;
 
                 case FORECAST:
-                    String forecast = weatherService.getForecast();
-                    textToSpeechService.say(forecast, "uk");
-                    responseMessages.add(forecast);
+                    List<String> forecast = weatherService.getForecast();
+                    for (int i = 0; i < forecast.size(); i++) {
+                        delayQueueService.put(new NotificationMessage(textToSpeechService.prepareFile(forecast.get(i), "uk"), i * 15));
+                        responseMessages.add(forecast.get(i));
+                    }
                     break;
 
                 case CONDITION:
@@ -237,10 +266,12 @@ public class TelegramServiceImpl implements TelegramService {
 
                 case VOLUME_UP:
                     mediaPlayerService.setVolume(true);
+                    keyboardMarkup = volumeKeyboard();
                     break;
 
                 case VOLUME_DOWN:
                     mediaPlayerService.setVolume(false);
+                    keyboardMarkup = volumeKeyboard();
                     break;
 
                 case SAY:
@@ -297,7 +328,7 @@ public class TelegramServiceImpl implements TelegramService {
                             "Zone <b>%s</b> is <b>%s</b> now",
                             zone.getName(),
                             security ? "arming" : "disarming"));
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 } else {
                     log.warn("Need to find zone by name {}", message.getText());
                     responseMessages.add(format("Can't find zone with name %s", message.getText()));
@@ -338,6 +369,40 @@ public class TelegramServiceImpl implements TelegramService {
                 } else {
                     responseMessages.add(format("Trigger %s not found", message.getText()));
                 }
+            } else if (previousCommand == ADMIN_TEMPERATURE_SENSOR_ADD) {
+                previousCommandMap.remove(id);
+                String text = message.getText();
+                if (isEmpty(text)) {
+                    responseMessages.add("Message cannot me empty");
+                } else {
+                    String[] split = text.split("#");
+                    if (split.length == 4) {
+                        try {
+                            Integer zoneId = Integer.valueOf(split[0]);
+                            String name = split[1];
+                            double min = Double.parseDouble(split[2]);
+                            double max = Double.parseDouble(split[3]);
+                            Zone zone = new Zone();
+                            zone.setId(zoneId);
+                            TemperatureSensor sensor = new TemperatureSensor();
+                            sensor.setZone(zone);
+                            sensor.setName(name);
+                            sensor.setMinThreshold(min);
+                            sensor.setMaxThreshold(max);
+                            TemperatureSensor save = temperatureService.save(sensor);
+                            responseMessages.add(format("Saved sensor with name %s and id %d",
+                                    save.getName(),
+                                    save.getId()));
+                        } catch (Throwable throwable) {
+                            log.error("Failed to create new sensor", throwable);
+                            responseMessages.add(format("Failed to create new sensor: %s", throwable.getMessage()));
+                        }
+
+                    } else {
+                        responseMessages.add(format("%d is not valid amount of parameters. Please use valid format", split.length));
+                    }
+                }
+
             }
         }
 
@@ -370,7 +435,7 @@ public class TelegramServiceImpl implements TelegramService {
                     zoneService.setSecure(zone, true);
                     responseMessages.add(format(
                             "Zone <b>%s</b> is <b>arming</b> now", zone.getName()));
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 }
                 break;
             }
@@ -379,7 +444,7 @@ public class TelegramServiceImpl implements TelegramService {
                 for (Zone zone : zones) {
                     zoneService.setSecure(zone, false);
                     responseMessages.add(format("Zone <b>%s</b> is <b>disarming</b> now", zone.getName()));
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 }
                 break;
             }
@@ -391,7 +456,7 @@ public class TelegramServiceImpl implements TelegramService {
                         zoneService.setSecure(zone, command[2].equals("0") ? Boolean.FALSE : Boolean.TRUE);
                         responseMessages.add(format("Zone <b>%s</b> changed security to <b>%s</b>", zone.getName(),
                                 zone.isSecure()));
-                        responseMessages.add(zoneService.getInfo(zone));
+                        responseMessages.add(zone.getInfo());
                     } catch (Exception e) {
                         log.error("Error to change state for zone {} to {}", command[1], command[2]);
                         responseMessages.add("Can't find zone with id: " + command[1]);
@@ -412,15 +477,16 @@ public class TelegramServiceImpl implements TelegramService {
             case "/gs": {
                 Collection<Zone> zones = zoneService.getAll();
                 for (Zone zone : zones) {
-                    responseMessages.add(zoneService.getInfo(zone));
+                    responseMessages.add(zone.getInfo());
                 }
                 break;
 
             }
             case "/wf": {
-                String forecast = weatherService.getForecast();
-                textToSpeechService.say(forecast, "uk");
-                responseMessages.add(forecast);
+                weatherService.getForecast().forEach(f -> {
+                    textToSpeechService.say(f, "uk");
+                    responseMessages.add(f);
+                });
                 break;
             }
             case "/wc": {

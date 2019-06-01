@@ -42,6 +42,11 @@ public class ScheduleService {
         queueService.take();
     }
 
+    @Scheduled(fixedDelay = 10000)
+    public void queueHeatingTake() {
+        queueService.takeHeating();
+    }
+
     @Scheduled(fixedDelay = 60000)
     public void readSms() {
         log.debug("Scheduler is running");
@@ -49,7 +54,9 @@ public class ScheduleService {
         if (!sms.isEmpty()) {
             log.info("Read {} messages", sms.size());
             StringBuffer sb = new StringBuffer();
-            sms.forEach(s -> sb.append("http://www.smspdu.com/?action=ppdu&pdu=").append(s).append("\r<br>"));
+            sms.forEach(s -> sb
+//                    .append("http://www.smspdu.com/?action=ppdu&pdu=")
+                    .append(s).append("\r<br>"));
             notificationService.sendEmailNotification("Sms received", sb.toString());
         }
     }
@@ -58,6 +65,15 @@ public class ScheduleService {
     public void zoneActivityMonitor() {
         log.debug("Zone activity scheduler start");
         zoneService.activity();
+    }
+
+    @Scheduled(cron = "${zone.night.cron}")
+    public void nightZoneSecure() {
+        log.info("Cron job to secure night zone started...");
+        zoneService.getAll().stream()
+                .filter(Zone::isNightSecurity)
+                .filter(zone -> !zone.isActive() && !zone.isSecure())
+                .forEach(zone -> zoneService.setSecure(zone, true));
     }
 
     @PostConstruct

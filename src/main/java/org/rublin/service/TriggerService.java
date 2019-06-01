@@ -13,6 +13,7 @@ import java.util.List;
 public interface TriggerService {
     Trigger save(Trigger trigger, Zone obj);
     void delete(int id) throws NotFoundException;
+    void delete(List<Zone> zoneList) throws NotFoundException;
     Trigger get(int id) throws NotFoundException;
     List<Trigger> getByState(boolean state);
     Collection<Trigger> getAll();

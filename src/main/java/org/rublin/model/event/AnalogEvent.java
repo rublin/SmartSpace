@@ -1,5 +1,6 @@
 package org.rublin.model.event;
 
+import lombok.NoArgsConstructor;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
         @NamedQuery(name = AnalogEvent.GET_BETWEEN, query = "SELECT e FROM AnalogEvent e WHERE e.type='ANALOG' AND e.time BETWEEN :from AND :to")
 })
 @Entity
+@NoArgsConstructor
 @Table(name = "events", uniqueConstraints = {@UniqueConstraint(columnNames = {"trigger_id", "date_time"}, name = "events_unique_trigger_datetime_idx")})
 public class AnalogEvent extends AbstractEvent<Double> {
 
@@ -29,22 +31,11 @@ public class AnalogEvent extends AbstractEvent<Double> {
     @Column(name = "analog_state")
     private Double state;
 
-    public AnalogEvent() {
-        super.setType(Type.DIGITAL);
-    }
-
     public AnalogEvent(Trigger trigger, Double state) {
         super(trigger);
         this.state = state;
         super.setType(Type.ANALOG);
         time = LocalDateTime.now();
-    }
-
-    public AnalogEvent(Trigger trigger, Double state, LocalDateTime time) {
-        super(trigger);
-        this.state = state;
-        super.setType(Type.ANALOG);
-        super.setTime(time);
     }
 
     public AnalogEvent(int id, Trigger trigger, Double state, LocalDateTime time) {
@@ -59,7 +50,6 @@ public class AnalogEvent extends AbstractEvent<Double> {
     public Double getState() {
         return state;
     }
-
 
     @Override
     public String toString() {

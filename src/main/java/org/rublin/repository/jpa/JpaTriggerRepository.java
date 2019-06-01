@@ -11,6 +11,8 @@ import javax.persistence.PersistenceContext;
 import java.util.Collection;
 import java.util.List;
 
+import static org.rublin.model.Trigger.DELETE_BY_ZONE;
+
 /**
  * Created by Sheremet on 28.06.2016.
  */
@@ -37,6 +39,15 @@ public class JpaTriggerRepository implements TriggerRepository {
     @Transactional
     public boolean delete(int id) {
         return em.createNamedQuery(Trigger.DELETE).setParameter("id", id).executeUpdate() != 0;
+    }
+
+    @Override
+    public boolean deleteAllByZone(List<Zone> list) {
+        int result = em.createNamedQuery(DELETE_BY_ZONE)
+                .setParameter("zone", list)
+                .executeUpdate();
+        System.out.println(result);
+        return false;
     }
 
     @Override

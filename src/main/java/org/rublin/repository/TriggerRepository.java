@@ -12,6 +12,7 @@ import java.util.List;
 public interface TriggerRepository {
     Trigger save (Trigger trigger, Zone obj);
     boolean delete (int id);
+    boolean deleteAllByZone (List<Zone> list);
     Trigger get (int id);
     List<Trigger> getByState(boolean state);
     Collection<Trigger> getAll ();

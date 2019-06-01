@@ -13,10 +13,11 @@ public enum TelegramCommand {
     MAIN("\uD83D\uDD19 Return to main page"),
 
     ADMIN("\uD83D\uDC68\u200D\uD83D\uDCBB Admin"),
-    ADMIN_TRIGGERS("\uD83C\uDF9A Triggers"),
-    ADMIN_TRIGGER_ADD("\u2795 Add trigger"),
-    ADMIN_TRIGGER_EDIT("\uD83D\uDD27 Edit trigger"),
-    ADMIN_TRIGGER_REMOVE("\u2796 Remove trigger"),
+    ADMIN_TEMPERATURE_SENSOR_ADD("\uD83C\uDF21 Add temperature sensor"),
+    ADMIN_SENSORS("\uD83C\uDF9A Sensors"),
+    ADMIN_SENSOR_ADD("\u2795 Add sensor"),
+    ADMIN_SENSOR_EDIT("\uD83D\uDD27 Edit sensor"),
+    ADMIN_SENSOR_REMOVE("\u2796 Remove sensor"),
     ADMIN_ZONES("\uD83D\uDEC3 Zones"),
     ADMIN_ZONE_ADD("\u2795 Add zone"),
     ADMIN_ZONE_EDIT("\uD83D\uDD27 Edit zone"),
@@ -31,6 +32,9 @@ public enum TelegramCommand {
     DISARMING("\uD83D\uDD13 Disarming"),
     SECURITY_ALL("\u203C All zones"),
 
+    HEATING("\uD83D\uDD25 Heating"),
+    HEATING_PUMP_ON("\u2714 Turn pump on"),
+    HEATING_PUMP_OFF("\u274C Turn pump off"),
     CAMERA("\uD83D\uDCF7 Camera"),
     CAMERA_ALL("\u203C All cameras"),
 

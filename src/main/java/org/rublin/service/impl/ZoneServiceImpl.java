@@ -1,45 +1,46 @@
 package org.rublin.service.impl;
 
+import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.rublin.controller.NotificationService;
-import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.ZoneStatus;
 import org.rublin.model.event.Event;
-import org.rublin.repository.ZoneRepository;
+import org.rublin.repository.ZoneRepositoryJpa;
 import org.rublin.service.EventService;
 import org.rublin.service.ZoneService;
-import org.rublin.util.exception.ExceptionUtil;
 import org.rublin.util.exception.NotFoundException;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static org.slf4j.LoggerFactory.getLogger;
+import static java.time.LocalDateTime.now;
 
-/**
- * Created by Sheremet on 11.07.2016.
- */
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ZoneServiceImpl implements ZoneService {
+    
+    private final ZoneRepositoryJpa zoneRepository;
 
-    private static final Logger LOG = getLogger(ZoneServiceImpl.class);
+    private final EventService eventService;
 
-    @Autowired
-    private ZoneRepository zoneRepository;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private EventService eventService;
+    @Value("${zone.activity.threshold.minutes}")
+    private Integer threshold;
 
-    @Autowired
-    private NotificationService notificationService;
+    @Value("${zone.night.period.workdays}")
+    private String[] nightPeriodWorkdays;
+
+    @Value("${zone.night.period.weekends}")
+    private String[] nightPeriodWeekends;
 
     @Override
     public Zone save(Zone zone) {
@@ -47,94 +48,111 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public void delete(int id) throws NotFoundException {
-        ExceptionUtil.checkNotFoundWithId(zoneRepository.delete(id), id);
+    public void delete(int id) {
+        zoneRepository.deleteById(id);
     }
 
     @Override
     public Zone get(int id) throws NotFoundException {
-        return ExceptionUtil.checkNotFoundWithId(zoneRepository.get(id), id);
+        return zoneRepository.findById(id).orElseThrow(() -> new NotFoundException("Zone with id=" + id + " not found"));
     }
 
     @Override
     public Collection<Zone> getAll() {
-        return zoneRepository.getAll();
+        return Lists.newArrayList(zoneRepository.findAll());
     }
 
     @Override
     public void setSecure(Zone zone, boolean security) {
         if (zone.isSecure() != security) {
             zone.setSecure(security);
+            zone.setSecurityChanged(now());
             if (!security) {
                 zone.setStatus(ZoneStatus.GREEN);
             }
-            zoneRepository.save(zone);
-            LOG.info("change Zone secure state to {}", zone.isSecure());
-            notificationService.sendInfoToAllUsers(zone);
+            save(zone);
+            log.info("change Zone secure state to {}", zone.isSecure());
+            notificationService.notifyAdmin(zone + " security state is changed to " + security);
         } else {
-            LOG.info("Zone {} already {}", zone.getName(), security ? "armed" : "disarmed");
+            log.info("Zone {} already {}", zone.getName(), security ? "armed" : "disarmed");
         }
     }
 
     @Override
     public Zone setStatus(Zone zone, ZoneStatus status) {
         zone.setStatus(status);
-        zoneRepository.save(zone);
+        save(zone);
         return zone;
     }
 
     @Override
-    public String getInfo(Zone zone) {
-        return String.format(
-                "id: <b>%d</b>, name: <b>%s</b>, status: <b>%s</b>, secure: <b>%s</b>",
-                zone.getId(),
-                zone.getName(),
-                zone.getStatus().toString(),
-                zone.isSecure() ? "YES" : "NO");    }
-
-    @Override
-    public void activity() {
-        LocalDateTime now = LocalDateTime.now();
-        List<Event> lastHourEvents = eventService.getBetween(now.minusHours(1), now);
-        Map<Integer, List<Event>> eventsByTrigger = lastHourEvents.stream()
-                .collect(groupingBy(e -> e.getTrigger().getId()));
+    public synchronized void activity() {
+        LocalDateTime now = now();
+        List<Event> lastEvents = eventService.getBetween(now.minusMinutes(threshold), now);
         for (Zone zone : getAll()) {
-            List<Event> lastHourEventsByZone = zone.getTriggers().stream()
-                    .filter(Trigger::isSecure)
-                    .map(trigger -> eventsByTrigger.get(trigger.getId()))
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-            boolean active = checkZoneActivity(lastHourEvents.size());
-            LOG.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), lastHourEvents.size(), active);
+            long amountOfEventByZone = lastEvents.stream()
+                    .filter(event -> event.getTrigger().getZone().equals(zone))
+                    .filter(event -> event.getTrigger().isSecure())
+                    .count();
+            boolean active = checkZoneActivity((int) amountOfEventByZone);
+            log.debug("Zone {} has {} events by last hour. Activity is {}", zone.getName(), amountOfEventByZone, active);
             if (zone.isActive() != active) {
-                LOG.info("Zone {} set activity to {}", zone.getName(), active);
+                log.info("Zone {} set activity to {}", zone.getName(), active);
                 zone.setActive(active);
-                zoneRepository.save(zone);
+                save(zone);
+
+                if (zone.isNightSecurity() &&
+                        !zone.isSecure() &&
+                        nightTime(now())) {
+                    log.info("It's time to automatically enable secure for zone {}", zone);
+                    setSecure(zone, true);
+                }
+
+                if (active && zone.isMorningDetector() && morningStarts(now())) {
+                    notificationService.morningNotifications();
+                    getAll().stream()
+                            .filter(Zone::isSecure)
+                            .forEach(z -> setSecure(z, false));
+                }
             }
         }
     }
 
     @Override
     public void sendNotification(Zone zone, boolean isSecure) {
-        LOG.info("Notification sending");
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                notificationService.sendAlarmNotification(zone, isSecure);
-            }
-        });
+        log.info("Notification sending");
+        Thread thread = new Thread(() -> notificationService.sendAlarmNotification(zone, isSecure));
         thread.start();
     }
 
-    private boolean checkZoneActivity(int events) {
-        LocalDateTime now = LocalDateTime.now();
-        if (now.getHour() < 5) {
+    boolean checkZoneActivity(int events) {
+        if (nightTime(now())) {
             return events > 5;
-        } else if (now.getHour() == 5 && now.getMinute() < 30) {
-            return events > 5;
-        } else {
-            return events > 1;
         }
+        return events >= 1;
+    }
+
+    boolean morningStarts(LocalDateTime now) {
+        LocalTime workdaysMorningStart = LocalTime.parse(nightPeriodWorkdays[1]);
+        LocalTime weekdaysMorningStart = LocalTime.parse(nightPeriodWeekends[1]);
+
+        if (isWeekend(now)) {
+            return now.toLocalTime().isAfter(weekdaysMorningStart) && now.toLocalTime().isBefore(weekdaysMorningStart.plusHours(2));
+        } else {
+            return now.toLocalTime().isAfter(workdaysMorningStart) && now.toLocalTime().isBefore(workdaysMorningStart.plusHours(2));
+        }
+    }
+
+    boolean nightTime(LocalDateTime now) {
+        if (isWeekend(now)) {
+            return now.toLocalTime().isAfter(LocalTime.parse(nightPeriodWeekends[0])) || now.toLocalTime().isBefore(LocalTime.parse(nightPeriodWeekends[1]));
+        } else {
+            return now.toLocalTime().isAfter(LocalTime.parse(nightPeriodWorkdays[0])) || now.toLocalTime().isBefore(LocalTime.parse(nightPeriodWorkdays[1]));
+        }
+
+    }
+
+    boolean isWeekend(LocalDateTime now) {
+        return DayOfWeek.SUNDAY == now.getDayOfWeek() || DayOfWeek.SATURDAY == now.getDayOfWeek();
     }
 }

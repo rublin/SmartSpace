@@ -1,12 +1,12 @@
 package org.rublin.service.impl;
 
+import com.google.common.collect.Lists;
 import org.rublin.AuthorizedUser;
+import org.rublin.model.user.Role;
 import org.rublin.model.user.User;
-import org.rublin.repository.UserRepository;
+import org.rublin.repository.UserRepositoryJpa;
 import org.rublin.service.UserService;
 import org.rublin.util.UserUtil;
-import org.rublin.util.exception.ExceptionUtil;
-import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +24,7 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Autowired
-    private UserRepository repository;
+    private UserRepositoryJpa repository;
 
     @Override
     public User save(User user) {
@@ -32,42 +32,47 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     }
 
     @Override
-    public void delete(int id) throws NotFoundException {
-        ExceptionUtil.checkNotFoundWithId(repository.delete(id), id);
+    public void delete(int id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public User get(int id) throws NotFoundException {
-        return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
+    public User get(int id) {
+        return repository.findById(id).get();
     }
 
     @Override
-    public User getByEmail(String email) throws NotFoundException {
+    public User getByEmail(String email) {
         Objects.requireNonNull(email, "Email must not be empty");
-        return ExceptionUtil.checkNotFound(repository.getByEmail(email), "email=" + email);
+        return repository.findByEmail(email);
     }
 
     @Override
-    public User getByTelegramId(int telegramId) throws NotFoundException {
+    public User getByTelegramId(int telegramId) {
         Objects.requireNonNull(telegramId, "TelegramId must not be empty");
-        return ExceptionUtil.checkNotFound(repository.getByTelegramId(telegramId), "telegramId=" + telegramId);
+        return repository.findByTelegramId(telegramId);
     }
 
     @Override
-    public User getByTelegramName(String name) throws NotFoundException {
+    public User getByTelegramName(String name) {
         Objects.requireNonNull(name, "TelegramName must not be empty");
-        return ExceptionUtil.checkNotFound(repository.getByTelegramName(name), "telegramName=" + name);
+        return repository.findByTelegramName(name);
     }
 
     @Override
-    public User getByMobile(String mobile) throws NotFoundException {
+    public User getByMobile(String mobile) {
         Objects.requireNonNull(mobile, "Mobile number must not be empty");
-        return ExceptionUtil.checkNotFound(repository.getByMobile(mobile), "mobile=" + mobile);
+        return repository.findByMobile(mobile);
     }
 
     @Override
     public List<User> getAll() {
-        return repository.getAll();
+        return Lists.newArrayList(repository.findAll());
+    }
+
+    @Override
+    public List<User> getAdmins() {
+        return repository.findByRoles(Role.ROLE_ADMIN);
     }
 
     @Override
@@ -86,7 +91,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repository.getByEmail(email);
+        User user = repository.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User " + email + " is not found");
         }

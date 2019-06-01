@@ -1,16 +1,9 @@
 package org.rublin.web.rest;
 
-import org.rublin.model.Zone;
 import org.rublin.model.Trigger;
 import org.rublin.web.AbstractTriggerController;
-import org.rublin.web.TriggerController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.rublin.service.TriggerService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
