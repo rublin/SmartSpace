@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://balarama.db.elephantsql.com:5432/vhkmrkpp
+    username: vhkmrkpp
+    password: e0b4fPkZSxrZnkbRuLEb102ozYfexWHW
+    driver-class-name: org.postgresql.Driver
+    platform: postgresql
+
+#   for the first start only
+#  flyway:
+#    baseline-on-migrate: true
