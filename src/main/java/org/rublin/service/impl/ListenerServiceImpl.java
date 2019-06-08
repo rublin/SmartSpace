@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.events.OnHeatingEvent;
 import org.rublin.events.OnHeatingStopEvent;
 import org.rublin.events.OnNewEvent;
+import org.rublin.events.OnTelegramNotifyEvent;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.Zone;
@@ -14,6 +15,7 @@ import org.rublin.service.EventService;
 import org.rublin.service.TriggerService;
 import org.rublin.service.ZoneService;
 import org.rublin.service.delayed.DelayQueueService;
+import org.rublin.telegram.TelegramController;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
+
+import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
 
 @Slf4j
 @Service
@@ -31,6 +36,19 @@ public class ListenerServiceImpl {
     private final ZoneService zoneService;
     private final EventService eventService;
     private final TriggerService triggerService;
+    private final TelegramController telegramController;
+
+    @Async
+    @EventListener
+    public void telegramNotificationListener(OnTelegramNotifyEvent event) {
+        if (Objects.nonNull(event.getUser())) {
+            telegramController.sendTextMessage(String.valueOf(event.getUser().getTelegramId()), event.getMessage(), mainKeyboard(event.getUser()));
+        } else if (Objects.nonNull(event.getFiles())) {
+            telegramController.sendAlarmMessage(event.getFiles());
+        } else {
+            telegramController.sendAlarmMessage(event.getMessage());
+        }
+    }
 
     @Async
     @EventListener

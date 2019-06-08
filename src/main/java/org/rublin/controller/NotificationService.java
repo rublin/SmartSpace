@@ -1,6 +1,7 @@
 package org.rublin.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.rublin.events.OnTelegramNotifyEvent;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
@@ -11,6 +12,7 @@ import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.system.ApplicationHome;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
 
 
 /**
@@ -46,11 +47,9 @@ public class NotificationService {
     private String tmpDir;
 
     @Autowired
-    private  EmailController emailController;
+    private EmailController emailController;
     @Autowired
-    private  TelegramController telegramController;
-    @Autowired
-    private  ModemController modemController;
+    private ModemController modemController;
     @Autowired
     private UserService userService;
     @Autowired
@@ -63,6 +62,9 @@ public class NotificationService {
     private WeatherService weatherService;
     @Autowired
     private DelayQueueService delayQueueService;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Value("${mail.notification}")
     private boolean mailNotification;
@@ -80,7 +82,7 @@ public class NotificationService {
 
     public void notifyAdmin(String message) {
         userService.getAdmins().forEach(user -> {
-            telegramController.sendTextMessage(String.valueOf(user.getTelegramId()), message, mainKeyboard(user));
+            eventPublisher.publishEvent(new OnTelegramNotifyEvent(message, null, user));
         });
     }
 
@@ -219,11 +221,11 @@ public class NotificationService {
     }
 
     private void sendTelegram(String message) {
-        telegramController.sendAlarmMessage(message);
+        eventPublisher.publishEvent(new OnTelegramNotifyEvent(message, null, null));
     }
 
     private void sendTelegram(List<File> files) {
-        telegramController.sendAlarmMessage(files);
+        eventPublisher.publishEvent(new OnTelegramNotifyEvent(null, files, null));
     }
 
     private List<File> getPhotos(Zone zone) {
