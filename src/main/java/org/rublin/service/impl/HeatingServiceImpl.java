@@ -27,7 +27,7 @@ public class HeatingServiceImpl implements HeatingService {
     private final SystemConfigService systemConfigService;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Value("${pump.relay.ip}")
+    @Value("${pump.relay.ip:@null}")
     private String ip;
 
     @Value("${pump.start.delay}")
@@ -71,7 +71,7 @@ public class HeatingServiceImpl implements HeatingService {
     @PostConstruct
     private void init() {
         String pump = systemConfigService.get(PUMP);
-        if (Objects.nonNull(pump)) {
+        if (Objects.nonNull(ip) && Objects.nonNull(pump)) {
             pump(Boolean.valueOf(pump));
         }
     }
