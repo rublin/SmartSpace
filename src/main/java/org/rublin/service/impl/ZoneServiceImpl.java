@@ -1,6 +1,7 @@
 package org.rublin.service.impl;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.rublin.controller.NotificationService;
 import org.rublin.model.Zone;
@@ -10,7 +11,6 @@ import org.rublin.repository.ZoneRepositoryJpa;
 import org.rublin.service.EventService;
 import org.rublin.service.ZoneService;
 import org.rublin.util.exception.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +24,14 @@ import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ZoneServiceImpl implements ZoneService {
     
-    @Autowired
-    private ZoneRepositoryJpa zoneRepository;
+    private final ZoneRepositoryJpa zoneRepository;
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
 
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Value("${zone.activity.threshold.minutes}")
     private Integer threshold;
@@ -72,7 +70,7 @@ public class ZoneServiceImpl implements ZoneService {
             if (!security) {
                 zone.setStatus(ZoneStatus.GREEN);
             }
-            zoneRepository.save(zone);
+            save(zone);
             log.info("change Zone secure state to {}", zone.isSecure());
             notificationService.notifyAdmin(zone + " security state is changed to " + security);
         } else {
@@ -83,7 +81,7 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public Zone setStatus(Zone zone, ZoneStatus status) {
         zone.setStatus(status);
-        zoneRepository.save(zone);
+        save(zone);
         return zone;
     }
 
@@ -101,14 +99,13 @@ public class ZoneServiceImpl implements ZoneService {
             if (zone.isActive() != active) {
                 log.info("Zone {} set activity to {}", zone.getName(), active);
                 zone.setActive(active);
-                zoneRepository.save(zone);
+                save(zone);
 
                 if (zone.isNightSecurity() &&
                         !zone.isSecure() &&
                         nightTime(now())) {
                     log.info("It's time to automatically enable secure for zone {}", zone);
                     setSecure(zone, true);
-                    notificationService.notifyAdmin(zone + " automatically armed");
                 }
 
                 if (active && zone.isMorningDetector() && morningStarts(now())) {

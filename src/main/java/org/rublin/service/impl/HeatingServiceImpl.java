@@ -27,6 +27,9 @@ public class HeatingServiceImpl implements HeatingService {
     private final SystemConfigService systemConfigService;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Value("${pump.relay.enable}")
+    private boolean enable;
+
     @Value("${pump.relay.ip}")
     private String ip;
 
@@ -71,7 +74,7 @@ public class HeatingServiceImpl implements HeatingService {
     @PostConstruct
     private void init() {
         String pump = systemConfigService.get(PUMP);
-        if (Objects.nonNull(pump)) {
+        if (enable && Objects.nonNull(pump)) {
             pump(Boolean.valueOf(pump));
         }
     }
