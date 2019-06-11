@@ -1,11 +1,16 @@
 package org.rublin.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.rublin.events.OnTelegramNotifyEvent;
+import org.rublin.events.OnTelegramFileNotifyEvent;
+import org.rublin.events.OnTelegramTextNotifyEvent;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
-import org.rublin.service.*;
+import org.rublin.service.MediaPlayerService;
+import org.rublin.service.TextToSpeechService;
+import org.rublin.service.TriggerService;
+import org.rublin.service.UserService;
+import org.rublin.service.WeatherService;
 import org.rublin.service.delayed.DelayQueueService;
 import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
@@ -82,7 +87,7 @@ public class NotificationService {
 
     public void notifyAdmin(String message) {
         userService.getAdmins().forEach(user -> {
-            eventPublisher.publishEvent(new OnTelegramNotifyEvent(message, null, user));
+            eventPublisher.publishEvent(new OnTelegramTextNotifyEvent(message, user));
         });
     }
 
@@ -221,11 +226,11 @@ public class NotificationService {
     }
 
     private void sendTelegram(String message) {
-        eventPublisher.publishEvent(new OnTelegramNotifyEvent(message, null, null));
+        eventPublisher.publishEvent(new OnTelegramTextNotifyEvent(message, null));
     }
 
     private void sendTelegram(List<File> files) {
-        eventPublisher.publishEvent(new OnTelegramNotifyEvent(null, files, null));
+        eventPublisher.publishEvent(new OnTelegramFileNotifyEvent(files));
     }
 
     private List<File> getPhotos(Zone zone) {
