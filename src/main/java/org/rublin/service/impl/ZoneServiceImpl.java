@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
@@ -26,7 +27,7 @@ import static java.time.LocalDateTime.now;
 @Service
 @RequiredArgsConstructor
 public class ZoneServiceImpl implements ZoneService {
-    
+
     private final ZoneRepositoryJpa zoneRepository;
 
     private final EventService eventService;
@@ -108,10 +109,15 @@ public class ZoneServiceImpl implements ZoneService {
                     setSecure(zone, true);
                 }
 
-                if (active && zone.isMorningDetector() && morningStarts(now())) {
+                if (active && zone.isMorningDetector() &&
+                        LocalDate.now()
+                                .isAfter(zone.getLastMorningNotification().toLocalDate())) {
+                    zone.setLastMorningNotification(LocalDateTime.now());
+                    save(zone);
                     notificationService.morningNotifications();
                     getAll().stream()
                             .filter(Zone::isSecure)
+                            .filter(Zone::isNightSecurity)
                             .forEach(z -> setSecure(z, false));
                 }
             }

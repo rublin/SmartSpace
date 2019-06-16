@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -63,6 +64,8 @@ public class Zone {
 
     private boolean morningDetector;
 
+    private LocalDateTime lastMorningNotification;
+
     public Zone(int id, String name, String shortName, ZoneStatus status, boolean secure) {
         this.id = id;
         this.name = name;
@@ -76,6 +79,10 @@ public class Zone {
         this.shortName = shortName;
         this.status = ZoneStatus.GREEN;
         this.secure = false;
+    }
+
+    public LocalDateTime getLastMorningNotification() {
+        return Objects.isNull(lastMorningNotification) ? LocalDateTime.now().minusDays(1) : lastMorningNotification;
     }
 
     @JsonIgnore
