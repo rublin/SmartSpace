@@ -78,8 +78,10 @@ public class ScheduleService {
 
     @PostConstruct
     private void init() {
-        taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.FIRST_CRON_TIME_NOTIFICATION)));
-        taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.SECOND_CRON_TIME_NOTIFICATION)));
+//        disabled time notification
+//        we do not need it since we do not go to work
+//        taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.FIRST_CRON_TIME_NOTIFICATION)));
+//        taskScheduler.schedule(new TimeNotificationTask(), new CronTrigger(configService.get(ConfigKey.SECOND_CRON_TIME_NOTIFICATION)));
     }
 
     class TimeNotificationTask implements Runnable {

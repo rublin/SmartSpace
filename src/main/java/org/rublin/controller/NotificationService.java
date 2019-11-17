@@ -99,13 +99,13 @@ public class NotificationService {
 
         delayQueueService.put(new NotificationMessage(condition, 0));
         delayQueueService.put(new NotificationMessage(condition, 120));
-        delayQueueService.put(new NotificationMessage(condition, 600));
+//        delayQueueService.put(new NotificationMessage(condition, 600));
         delayQueueService.put(new NotificationMessage(forecasts.get(0), 20));
         delayQueueService.put(new NotificationMessage(forecasts.get(1), 40));
         delayQueueService.put(new NotificationMessage(forecasts.get(0), 140));
         delayQueueService.put(new NotificationMessage(forecasts.get(1), 160));
-        delayQueueService.put(new NotificationMessage(forecasts.get(0), 620));
-        delayQueueService.put(new NotificationMessage(forecasts.get(1), 640));
+//        delayQueueService.put(new NotificationMessage(forecasts.get(0), 620));
+//        delayQueueService.put(new NotificationMessage(forecasts.get(1), 640));
     }
 
     public void sendEmailNotification(String subject, String message) {
