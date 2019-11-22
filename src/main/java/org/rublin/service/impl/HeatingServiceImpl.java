@@ -21,6 +21,7 @@ import static org.rublin.model.ConfigKey.PUMP;
 
 @Slf4j
 @Service
+@Deprecated
 @RequiredArgsConstructor
 public class HeatingServiceImpl implements HeatingService {
 
