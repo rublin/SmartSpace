@@ -32,9 +32,19 @@ public enum TelegramCommand {
     DISARMING("\uD83D\uDD13 Disarming"),
     SECURITY_ALL("\u203C All zones"),
 
-    HEATING("\uD83D\uDD25 Heating"),
-    HEATING_PUMP_ON("\u2714 Turn pump on"),
-    HEATING_PUMP_OFF("\u274C Turn pump off"),
+    RELAY("\uD83D\uDD0C Relay"),
+    RELAY_0("\u0030\uFE0F\u20E3 0"),
+    RELAY_10("\u0031\uFE0F\u20E3 10"),
+    RELAY_20("\u0032\uFE0F\u20E3 20"),
+    RELAY_30("\u0033\uFE0F\u20E3 30"),
+    RELAY_40("\u0034\uFE0F\u20E3 40"),
+    RELAY_50("\u0035\uFE0F\u20E3 50"),
+    RELAY_60("\u0036\uFE0F\u20E3 60"),
+    RELAY_70("\u0037\uFE0F\u20E3 70"),
+    RELAY_80("\u0038\uFE0F\u20E3 80"),
+    RELAY_90("\u0039\uFE0F\u20E3 90"),
+    RELAY_100("\uD83D\uDD1F 100"),
+
     CAMERA("\uD83D\uDCF7 Camera"),
     CAMERA_ALL("\u203C All cameras"),
 

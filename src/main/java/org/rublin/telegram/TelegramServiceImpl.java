@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Camera;
 import org.rublin.model.ConfigKey;
+import org.rublin.model.Relay;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.event.Event;
@@ -47,11 +48,12 @@ public class TelegramServiceImpl implements TelegramService {
     private final EventService eventService;
     private final SystemConfigService configService;
     private final UserService userService;
-    private final HeatingService heatingService;
     private final DelayQueueService delayQueueService;
+    private final RelayService relayService;
 
 
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
+    private Map<Long, String> valueMap = new ConcurrentHashMap<>();
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -195,18 +197,80 @@ public class TelegramServiceImpl implements TelegramService {
                     previousCommandMap.remove(id);
                     break;
 
-                case HEATING:
-                    responseMessages.add(heatingService.current().isGlobalStatus() ? "Pump is ON" : "Pump is OFF");
-                    keyboardMarkup = heatingKeyboard();
+                case RELAY:
+                    List<Relay> relays = relayService.getAll();
+                    relays.forEach(relay -> responseMessages.add(relayService.toTelegram(relay)));
+                    responseMessages.add("Select the relay");
+                    keyboardMarkup = relayKeyboard(relays.stream()
+                            .map(Relay::getName)
+                            .collect(toList()));
+                    previousCommandMap.put(id, command);
                     break;
 
-                case HEATING_PUMP_ON:
-                    responseMessages.add(heatingService.pump(true));
+                case RELAY_0:
+                    relayService.changeRelayStatus(valueMap.get(id), 0);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
                     break;
 
-                case HEATING_PUMP_OFF:
-                    heatingService.stopHeating();
-                    responseMessages.add(heatingService.current().status());
+                case RELAY_10:
+                    relayService.changeRelayStatus(valueMap.get(id), 10);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_20:
+                    relayService.changeRelayStatus(valueMap.get(id), 20);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_30:
+                    relayService.changeRelayStatus(valueMap.get(id), 30);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_40:
+                    relayService.changeRelayStatus(valueMap.get(id), 40);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_50:
+                    relayService.changeRelayStatus(valueMap.get(id), 50);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_60:
+                    relayService.changeRelayStatus(valueMap.get(id), 60);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_70:
+                    relayService.changeRelayStatus(valueMap.get(id), 70);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_80:
+                    relayService.changeRelayStatus(valueMap.get(id), 80);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_90:
+                    relayService.changeRelayStatus(valueMap.get(id), 90);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_100:
+                    relayService.changeRelayStatus(valueMap.get(id), 100);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
                     break;
 
                 case EVENTS:
@@ -403,6 +467,11 @@ public class TelegramServiceImpl implements TelegramService {
                     }
                 }
 
+            } else if (previousCommand == RELAY) {
+                valueMap.put(id, message.getText());
+                keyboardMarkup = relayStateKeyboard();
+                responseMessages.add("Shoose the state");
+                previousCommandMap.remove(id);
             }
         }
 

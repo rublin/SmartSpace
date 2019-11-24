@@ -12,6 +12,7 @@ import org.rublin.service.EventService;
 import org.rublin.service.ZoneService;
 import org.rublin.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -60,7 +61,7 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public Collection<Zone> getAll() {
-        return Lists.newArrayList(zoneRepository.findAll());
+        return Lists.newArrayList(zoneRepository.findAll(Sort.by("name")));
     }
 
     @Override

@@ -1,7 +1,11 @@
 package org.rublin.repository;
 
 import org.rublin.model.Relay;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface RelayRepository extends CrudRepository<Relay, Integer> {
+import java.util.Optional;
+
+public interface RelayRepository extends PagingAndSortingRepository<Relay, Integer> {
+
+    Optional<Relay> findByName(String name);
 }
