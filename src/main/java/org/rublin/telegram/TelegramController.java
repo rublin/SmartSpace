@@ -102,12 +102,14 @@ public class TelegramController extends TelegramLongPollingBot {
     @SneakyThrows
     private void sendPhotoMessage(String id, List<File> files) {
         List<InputMedia> mediaPhotos = files.stream()
+                .filter(Objects::nonNull)
                 .map(file -> {
                     InputMediaPhoto inputMediaPhoto = new InputMediaPhoto();
                     inputMediaPhoto.setMedia(file, file.getName());
                     return inputMediaPhoto;
                 })
                 .collect(Collectors.toList());
+
         SendMediaGroup group = new SendMediaGroup();
         group.setChatId(id);
         group.setMedia(mediaPhotos);
