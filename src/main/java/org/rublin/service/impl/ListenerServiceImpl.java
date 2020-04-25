@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.events.OnHeatingEvent;
 import org.rublin.events.OnHeatingStopEvent;
 import org.rublin.events.OnNewEvent;
-import org.rublin.events.OnTelegramNotifyEvent;
+import org.rublin.events.OnTelegramFileNotifyEvent;
+import org.rublin.events.OnTelegramTextNotifyEvent;
 import org.rublin.model.Trigger;
 import org.rublin.model.Type;
 import org.rublin.model.Zone;
@@ -40,14 +41,20 @@ public class ListenerServiceImpl {
 
     @Async
     @EventListener
-    public void telegramNotificationListener(OnTelegramNotifyEvent event) {
+    public void telegramNotificationListener(OnTelegramTextNotifyEvent event) {
+        log.info("Received telegram text notification: {}", event.getMessage());
         if (Objects.nonNull(event.getUser())) {
             telegramController.sendTextMessage(String.valueOf(event.getUser().getTelegramId()), event.getMessage(), mainKeyboard(event.getUser()));
-        } else if (Objects.nonNull(event.getFiles())) {
-            telegramController.sendAlarmMessage(event.getFiles());
         } else {
             telegramController.sendAlarmMessage(event.getMessage());
         }
+    }
+
+    @Async
+    @EventListener
+    public void telegramFileNotification(OnTelegramFileNotifyEvent event) {
+        log.info("Received telegram file notification with {} files", event.getFiles().size());
+        telegramController.sendAlarmMessage(event.getFiles());
     }
 
     @Async

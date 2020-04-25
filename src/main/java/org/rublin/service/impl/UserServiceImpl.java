@@ -66,8 +66,8 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     }
 
     @Override
-    public List<User> getAll() {
-        return Lists.newArrayList(repository.findAll());
+    public List<User> getAll(boolean active) {
+        return Lists.newArrayList(repository.findByEnabled(active));
     }
 
     @Override

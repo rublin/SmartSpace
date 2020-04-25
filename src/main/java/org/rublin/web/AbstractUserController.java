@@ -26,7 +26,7 @@ public class AbstractUserController {
 
     public List<User> getAll() {
         LOG.debug("get all users");
-        return userService.getAll();
+        return userService.getAll(true);
     }
 
     public void delete(int id) {

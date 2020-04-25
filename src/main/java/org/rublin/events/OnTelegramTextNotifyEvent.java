@@ -2,24 +2,23 @@ package org.rublin.events;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.rublin.model.user.User;
 import org.springframework.context.ApplicationEvent;
 
-import java.io.File;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class OnTelegramNotifyEvent extends ApplicationEvent {
+@ToString
+public class OnTelegramTextNotifyEvent extends ApplicationEvent {
 
     private String message;
-    private List<File> files;
     private User user;
 
-    public OnTelegramNotifyEvent(String message, List<File> files, User user) {
+    public OnTelegramTextNotifyEvent(@NotBlank String message, User user) {
         super(message);
         this.message = message;
-        this.files = files;
         this.user = user;
     }
 }

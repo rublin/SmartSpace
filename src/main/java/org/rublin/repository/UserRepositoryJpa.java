@@ -16,4 +16,6 @@ public interface UserRepositoryJpa extends PagingAndSortingRepository<User, Inte
     User findByMobile(String mobile);
 
     List<User> findByRoles(Role role);
+
+    List<User> findByEnabled(Boolean enabled);
 }

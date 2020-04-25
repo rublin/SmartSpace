@@ -3,7 +3,7 @@ package org.rublin.to;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.io.File;
 import java.util.List;

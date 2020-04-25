@@ -1,11 +1,16 @@
 package org.rublin.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.rublin.events.OnTelegramNotifyEvent;
+import org.rublin.events.OnTelegramFileNotifyEvent;
+import org.rublin.events.OnTelegramTextNotifyEvent;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Zone;
 import org.rublin.model.user.User;
-import org.rublin.service.*;
+import org.rublin.service.MediaPlayerService;
+import org.rublin.service.TextToSpeechService;
+import org.rublin.service.TriggerService;
+import org.rublin.service.UserService;
+import org.rublin.service.WeatherService;
 import org.rublin.service.delayed.DelayQueueService;
 import org.rublin.telegram.TelegramController;
 import org.rublin.util.Image;
@@ -82,7 +87,7 @@ public class NotificationService {
 
     public void notifyAdmin(String message) {
         userService.getAdmins().forEach(user -> {
-            eventPublisher.publishEvent(new OnTelegramNotifyEvent(message, null, user));
+            eventPublisher.publishEvent(new OnTelegramTextNotifyEvent(message, user));
         });
     }
 
@@ -94,17 +99,17 @@ public class NotificationService {
 
         delayQueueService.put(new NotificationMessage(condition, 0));
         delayQueueService.put(new NotificationMessage(condition, 120));
-        delayQueueService.put(new NotificationMessage(condition, 600));
+//        delayQueueService.put(new NotificationMessage(condition, 600));
         delayQueueService.put(new NotificationMessage(forecasts.get(0), 20));
         delayQueueService.put(new NotificationMessage(forecasts.get(1), 40));
         delayQueueService.put(new NotificationMessage(forecasts.get(0), 140));
         delayQueueService.put(new NotificationMessage(forecasts.get(1), 160));
-        delayQueueService.put(new NotificationMessage(forecasts.get(0), 620));
-        delayQueueService.put(new NotificationMessage(forecasts.get(1), 640));
+//        delayQueueService.put(new NotificationMessage(forecasts.get(0), 620));
+//        delayQueueService.put(new NotificationMessage(forecasts.get(1), 640));
     }
 
     public void sendEmailNotification(String subject, String message) {
-        sendEmail(getEmails(userService.getAll()), subject, message);
+        sendEmail(getEmails(userService.getAll(true)), subject, message);
     }
 
     public void sendInfoToAllUsers(Zone zone) {
@@ -117,18 +122,13 @@ public class NotificationService {
                 zone.getStatus(),
                 zone.isSecure() ? "GREEN" : "GREY",
                 zone.isSecure());
-        List<String> emails = getEmails(userService.getAll());
+        List<String> emails = getEmails(userService.getAll(true));
         sendEmail(emails, subject, message);
         log.info("Sending info notification {} to {}", subject, emails);
     }
 
     public void sendAlarmNotification(Zone zone, boolean isSecure) {
-        Thread sound = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sendSound(isSecure);
-            }
-        });
+        Thread sound = new Thread(() -> sendSound(isSecure));
         sound.start();
         String message = triggerService.getInfo(zone);
         String mailBody = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
@@ -152,7 +152,7 @@ public class NotificationService {
         }
         String subject = String.format("%s form zone %s", subjectHeader, zone.getShortName());
         sendTelegram(message);
-        sendEmail(getEmails(userService.getAll()), subject, mailBody, photos);
+        sendEmail(getEmails(userService.getAll(true)), subject, mailBody, photos);
         log.info("Using sms notification is {}", smsNotification);
 
         if (smsNotification) {
@@ -161,14 +161,14 @@ public class NotificationService {
              */
             LocalDateTime time = LocalDateTime.now();
             if (time.getHour() >= 22 || time.getHour() <= 6) {
-                userService.getAll().forEach(
+                userService.getAll(true).forEach(
                         user -> sendCall(user.getMobile())
                 );
             } else {
                 /**
                  * Send sms notification to each user
                  */
-                userService.getAll().forEach(
+                userService.getAll(true).forEach(
                         user -> sendSms(user.getMobile(), message.replaceAll("<[^>]*>", ""))
                 );
             }
@@ -177,7 +177,7 @@ public class NotificationService {
              * Send short call notifications
              * 5000 equals to 5 sec
              */
-            userService.getAll().forEach(user -> sendCall(user.getMobile(), callTimeout));
+            userService.getAll(true).forEach(user -> sendCall(user.getMobile(), callTimeout));
         }
     }
 
@@ -221,11 +221,11 @@ public class NotificationService {
     }
 
     private void sendTelegram(String message) {
-        eventPublisher.publishEvent(new OnTelegramNotifyEvent(message, null, null));
+        eventPublisher.publishEvent(new OnTelegramTextNotifyEvent(message, null));
     }
 
     private void sendTelegram(List<File> files) {
-        eventPublisher.publishEvent(new OnTelegramNotifyEvent(null, files, null));
+        eventPublisher.publishEvent(new OnTelegramFileNotifyEvent(files));
     }
 
     private List<File> getPhotos(Zone zone) {

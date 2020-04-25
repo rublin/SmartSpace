@@ -5,31 +5,72 @@ import lombok.extern.slf4j.Slf4j;
 import org.rublin.message.NotificationMessage;
 import org.rublin.model.Camera;
 import org.rublin.model.ConfigKey;
+import org.rublin.model.Relay;
 import org.rublin.model.Trigger;
 import org.rublin.model.Zone;
 import org.rublin.model.event.Event;
 import org.rublin.model.sensor.TemperatureSensor;
 import org.rublin.model.user.User;
-import org.rublin.service.*;
+import org.rublin.service.CameraService;
+import org.rublin.service.EventService;
+import org.rublin.service.MediaPlayerService;
+import org.rublin.service.RelayService;
+import org.rublin.service.SystemConfigService;
+import org.rublin.service.TextToSpeechService;
+import org.rublin.service.TriggerService;
+import org.rublin.service.UserService;
+import org.rublin.service.WeatherService;
+import org.rublin.service.ZoneService;
 import org.rublin.service.delayed.DelayQueueService;
 import org.rublin.service.impl.TemperatureServiceImpl;
 import org.rublin.to.TelegramResponseDto;
 import org.rublin.util.Image;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.api.objects.Message;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.io.File;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.rublin.telegram.TelegramCommand.*;
-import static org.rublin.telegram.TelegramKeyboardUtil.*;
+import static org.rublin.telegram.TelegramCommand.ADMIN_TEMPERATURE_SENSOR_ADD;
+import static org.rublin.telegram.TelegramCommand.ARMING;
+import static org.rublin.telegram.TelegramCommand.CAMERA;
+import static org.rublin.telegram.TelegramCommand.DISARMING;
+import static org.rublin.telegram.TelegramCommand.EVENTS;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_DE;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_EN;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_OTHER;
+import static org.rublin.telegram.TelegramCommand.LANGUAGE_UK;
+import static org.rublin.telegram.TelegramCommand.RELAY;
+import static org.rublin.telegram.TelegramCommand.SAY;
+import static org.rublin.telegram.TelegramKeyboardUtil.adminKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.armingOrDisarmingKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.cameraKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.eventsKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.mainKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.mediaKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.relayKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.relayStateKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.sayKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.securityKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.triggerKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.volumeKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.weatherKeyboard;
+import static org.rublin.telegram.TelegramKeyboardUtil.zonesKeyboard;
 import static org.springframework.util.StringUtils.isEmpty;
 
 @Slf4j
@@ -47,11 +88,12 @@ public class TelegramServiceImpl implements TelegramService {
     private final EventService eventService;
     private final SystemConfigService configService;
     private final UserService userService;
-    private final HeatingService heatingService;
     private final DelayQueueService delayQueueService;
+    private final RelayService relayService;
 
 
     private Map<Long, TelegramCommand> previousCommandMap = new ConcurrentHashMap<>();
+    private Map<Long, String> valueMap = new ConcurrentHashMap<>();
 
     @Value("${tmp.directory}")
     private String tmpDir;
@@ -74,11 +116,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public Set<Integer> getChatIds() {
-        Set<Integer> collect = userService.getAll().stream()
+        return userService.getAll(true).stream()
                 .map(User::getTelegramId)
                 .filter(Objects::nonNull)
                 .collect(toSet());
-        return collect;
     }
 
     private User authentication(Message message) {
@@ -195,18 +236,80 @@ public class TelegramServiceImpl implements TelegramService {
                     previousCommandMap.remove(id);
                     break;
 
-                case HEATING:
-                    responseMessages.add(heatingService.current().isGlobalStatus() ? "Pump is ON" : "Pump is OFF");
-                    keyboardMarkup = heatingKeyboard();
+                case RELAY:
+                    List<Relay> relays = relayService.getAll();
+                    relays.forEach(relay -> responseMessages.add(relayService.toTelegram(relay)));
+                    responseMessages.add("Select the relay");
+                    keyboardMarkup = relayKeyboard(relays.stream()
+                            .map(Relay::getName)
+                            .collect(toList()));
+                    previousCommandMap.put(id, command);
                     break;
 
-                case HEATING_PUMP_ON:
-                    responseMessages.add(heatingService.pump(true));
+                case RELAY_0:
+                    relayService.changeRelayStatus(valueMap.get(id), 0);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
                     break;
 
-                case HEATING_PUMP_OFF:
-                    heatingService.stopHeating();
-                    responseMessages.add(heatingService.current().status());
+                case RELAY_10:
+                    relayService.changeRelayStatus(valueMap.get(id), 10);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_20:
+                    relayService.changeRelayStatus(valueMap.get(id), 20);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_30:
+                    relayService.changeRelayStatus(valueMap.get(id), 30);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_40:
+                    relayService.changeRelayStatus(valueMap.get(id), 40);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_50:
+                    relayService.changeRelayStatus(valueMap.get(id), 50);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_60:
+                    relayService.changeRelayStatus(valueMap.get(id), 60);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_70:
+                    relayService.changeRelayStatus(valueMap.get(id), 70);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_80:
+                    relayService.changeRelayStatus(valueMap.get(id), 80);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_90:
+                    relayService.changeRelayStatus(valueMap.get(id), 90);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
+                    break;
+
+                case RELAY_100:
+                    relayService.changeRelayStatus(valueMap.get(id), 100);
+                    previousCommandMap.remove(id);
+                    valueMap.remove(id);
                     break;
 
                 case EVENTS:
@@ -403,6 +506,11 @@ public class TelegramServiceImpl implements TelegramService {
                     }
                 }
 
+            } else if (previousCommand == RELAY) {
+                valueMap.put(id, message.getText());
+                keyboardMarkup = relayStateKeyboard();
+                responseMessages.add("Shoose the state");
+                previousCommandMap.remove(id);
             }
         }
 
