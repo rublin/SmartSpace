@@ -1,7 +1,7 @@
 package org.rublin.telegram;
 
 import org.rublin.to.TelegramResponseDto;
-import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Set;
 
