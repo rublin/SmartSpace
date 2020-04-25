@@ -76,11 +76,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public Set<Integer> getChatIds() {
-        Set<Integer> collect = userService.getAll().stream()
+        return userService.getAll(true).stream()
                 .map(User::getTelegramId)
                 .filter(Objects::nonNull)
                 .collect(toSet());
-        return collect;
     }
 
     private User authentication(Message message) {

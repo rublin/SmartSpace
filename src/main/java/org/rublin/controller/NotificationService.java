@@ -109,7 +109,7 @@ public class NotificationService {
     }
 
     public void sendEmailNotification(String subject, String message) {
-        sendEmail(getEmails(userService.getAll()), subject, message);
+        sendEmail(getEmails(userService.getAll(true)), subject, message);
     }
 
     public void sendInfoToAllUsers(Zone zone) {
@@ -122,18 +122,13 @@ public class NotificationService {
                 zone.getStatus(),
                 zone.isSecure() ? "GREEN" : "GREY",
                 zone.isSecure());
-        List<String> emails = getEmails(userService.getAll());
+        List<String> emails = getEmails(userService.getAll(true));
         sendEmail(emails, subject, message);
         log.info("Sending info notification {} to {}", subject, emails);
     }
 
     public void sendAlarmNotification(Zone zone, boolean isSecure) {
-        Thread sound = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sendSound(isSecure);
-            }
-        });
+        Thread sound = new Thread(() -> sendSound(isSecure));
         sound.start();
         String message = triggerService.getInfo(zone);
         String mailBody = String.format("<h2>Zone: <span style=\"color: blue;\">%s</span></h2>\n" +
@@ -157,7 +152,7 @@ public class NotificationService {
         }
         String subject = String.format("%s form zone %s", subjectHeader, zone.getShortName());
         sendTelegram(message);
-        sendEmail(getEmails(userService.getAll()), subject, mailBody, photos);
+        sendEmail(getEmails(userService.getAll(true)), subject, mailBody, photos);
         log.info("Using sms notification is {}", smsNotification);
 
         if (smsNotification) {
@@ -166,14 +161,14 @@ public class NotificationService {
              */
             LocalDateTime time = LocalDateTime.now();
             if (time.getHour() >= 22 || time.getHour() <= 6) {
-                userService.getAll().forEach(
+                userService.getAll(true).forEach(
                         user -> sendCall(user.getMobile())
                 );
             } else {
                 /**
                  * Send sms notification to each user
                  */
-                userService.getAll().forEach(
+                userService.getAll(true).forEach(
                         user -> sendSms(user.getMobile(), message.replaceAll("<[^>]*>", ""))
                 );
             }
@@ -182,7 +177,7 @@ public class NotificationService {
              * Send short call notifications
              * 5000 equals to 5 sec
              */
-            userService.getAll().forEach(user -> sendCall(user.getMobile(), callTimeout));
+            userService.getAll(true).forEach(user -> sendCall(user.getMobile(), callTimeout));
         }
     }
 

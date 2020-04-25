@@ -11,7 +11,7 @@ public class TelegramCommandTest {
 
     @Test
     public void getCommandName() {
-        assertEquals("Security", SECURITY.getCommandName());
+        assertEquals("\uD83D\uDC6E Security", SECURITY.getCommandName());
         assertEquals("All zones", SECURITY_ALL.getCommandName());
         assertEquals("All cameras", CAMERA_ALL.getCommandName());
     }

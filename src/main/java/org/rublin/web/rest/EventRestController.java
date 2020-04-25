@@ -58,8 +58,14 @@ public class EventRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Event will be saved");
     }
 
+    @GetMapping("/temperature/add")
+    public ResponseEntity<String> saveNewTemperatureEvent(@RequestParam int triggerId, @RequestParam double state) {
+        log.info("Received new temperature {} from sensor {}", state, triggerId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Event will be saved");
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Event> get (@PathVariable("id") int triggerId) {
+    public List<Event> get(@PathVariable("id") int triggerId) {
         return eventService.get(triggerService.get(triggerId));
     }
 

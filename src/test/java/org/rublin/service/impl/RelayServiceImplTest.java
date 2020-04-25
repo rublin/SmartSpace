@@ -56,9 +56,10 @@ public class RelayServiceImplTest {
 
     @Test
     public void telegramToString() {
-        assertEquals("Id: 1; Name: name; State: 40%", relayService.toTelegram(new Relay()
+        assertEquals("Id: 1; Name: name; Current: ON; State: 40%", relayService.toTelegram(new Relay()
                 .setId(1)
                 .setName("name")
+                .setUpdated(LocalDateTime.now())
                 .setProductivityPerCent(40)));
     }
 }
